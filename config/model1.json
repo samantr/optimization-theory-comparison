@@ -1,0 +1,21 @@
+{
+  "_status": "Provisional pilot configuration; confirm noise level and split before final experiments",
+  "model": "exponential_decay",
+  "n_observations": 120,
+  "x_min": 0.0,
+  "x_max": 4.0,
+  "true_parameters": {
+    "a": 4.0,
+    "half_life": 1.0,
+    "c": 1.0
+  },
+  "noise": {
+    "sigma": 0.1,
+    "seed": 42
+  },
+  "split": {
+    "train_fraction": 0.6,
+    "validation_fraction": 0.2,
+    "seed": 2026
+  }
+}
