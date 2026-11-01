@@ -5,7 +5,7 @@
 | Phase | Status | Evidence / next action |
 | --- | --- | --- |
 | 1. Research question and foundations | Completed | Worked residuals, MSE, derivatives, curvature, local/global extrema, fairness |
-| 2. Model and data | Completed for Model 1 pilot; Model 2 synthetic data generated | Model 1 model, data, MSE, gradient, exact Hessian verified; Model 2 stable logistic prediction and reproducible data generator tested, derivatives still pending |
+| 2. Model and data | Model 1 pilot and Model 2 derivatives verified | Model 1 and Model 2 synthetic data and analytical MSE gradients/exact Hessians tested; Model 2 optimizer integration pending |
 | 3. Gradient Descent | Pilot implemented | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime and failure logging; experimental settings remain provisional |
 | 4. Exact Newton | Pilot implemented | Full-step exact Newton preserved; separate safeguarded exact-Hessian hybrid with Armijo backtracking and explicit gradient fallback added |
 | 5. Validation | Partially completed | Finite-difference derivative checks and unit tests for all three pilot variants; broader empirical validation pending |
@@ -49,8 +49,9 @@
 
 - Model 1 forward prediction and synthetic Gaussian data generation.
 - Model 2 overflow-resistant logistic prediction, approved 3-parameter truth,
-  deterministic noise and split, metadata/CSV/plot export, and protocol tests.
-  Analytical derivatives and optimizer support remain pending.
+  deterministic noise and split, metadata/CSV/plot export, analytical MSE
+  gradient/exact Hessian, and independent finite-difference tests.
+  See `docs/MODEL2_DERIVATIVES.md`; optimizer support remains pending.
 - Independent noise and split random generators.
 - CSV/JSON/plot export script.
 - Model 1 objective J(theta) using candidate parameters and training observations.

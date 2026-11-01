@@ -17,6 +17,8 @@ Already implemented and tested:
   approved, independently seeded synthetic dataset (truth [10,1.5,2]).
 - Model 2: five approved starting vectors and a reproducible manifest of
   50 paired dataset/start conditions (no optimization runs yet).
+- Model 2: analytical MSE gradient and **exact Hessian** (including
+  residual-dependent curvature), checked by numerical differentiation.
 - Synthetic Gaussian observations from known true parameters.
 - Parameter-dependent Model 1 training MSE, explicitly using candidate [a,b,c]
   and supplied observed training data (never known true parameters).
@@ -34,8 +36,8 @@ Already implemented and tested:
 - Deterministic CSV, metadata (including a SHA-256 digest), and an optional preview plot.
 - Unit checks for the mathematical endpoints, seed reproducibility, and split counts.
 
-**Not yet implemented:** Model 2 analytical gradient/Hessian and optimizer
-comparisons, Model 3 (Gaussian peak), Model 4 (oscillatory trend), controlled
+**Not yet implemented:** Model 2 optimizer integration and comparisons,
+Model 3 (Gaussian peak), Model 4 (oscillatory trend), controlled
 paired optimizer experiments, or the final report. These will be added after
 mathematical checkpoints.
 
@@ -66,6 +68,7 @@ optimization-theory-comparison/
       synthetic.py
     objectives/
       mse.py
+      logistic_mse.py
     optimizers/
       __init__.py
       common.py
@@ -84,6 +87,7 @@ optimization-theory-comparison/
     test_model1.py
     test_model2.py
     test_model2_dataset.py
+    test_model2_derivatives.py
     test_objective.py
     test_gradient_descent.py
     test_newton.py
@@ -91,6 +95,7 @@ optimization-theory-comparison/
   docs/
     MODELS.md
     MODEL1_HESSIAN.md
+    MODEL2_DERIVATIVES.md
     GRADIENT_DESCENT.md
     NEWTON.md
     NEWTON_SAFEGUARDED.md

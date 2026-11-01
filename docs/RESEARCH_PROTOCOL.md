@@ -95,8 +95,9 @@ to initialization?
   methods will receive candidate vectors and training observations, never
   the true parameter values or held-out labels.
 - Model 2 approved optimizer starting points are recorded in the research
-  manifest. Analytical derivatives, tuning, and actual comparisons are not
-  yet implemented.
+  manifest. The analytical gradient and exact Hessian are implemented and
+  independently checked; optimizer integration, tuning, and actual
+  comparisons remain pending.
 
 Machine-readable approved counts are in `config/experiment_plan.json`.
 The `opttheory.experiments.plan` module enumerates 50 matched Model 1

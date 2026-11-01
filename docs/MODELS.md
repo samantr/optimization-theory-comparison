@@ -1,14 +1,15 @@
 # Four planned nonlinear regression families
 
 Model 1 has synthetic data and analytical optimization derivatives. Model 2
-has an approved true synthetic curve and tested, seeded data generator;
-its gradient, Hessian, and optimizers have **not** been implemented.
+has an approved true synthetic curve, a tested seeded data generator, and
+validated analytical MSE gradient/exact Hessian; optimizer integration
+has **not** been implemented.
 Models 3-4 remain proposals.
 
 | Model | Function | Free parameters | Status |
 | --- | --- | --- | --- |
 | 1. Exponential decay | a exp(bx) + c | a, b, c | Data generation implemented |
-| 2. Logistic growth | L / (1 + exp[-k(x-x0)]) | L, k, x0 | Prediction and seeded dataset tested; derivatives pending |
+| 2. Logistic growth | L / (1 + exp[-k(x-x0)]) | L, k, x0 | Prediction, seeded data, gradient, and exact Hessian tested |
 | 3. Gaussian peak | A exp[-(x-mu)^2/(2 sigma_model^2)] | A, mu, sigma_model | Planned |
 | 4. Oscillatory upward trend | mx + A sin(omega x) + B sin(2 omega x) | m, A, omega, B | Planned |
 
@@ -33,6 +34,8 @@ python -m scripts.generate_model2
 ```
 
 No true synthetic parameter is passed to either optimization algorithm.
+See `docs/MODEL2_DERIVATIVES.md` for the chain rule, exact Hessian,
+one-point example, and finite-difference validation.
 
 Model 4 is inspired by Saman's hand-drawn rising, multi-peak curve. It is not
 intended to trace that image pixel-for-pixel. Its unknown frequency omega can
