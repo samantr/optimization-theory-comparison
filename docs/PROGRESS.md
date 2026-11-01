@@ -9,8 +9,8 @@
 | 3. Gradient Descent | Pilot implemented | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime and failure logging; experimental settings remain provisional |
 | 4. Exact Newton | Pilot implemented | Full-step exact Newton preserved; separate safeguarded exact-Hessian hybrid with Armijo backtracking and explicit gradient fallback added |
 | 5. Validation | Partially completed | Finite-difference derivative checks and unit tests for all three pilot variants; broader empirical validation pending |
-| 6. Controlled comparisons | Study size approved; not started | 4 models × 10 dataset seeds × 5 starts; paired across the two main methods and a separately labelled safeguarded variant; other settings pending |
-| 7. Results and plots | Not started | No optimizer results exist yet |
+| 6. Controlled comparisons | Study size and Model 1 starts approved; not started | 4 models × 10 dataset seeds × 5 fixed model-specific starts; Model 1 S1–S5 recorded; other settings pending |
+| 7. Results and plots | Not started | No controlled-comparison results exist yet; pilot diagnostics only |
 | 8. Literature and interpretation | Not started | Verified sources only |
 | 9. Report and presentation | Not started | Use validated results only |
 
@@ -22,6 +22,8 @@
 - Exact true parameters: a = 4, b = ln(0.5), c = 1.
 - f(0) = 5, f(1) = 3, f(2) = 2, f(3) = 1.5, f(4) = 1.25.
 - Both algorithms must use the same generated data and initial parameters.
+- Five Model 1 start vectors S1–S5 and the fixed-start-per-seed strategy are
+  approved and recorded in `config/experiment_plan.json`.
 
 ## Provisional settings pending confirmation
 
@@ -63,9 +65,9 @@ Newton variant are implemented, with 40 passing unit tests. Reproducible
 training-only pilot scripts exist for all three. On one illustrative start,
 full-step Newton reached a poor saddle while the safeguarded variant found
 a good training fit; neither is comparative evidence. Next: confirm dataset,
-noise, starting-vector selection, seed schedule, learning-rate/line-search
+noise, starting-vector selection for Models 2–4, seed schedule, learning-rate/line-search
 policies, success criteria, and timing before the approved 10-seed × 5-start
 paired grid is executed.
 The noise/split settings remain provisional and need confirmation before
-controlled comparisons. No optimizer has been implemented yet.
+controlled comparisons. No **controlled** optimizer grid has been executed yet.
 

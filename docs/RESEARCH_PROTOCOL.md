@@ -30,6 +30,9 @@ to initialization?
   sketch-inspired oscillatory trend.
 - **Ten independently seeded datasets per model.**
 - **Five starting parameter vectors per dataset.**
+- **Starting-vector strategy approved:** five fixed, deliberately varied,
+  model-specific vectors reused across the ten dataset seeds; all methods
+  receive the same vectors within every matched condition.
 - **Same dataset and same start across methods within each paired condition.**
 - **Two primary methods:** fixed-step batch Gradient Descent and full-step
   exact Newton. **One separately labelled exploratory variant:** safeguarded
@@ -41,7 +44,12 @@ to initialization?
 - Dataset seeds are grouping units: five starts on the same dataset are **not
   five independent datasets**. Summaries and uncertainty estimates must
   respect this hierarchy.
-- **Not approved/frozen yet:** exact starting vectors/distribution, final
+- **Model 1 starting vectors approved** (parameter order `[a,b,c]`):
+  `S1=[3,-0.5,1]`, `S2=[1,-1.2,0]`, `S3=[6,-0.2,2]`,
+  `S4=[-1,-0.5,3]`, `S5=[2,0.4,0]`. These probe normal, extreme,
+  sign-reversed, and growth-like initial conditions. They are kept even if
+  an algorithm fails, and are not optimized against the test set.
+- **Not approved/frozen yet:** starting vectors for Models 2–4, final
   noise and split settings, seed schedule, optimizer tuning budgets, timing
   protocol, and success/failure thresholds. No controlled grid has been run.
 

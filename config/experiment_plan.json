@@ -8,6 +8,15 @@
   ],
   "dataset_seeds_per_model": 10,
   "starting_points_per_dataset": 5,
+  "starting_point_strategy": "Five preregistered model-specific vectors, repeated unchanged across the ten dataset seeds and used identically by all methods.",
+  "model1_parameter_order": ["a", "b", "c"],
+  "model1_starting_points": [
+    {"id": "S1", "theta": [3.0, -0.5, 1.0], "purpose": "Familiar pilot starting point"},
+    {"id": "S2", "theta": [1.0, -1.2, 0.0], "purpose": "Small amplitude and rapid decay"},
+    {"id": "S3", "theta": [6.0, -0.2, 2.0], "purpose": "Large amplitude and slow decay"},
+    {"id": "S4", "theta": [-1.0, -0.5, 3.0], "purpose": "Negative amplitude"},
+    {"id": "S5", "theta": [2.0, 0.4, 0.0], "purpose": "Initially increasing exponential"}
+  ],
   "primary_methods": [
     "gradient_descent",
     "newton"
@@ -17,7 +26,7 @@
   ],
   "pairing_rule": "All methods use identical training data and starting parameters for each model/dataset-seed/start-point condition.",
   "pending_decisions": [
-    "How to select and preregister the five starting points per model",
+    "Preregister five starting vectors for each of Models 2, 3, and 4",
     "Final observation count, noise levels, and data split",
     "Seed schedule and independent random streams",
     "Tuning and stopping policies on training/validation only",
