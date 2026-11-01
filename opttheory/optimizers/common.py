@@ -22,5 +22,6 @@ class OptimizationResult:
     elapsed_seconds: float
     objective_evaluations: int
     gradient_evaluations: int
+    hessian_evaluations: int = 0
 
 

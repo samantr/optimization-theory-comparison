@@ -7,8 +7,8 @@
 | 1. Research question and foundations | Completed | Worked residuals, MSE, derivatives, curvature, local/global extrema, fairness |
 | 2. Model and data | Completed for Model 1 pilot | Model, data, MSE, analytical gradient, and exact Hessian implemented and verified; other models and experimental settings remain for later phases |
 | 3. Gradient Descent | Pilot implemented | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime and failure logging; experimental settings remain provisional |
-| 4. Exact Newton | Not started | Study second-order Taylor model, Hessian solve and safeguards |
-| 5. Validation | Not started | Derivative checks and solver tests |
+| 4. Exact Newton | Pilot implemented | Full-step exact Hessian solve with singular/ill-conditioned detection and loss/failure history; later safeguards to be explicitly designed |
+| 5. Validation | Partially completed | Finite-difference gradient/Hessian checks and unit tests for both pilot solvers; broader empirical validation pending |
 | 6. Controlled comparisons | Not started | Paired seeds, initializations, timing and failure logging |
 | 7. Results and plots | Not started | No optimizer results exist yet |
 | 8. Literature and interpretation | Not started | Verified sources only |
@@ -48,15 +48,20 @@
   a reproducible training-only pilot command, and independent tests for the
   hand-computed step, singular Hessian independence, stopping, and overflow;
   see `docs/GRADIENT_DESCENT.md`.
+- A full-step **exact** Newton optimizer with an explicit linear system solve,
+  condition-number/singularity safeguards, history/counter logging, and tests
+  for a manually checkable three-parameter update; see `docs/NEWTON.md`.
 - Unit tests and mathematical endpoint checks.
 
 ## Current learning checkpoint
 
-The Model 1 gradient and exact Hessian and a first fixed-step GD optimizer are
-implemented, with 28 passing unit tests. The Hessian's six distinct entries
-and a singular case are documented in `docs/MODEL1_HESSIAN.md`, and a manually
-checked GD step in `docs/GRADIENT_DESCENT.md`. Next: interpret learning-rate
-effects before implementing **exact** Newton as a separate method.
+Both Model 1 optimizers are implemented and verified with 34 passing unit
+tests. Reproducible training-only pilot scripts are available for GD and
+full-step exact Newton. From the same illustrative initialization, Newton
+can reach an indefinite-Hessian stationary point with poor MSE. This is a
+pilot **failure mode**, not comparative evidence. Next: discuss what a
+gradient-norm stopping rule proves, plan clearly labelled Newton safeguards,
+and then freeze the paired multi-seed experiment protocol.
 The noise/split settings remain provisional and need confirmation before
 controlled comparisons. No optimizer has been implemented yet.
 

@@ -42,6 +42,10 @@ to initialization?
     than one Gradient Descent iteration.
 11. Separate parameter recovery error, training MSE, test MSE, and gradient norm.
 12. Preserve code version, package versions, config, seeds, and generated data hash.
+13. A small gradient is *not* automatically successful optimization: inspect
+    final loss and Hessian curvature, and record saddle/poor stationary points.
+14. Clearly distinguish unsafeguarded full-step Newton from any later
+    safeguarded or damped variant; do not silently alter the baseline.
 
 ## Report target
 
