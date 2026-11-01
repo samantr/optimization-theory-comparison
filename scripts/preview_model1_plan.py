@@ -22,8 +22,10 @@ def main() -> None:
     print(f"Model 1 planned method runs: {len(runs)}")
     print("First paired condition:")
     for row in runs[:3]:
-        print(f"  {row.dataset_id}/{row.start_id}: {row.method}, theta0={row.theta0}")
-    print("Only a manifest preview. Seed values are pending; no fitting or evaluation occurred.")
+        print(f"  {row.dataset_id}/{row.start_id}: {row.method}, "
+              f"noise_seed={row.noise_seed}, split_seed={row.split_seed}, "
+              f"theta0={row.theta0}")
+    print("Only a manifest preview. No fitting or evaluation occurred.")
 
 
 if __name__ == "__main__":

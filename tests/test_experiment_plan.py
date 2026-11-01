@@ -1,15 +1,18 @@
 """Validate approved study breadth and Model 1 pre-registered starting points."""
 
 import json
+from copy import deepcopy
 from pathlib import Path
 import unittest
 
 import numpy as np
 
 from opttheory.experiments import build_model1_plan
+from opttheory.datasets.synthetic import generate_model1
 
 
 PLAN = Path(__file__).resolve().parents[1] / "config" / "experiment_plan.json"
+MODEL1 = PLAN.parent / "model1.json"
 
 
 class ExperimentPlanTests(unittest.TestCase):
@@ -41,6 +44,33 @@ class ExperimentPlanTests(unittest.TestCase):
                           split["test_count"]], [72, 24, 24])
         self.assertEqual(sum([split["train_count"], split["validation_count"],
                               split["test_count"]]), p["observations_per_dataset"])
+
+    def test_seed_schedule_is_disjoint_across_models(self):
+        schedule = self.plan["seed_schedule"]
+        self.assertEqual(schedule["split_seed"], 2026)
+        self.assertEqual(set(schedule["noise_seeds_by_model"]),
+                         set(self.plan["model_families"]))
+        by_model = list(schedule["noise_seeds_by_model"].values())
+        self.assertTrue(all(len(seeds) == 10 and len(set(seeds)) == 10
+                            for seeds in by_model))
+        flattened = [seed for seeds in by_model for seed in seeds]
+        self.assertEqual(len(set(flattened)), 40)
+
+    def test_fixed_split_and_different_noise_are_reproducible(self):
+        prototype = json.loads(MODEL1.read_text(encoding="utf-8"))
+        def sample(noise_seed):
+            config = deepcopy(prototype)
+            config["noise"]["seed"] = noise_seed
+            config["split"]["seed"] = self.plan["seed_schedule"]["split_seed"]
+            return generate_model1(config)
+
+        a = sample(1000)
+        b = sample(1001)
+        again = sample(1000)
+        np.testing.assert_array_equal(a.split, b.split)
+        np.testing.assert_array_equal(a.noise, again.noise)
+        self.assertFalse(np.array_equal(a.noise, b.noise))
+        self.assertEqual(a.split_counts(), {"train": 72, "validation": 24, "test": 24})
 
     def test_model1_starts_are_fixed_distinct_and_finite(self):
         p = self.plan
@@ -75,6 +105,8 @@ class ExperimentPlanTests(unittest.TestCase):
                              ["gradient_descent", "newton", "safeguarded_newton"])
             self.assertEqual(len({r.theta0 for r in group}), 1)
             self.assertEqual(len({r.dataset_id for r in group}), 1)
+            self.assertEqual(len({r.noise_seed for r in group}), 1)
+            self.assertEqual({r.split_seed for r in group}, {2026})
 
 
 if __name__ == "__main__":

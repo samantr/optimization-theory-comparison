@@ -18,6 +18,16 @@
     "validation_count": 24,
     "test_count": 24
   },
+  "seed_schedule": {
+    "split_seed": 2026,
+    "policy": "All datasets use the same seeded random split. Noise seeds vary independently by model and replicate; no method-specific seeds.",
+    "noise_seeds_by_model": {
+      "exponential_decay": [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009],
+      "logistic": [1100, 1101, 1102, 1103, 1104, 1105, 1106, 1107, 1108, 1109],
+      "gaussian_peak": [1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207, 1208, 1209],
+      "oscillatory_trend": [1300, 1301, 1302, 1303, 1304, 1305, 1306, 1307, 1308, 1309]
+    }
+  },
   "primary_noise": {
     "distribution": "gaussian",
     "sigma": 0.1,
@@ -43,7 +53,6 @@
   "pairing_rule": "All methods use identical training data and starting parameters for each model/dataset-seed/start-point condition.",
   "pending_decisions": [
     "Preregister five starting vectors for each of Models 2, 3, and 4",
-    "Seed schedule and independent random streams",
     "Tuning and stopping policies on training/validation only",
     "Timing repetitions, failure criteria, and aggregation"
   ]

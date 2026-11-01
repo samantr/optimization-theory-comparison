@@ -9,7 +9,7 @@
 | 3. Gradient Descent | Pilot implemented | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime and failure logging; experimental settings remain provisional |
 | 4. Exact Newton | Pilot implemented | Full-step exact Newton preserved; separate safeguarded exact-Hessian hybrid with Armijo backtracking and explicit gradient fallback added |
 | 5. Validation | Partially completed | Finite-difference derivative checks and unit tests for all three pilot variants; broader empirical validation pending |
-| 6. Controlled comparisons | Study size, Model 1 starts, noise, and split approved; no runs yet | 120 observations with 72/24/24 seeded split; matched Model 1 run manifest prepared (150 placeholders); actual seed/tuning/timing settings pending |
+| 6. Controlled comparisons | Size, Model 1 starts, noise, split, and seeds fixed; no runs yet | 120 observations, 72/24/24 fixed split seed 2026, disjoint model-specific noise seeds, and 150 Model 1 method placeholders; tuning/timing pending |
 | 7. Results and plots | Not started | No controlled-comparison results exist yet; pilot diagnostics only |
 | 8. Literature and interpretation | Not started | Verified sources only |
 | 9. Report and presentation | Not started | Use validated results only |
@@ -28,6 +28,9 @@
   approved; other noise levels are deferred to robustness analysis.
 - Exactly 120 observations per dataset and a seeded random 72/24/24
   training/validation/test split are approved across all four models.
+- One fixed split seed (2026) across all datasets, plus pre-registered
+  nonoverlapping noise seeds (1000–1009, 1100–1109, 1200–1209, 1300–1309)
+  by model, is now recorded in the study configuration.
 
 ## Pilot settings and remaining confirmations
 
@@ -62,7 +65,8 @@
   Hessian check, explicit gradient fallback, Armijo backtracking, and counters
   for the extra computational work; see `docs/NEWTON_SAFEGUARDED.md`.
 - A deterministic Model 1 *manifest builder* lists 50 paired conditions and
-  150 method placeholders without selecting noise seeds or running any solver.
+  150 method placeholders, including their noise/split seed values, without
+  running any solver.
 - Unit tests and mathematical endpoint checks.
 
 ## Current learning checkpoint
@@ -72,9 +76,10 @@ Newton variant are implemented, with a growing passing unit-test suite. Reproduc
 training-only pilot scripts exist for all three. On one illustrative start,
 full-step Newton reached a poor saddle while the safeguarded variant found
 a good training fit; neither is comparative evidence. Next: confirm
-starting-vector selection for Models 2–4, seed schedule, learning-rate/line-search
+starting-vector selection for Models 2–4, learning-rate/line-search
 policies, success criteria, and timing before the approved 10-seed × 5-start
 paired grid is executed.
-The dataset size and 60/20/20 split are approved; concrete independent seeds
-and other settings remain pending. No **controlled** optimizer grid has run.
+The dataset size, noise/split seeds, and 60/20/20 split are recorded; solver
+tuning and evaluation policies remain pending. No **controlled** optimizer
+grid has run.
 

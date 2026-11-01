@@ -33,8 +33,8 @@ Already implemented and tested:
 **Not yet implemented:** Model 2 (logistic), Model 3 (Gaussian peak), Model 4 (oscillatory trend), controlled paired optimizer experiments, or the final report. These will be added after mathematical checkpoints.
 
 The current Model 1 scripts are **pilots**, not final experimental results.
-The dataset size, noise level, and 60/20/20 split are now approved, but seed
-schedules, solver tuning, and timing rules still need to be frozen.
+The dataset size, noise level, 60/20/20 split, and random-seed schedule are
+recorded, but solver tuning and timing rules still need to be frozen.
 
 ## Folder structure
 
@@ -178,9 +178,10 @@ model, and five paired starting points per dataset**. This is recorded in
 `config/experiment_plan.json` and `docs/RESEARCH_PROTOCOL.md`. The five
 fixed Model 1 starting vectors, Gaussian noise sigma=0.1, dataset size 120,
 and the 72/24/24 seeded train/validation/test split are approved. Starting
-vectors for Models 2–4, actual seed schedules, and timing rules are **not yet
-frozen**, and no controlled comparison has been run. The plan-preview script
-lists matched Model 1 runs without fitting any model.
+vectors for Models 2–4 and timing rules are **not yet frozen**. The noise
+seed schedule is explicitly recorded (Model 1: 1000–1009; Models 2–4:
+1100–1109, 1200–1209, 1300–1309), with the split seed fixed at 2026.
+The plan-preview script lists matched Model 1 runs without fitting any model.
 
 The CSV retains the clean curve and the actual noise values for auditability. The metadata records configuration, true parameters, split counts, package/runtime versions, and a file hash.
 
