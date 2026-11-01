@@ -74,6 +74,20 @@ limitations are disclosed in the results document. The preregistered
 experiment plan and evaluation-protocol files remain **unchanged** after
 execution to preserve their SHA-256 provenance.
 
+### Separate adaptive GD pilot (not part of the final study)
+
+Saman's gradient-reversal step-halving idea and a training-MSE backtracking
+variant have been implemented and tested against the original fixed-rate GD
+on **fresh pilot seeds**, using all five original starts per model.
+See `docs/ADAPTIVE_GD_EXPLORATORY_PILOT.md` for measured outcomes,
+failure cases, and limitations. The original final-evaluation code and
+pre-registered settings are unchanged.
+
+```powershell
+python -m scripts.run_adaptive_gd_pilot
+python -m scripts.run_adaptive_gd_pilot --execute
+```
+
 ## Folder structure
 
 ~~~text
