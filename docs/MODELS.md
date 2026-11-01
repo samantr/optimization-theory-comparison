@@ -1,17 +1,18 @@
-# Four planned nonlinear regression families
+# Two approved nonlinear regression families (plus optional future models)
 
-Model 1 has synthetic data and analytical optimization derivatives. Model 2
-has an approved true synthetic curve, a tested seeded data generator, and
-validated analytical MSE gradient/exact Hessian; optimizer integration
-has **not** been implemented.
-Models 3-4 remain proposals.
+The **official comparison** now has only Models 1 and 2, as approved by
+Saman to keep the study focused and feasible. Both have synthetic data,
+analytical MSE gradients and exact Hessians, and unit-tested connections
+to the same Gradient Descent and Newton implementations. Neither model's
+controlled comparison has been run. Models 3 and 4 are *optional future
+work*, not part of the pre-registered experiment grid.
 
 | Model | Function | Free parameters | Status |
 | --- | --- | --- | --- |
 | 1. Exponential decay | a exp(bx) + c | a, b, c | Data generation implemented |
-| 2. Logistic growth | L / (1 + exp[-k(x-x0)]) | L, k, x0 | Prediction, seeded data, gradient, and exact Hessian tested |
-| 3. Gaussian peak | A exp[-(x-mu)^2/(2 sigma_model^2)] | A, mu, sigma_model | Planned |
-| 4. Oscillatory upward trend | mx + A sin(omega x) + B sin(2 omega x) | m, A, omega, B | Planned |
+| 2. Logistic growth | L / (1 + exp[-k(x-x0)]) | L, k, x0 | Prediction, seeded data, derivatives, optimizer adapters tested |
+| 3. Gaussian peak (optional future work) | A exp[-(x-mu)^2/(2 sigma_model^2)] | A, mu, sigma_model | Not in official experiment |
+| 4. Oscillatory upward trend (optional future work) | mx + A sin(omega x) + B sin(2 omega x) | m, A, omega, B | Not in official experiment |
 
 **Naming note:** sigma_model is the width of the Gaussian regression curve and
 must not be confused with sigma_noise, the standard deviation of observation noise.
@@ -42,8 +43,11 @@ intended to trace that image pixel-for-pixel. Its unknown frequency omega can
 create a multimodal loss landscape, making it a potential initialization-sensitivity
 stress test.
 
-Within each model we will compare both algorithms on **identical data and
+Within each approved model we will compare both algorithms on **identical data and
 initial parameter vectors**. Raw performance between different model families
 must not be interpreted as an algorithm effect without accounting for their
 different complexity and parameter count.
+
+Claims about convergence, runtime, and failure modes will explicitly be
+limited to the two evaluated model families, not all nonlinear regressions.
 

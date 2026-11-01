@@ -24,13 +24,15 @@ to initialization?
 - Pilot split 72 train, 24 validation, 24 test
 - These settings require final confirmation before the comparative experiment.
 
-## Approved experimental breadth (2026-11-01)
+## Approved experimental breadth (2026-11-01, narrowed to two models)
 
-- **Four model families:** exponential decay, logistic, Gaussian peak, and
-  sketch-inspired oscillatory trend.
+- **Two core model families:** exponential decay and logistic growth.
+  The previously proposed Gaussian peak and sketch-inspired oscillatory
+  trend are retained only as optional future work. They are not part of
+  the official experiment or its claims.
 - **Ten independently seeded datasets per model.**
 - **Observation count approved:** exactly 120 input/target observations per
-  dataset for all four models. Each model may have a different appropriate
+  dataset for both models. Each model may have a different appropriate
   input domain, but the count remains matched.
 - **Random split approved:** seeded random allocation of 60% training (72),
   20% validation (24), and 20% untouched final test (24) observations,
@@ -38,8 +40,7 @@ to initialization?
 - **Seed strategy approved:** the split assignment is fixed by seed `2026`
   across all ten replicates, isolating the effect of different noise draws.
   A pre-registered nonoverlapping noise-seed schedule is stored explicitly:
-  Model 1 `1000`–`1009`; logistic `1100`–`1109`; Gaussian `1200`–`1209`;
-  oscillatory `1300`–`1309`. The exact numeric seeds are fixed by this
+  Model 1 `1000`–`1009` and logistic `1100`–`1109`. The numeric seeds are fixed by this
   project configuration and must not be selected based on test results.
 - **Primary noise setting approved:** additive zero-mean Gaussian noise with
   standard deviation \(\sigma_{noise}=0.1\) for all ten datasets per model;
@@ -61,9 +62,9 @@ to initialization?
   seed/start of that model. Report the calibration cost separately from
   measured optimizer execution time. The candidate grid and calibration
   seeds remain to be specified before tuning.
-- This yields **50 paired conditions per model** or **200 conditions across
-  four models**. If all three methods are run on each condition, the planned
-  initial grid contains 400 primary method runs plus 200 safeguarded runs,
+- This yields **50 paired conditions per model** or **100 conditions across
+  two models**. If all three methods are run on each condition, the planned
+  grid contains **200 primary method runs plus 100 safeguarded runs**,
   before timing repetitions or tuning.
 - Dataset seeds are grouping units: five starts on the same dataset are **not
   five independent datasets**. Summaries and uncertainty estimates must
@@ -78,8 +79,8 @@ to initialization?
   `S4=[10,-1,2]`, `S5=[7,0.15,0]`. They probe close, slow,
   steep/shifted, decreasing, and nearly flat initial curves. Keep all
   runs (including negative-k failures) in the final comparison.
-- **Not approved/frozen yet:** starting vectors for Models 3–4, GD tuning
-  candidate rates and separate calibration seeds, optimizer stopping budgets, timing
+- **Not approved/frozen yet:** GD tuning candidate rates and separate
+  calibration seeds, optimizer stopping budgets, timing
   protocol, and success/failure thresholds. No controlled grid has been run.
 
 ### Model 2 synthetic curve (approved)
@@ -96,7 +97,8 @@ to initialization?
   the true parameter values or held-out labels.
 - Model 2 approved optimizer starting points are recorded in the research
   manifest. The analytical gradient and exact Hessian are implemented and
-  independently checked; optimizer integration, tuning, and actual
+  independently checked. Both algorithms and the safeguarded variant have
+  passed isolated Model 2 integration tests. Tuning and actual controlled
   comparisons remain pending.
 
 Machine-readable approved counts are in `config/experiment_plan.json`.
@@ -146,4 +148,8 @@ course requirements.
 
 No experiment, result, figure, or academic conclusion should be claimed until
 the corresponding computation has actually been performed and checked.
+
+Because the scope is limited to two model families, conclusions must be
+phrased as **conditional on these two nonlinear regression problems**;
+neither method can be declared universally faster or more reliable.
 

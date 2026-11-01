@@ -1,11 +1,10 @@
 {
-  "status": "model1_and_model2_starts_approved_other_settings_pending",
+  "status": "two_model_scope_approved_tuning_and_execution_rules_pending",
   "model_families": [
     "exponential_decay",
-    "logistic",
-    "gaussian_peak",
-    "oscillatory_trend"
+    "logistic"
   ],
+  "optional_future_models": ["gaussian_peak", "oscillatory_trend"],
   "dataset_seeds_per_model": 10,
   "starting_points_per_dataset": 5,
   "observations_per_dataset": 120,
@@ -23,9 +22,7 @@
     "policy": "All datasets use the same seeded random split. Noise seeds vary independently by model and replicate; no method-specific seeds.",
     "noise_seeds_by_model": {
       "exponential_decay": [1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009],
-      "logistic": [1100, 1101, 1102, 1103, 1104, 1105, 1106, 1107, 1108, 1109],
-      "gaussian_peak": [1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207, 1208, 1209],
-      "oscillatory_trend": [1300, 1301, 1302, 1303, 1304, 1305, 1306, 1307, 1308, 1309]
+      "logistic": [1100, 1101, 1102, 1103, 1104, 1105, 1106, 1107, 1108, 1109]
     }
   },
   "gradient_descent_learning_rate_tuning": {
@@ -68,7 +65,6 @@
   ],
   "pairing_rule": "All methods use identical training data and starting parameters for each model/dataset-seed/start-point condition.",
   "pending_decisions": [
-    "Preregister five starting vectors for each of Models 3 and 4",
     "GD learning-rate candidate grid and independent calibration seed schedule",
     "Stopping policies for each optimizer",
     "Timing repetitions, failure criteria, and aggregation"

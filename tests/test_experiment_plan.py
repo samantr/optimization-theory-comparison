@@ -22,10 +22,11 @@ class ExperimentPlanTests(unittest.TestCase):
 
     def test_approved_condition_counts_and_method_groups(self):
         p = self.plan
-        self.assertEqual(len(p["model_families"]), 4)
+        self.assertEqual(p["model_families"], ["exponential_decay", "logistic"])
+        self.assertEqual(p["optional_future_models"], ["gaussian_peak", "oscillatory_trend"])
         self.assertEqual(p["dataset_seeds_per_model"], 10)
         self.assertEqual(p["starting_points_per_dataset"], 5)
-        self.assertEqual(4 * 10 * 5, 200)
+        self.assertEqual(2 * 10 * 5, 100)
         self.assertEqual(p["primary_methods"], ["gradient_descent", "newton"])
         self.assertEqual(p["exploratory_methods"], ["safeguarded_newton"])
         self.assertEqual(p["primary_noise"]["distribution"], "gaussian")
@@ -59,7 +60,7 @@ class ExperimentPlanTests(unittest.TestCase):
         self.assertTrue(all(len(seeds) == 10 and len(set(seeds)) == 10
                             for seeds in by_model))
         flattened = [seed for seeds in by_model for seed in seeds]
-        self.assertEqual(len(set(flattened)), 40)
+        self.assertEqual(len(set(flattened)), 20)
 
     def test_fixed_split_and_different_noise_are_reproducible(self):
         prototype = json.loads(MODEL1.read_text(encoding="utf-8"))

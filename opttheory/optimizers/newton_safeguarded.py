@@ -4,14 +4,20 @@ from time import perf_counter
 
 import numpy as np
 
-from opttheory.objectives.mse import gradient, hessian, objective
+from opttheory.objectives.mse import (
+    gradient as model1_gradient,
+    hessian as model1_hessian,
+    objective as model1_objective,
+)
 from opttheory.optimizers.common import OptimizationResult
 
 
 def safeguarded_newton(theta0, x, y_observed, *, max_iterations=100,
                        gradient_tolerance=1e-6, condition_limit=1e12,
                        armijo_constant=1e-4, backtrack_factor=0.5,
-                       max_backtracks=30) -> OptimizationResult:
+                       max_backtracks=30, objective_fn=model1_objective,
+                       gradient_fn=model1_gradient,
+                       hessian_fn=model1_hessian) -> OptimizationResult:
     """Exact-Hessian Newton with a descent fallback and Armijo backtracking.
 
     A positive-definite, well-conditioned Hessian gives the Newton direction
@@ -22,6 +28,8 @@ def safeguarded_newton(theta0, x, y_observed, *, max_iterations=100,
     This hybrid is **not** the original full-step Newton baseline. It neither
     changes the original solver nor replaces the exact Hessian with an
     unreported approximation. Histories contain accepted updates only.
+
+    Supply matching model-specific callables; Model 1 is the default.
     """
     if isinstance(max_iterations, (bool, np.bool_)) or not isinstance(max_iterations, (int, np.integer)) or max_iterations < 1:
         raise ValueError("max_iterations must be a positive integer.")
@@ -38,8 +46,8 @@ def safeguarded_newton(theta0, x, y_observed, *, max_iterations=100,
 
     theta = np.asarray(theta0, dtype=np.float64).copy()
     start = perf_counter()
-    loss = objective(theta, x, y_observed)
-    grad = gradient(theta, x, y_observed)
+    loss = objective_fn(theta, x, y_observed)
+    grad = gradient_fn(theta, x, y_observed)
     loss_history = [loss]
     norm_history = [float(np.linalg.norm(grad))]
     objective_evaluations = 1
@@ -56,7 +64,7 @@ def safeguarded_newton(theta0, x, y_observed, *, max_iterations=100,
     else:
         for _ in range(max_iterations):
             try:
-                H = hessian(theta, x, y_observed)
+                H = hessian_fn(theta, x, y_observed)
                 hessian_evaluations += 1
                 condition = float(np.linalg.cond(H))
                 use_fallback = not np.isfinite(condition) or condition > condition_limit
@@ -90,7 +98,7 @@ def safeguarded_newton(theta0, x, y_observed, *, max_iterations=100,
                             candidate = theta + alpha * direction
                         if not np.all(np.isfinite(candidate)):
                             raise FloatingPointError("Nonfinite trial parameters.")
-                        candidate_loss = objective(candidate, x, y_observed)
+                        candidate_loss = objective_fn(candidate, x, y_observed)
                         objective_evaluations += 1
                         if candidate_loss <= loss + armijo_constant * alpha * directional_derivative:
                             accepted = True
@@ -106,7 +114,7 @@ def safeguarded_newton(theta0, x, y_observed, *, max_iterations=100,
                     reason = "line_search_failed"
                     break
 
-                next_grad = gradient(candidate, x, y_observed)
+                next_grad = gradient_fn(candidate, x, y_observed)
                 gradient_evaluations += 1
                 next_norm = float(np.linalg.norm(next_grad))
                 if not np.isfinite(next_norm):

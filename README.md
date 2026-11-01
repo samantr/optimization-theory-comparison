@@ -19,6 +19,8 @@ Already implemented and tested:
   50 paired dataset/start conditions (no optimization runs yet).
 - Model 2: analytical MSE gradient and **exact Hessian** (including
   residual-dependent curvature), checked by numerical differentiation.
+- Both models: explicit model-specific loss/gradient/Hessian callables accepted
+  by the same optimizers, with Model 2 one-step integration tests.
 - Synthetic Gaussian observations from known true parameters.
 - Parameter-dependent Model 1 training MSE, explicitly using candidate [a,b,c]
   and supplied observed training data (never known true parameters).
@@ -36,10 +38,9 @@ Already implemented and tested:
 - Deterministic CSV, metadata (including a SHA-256 digest), and an optional preview plot.
 - Unit checks for the mathematical endpoints, seed reproducibility, and split counts.
 
-**Not yet implemented:** Model 2 optimizer integration and comparisons,
-Model 3 (Gaussian peak), Model 4 (oscillatory trend), controlled
-paired optimizer experiments, or the final report. These will be added after
-mathematical checkpoints.
+**Not yet implemented:** controlled paired optimizer experiments or the
+final report. The **official scope is Models 1 and 2**. The Gaussian peak
+and oscillatory trend ideas are optional future work, not required models.
 
 The current Model 1 scripts are **pilots**, not final experimental results.
 The dataset size, noise level, 60/20/20 split, and random-seed schedule are
@@ -88,6 +89,7 @@ optimization-theory-comparison/
     test_model2.py
     test_model2_dataset.py
     test_model2_derivatives.py
+    test_model2_optimizers.py
     test_objective.py
     test_gradient_descent.py
     test_newton.py
@@ -200,15 +202,14 @@ y_i=y_{\mathrm{clean},i}+\epsilon_i.
 
 The current pilot uses sigma = 0.1, noise seed 42, and split seed 2026. They are independent random streams. A single generated dataset must be reused by both algorithms in each paired comparison.
 
-The approved study breadth is **four model families, ten dataset seeds per
+The approved study breadth is **two model families, ten dataset seeds per
 model, and five paired starting points per dataset**. This is recorded in
-`config/experiment_plan.json` and `docs/RESEARCH_PROTOCOL.md`. The five
-fixed Model 1 starting vectors, Gaussian noise sigma=0.1, dataset size 120,
-and the 72/24/24 seeded train/validation/test split are approved. Starting
-vectors for Models 2–4 and timing rules are **not yet frozen**. The noise
-seed schedule is explicitly recorded (Model 1: 1000–1009; Models 2–4:
-1100–1109, 1200–1209, 1300–1309), with the split seed fixed at 2026.
-The plan-preview script lists matched Model 1 runs without fitting any model.
+`config/experiment_plan.json` and `docs/RESEARCH_PROTOCOL.md`. Both models'
+starting vectors, Gaussian noise sigma=0.1, dataset size 120,
+and the 72/24/24 seeded train/validation/test split are approved. Timing
+rules are **not yet frozen**. The noise seed schedule is explicitly recorded
+(Model 1: 1000–1009; Model 2: 1100–1109), with split seed 2026.
+The plan-preview scripts list matched conditions without fitting models.
 One GD learning rate per model will be tuned on separate calibration data and
 frozen for the evaluation grid; no test data will be used for tuning.
 
@@ -224,7 +225,8 @@ The CSV retains the clean curve and the actual noise values for auditability. Th
    and indefinite-Hessian behavior; do not silently substitute Gauss-Newton.
 6. Evaluate the separately labelled safeguarded Newton variant without
    replacing or disguising failures of the original full-step method.
-7. Add the other three model families only after the core method is verified.
+7. Keep any extra model families as optional future work after the two-model
+   controlled experiment has been completed and interpreted.
 8. Run paired comparisons and record failures as well as successes.
 
 See docs/PROGRESS.md for the cumulative checkpoint and docs/RESEARCH_PROTOCOL.md for controls.

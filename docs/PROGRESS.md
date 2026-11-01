@@ -5,19 +5,20 @@
 | Phase | Status | Evidence / next action |
 | --- | --- | --- |
 | 1. Research question and foundations | Completed | Worked residuals, MSE, derivatives, curvature, local/global extrema, fairness |
-| 2. Model and data | Model 1 pilot and Model 2 derivatives verified | Model 1 and Model 2 synthetic data and analytical MSE gradients/exact Hessians tested; Model 2 optimizer integration pending |
+| 2. Model and data | Model 1 pilot and Model 2 derivatives verified | Both models' synthetic data, analytical MSE gradients and exact Hessians tested; Model 2 optimizer integration tests pass |
 | 3. Gradient Descent | Pilot implemented | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime and failure logging; experimental settings remain provisional |
 | 4. Exact Newton | Pilot implemented | Full-step exact Newton preserved; separate safeguarded exact-Hessian hybrid with Armijo backtracking and explicit gradient fallback added |
 | 5. Validation | Partially completed | Finite-difference derivative checks and unit tests for all three pilot variants; broader empirical validation pending |
-| 6. Controlled comparisons | Size, Model 1/2 starts, noise/split seeds, and GD tuning strategy approved; no runs yet | 120 observations, 72/24/24 split, matched manifests for Models 1/2; one GD rate per model to be chosen on separate calibration sets; exact tuning grid and timing pending |
+| 6. Controlled comparisons | Two-model scope, size, starts, noise/split seeds, and GD tuning strategy approved; no runs yet | 100 matched conditions across two models, 200 primary and 100 exploratory planned method runs; model-specific rates to be tuned on separate calibration sets; execution rules pending |
 | 7. Results and plots | Not started | No controlled-comparison results exist yet; pilot diagnostics only |
 | 8. Literature and interpretation | Not started | Verified sources only |
 | 9. Report and presentation | Not started | Use validated results only |
 
 ## Confirmed mathematical choices
 
-- Four nonlinear model families: exponential, logistic, Gaussian peak, oscillatory trend.
-- The oscillatory model is mathematical and sketch-inspired, not an exact trace.
+- The **official** study includes exponential decay and logistic growth only.
+  Gaussian peak and the mathematical, sketch-inspired oscillatory model are
+  optional future work, not part of the approved experiment.
 - Model 1 true curve: f(x) = 4(0.5)^x + 1.
 - Exact true parameters: a = 4, b = ln(0.5), c = 1.
 - f(0) = 5, f(1) = 3, f(2) = 2, f(3) = 1.5, f(4) = 1.25.
@@ -29,10 +30,10 @@
 - Primary Gaussian noise sigma=0.1 across the ten noise seeds per model is
   approved; other noise levels are deferred to robustness analysis.
 - Exactly 120 observations per dataset and a seeded random 72/24/24
-  training/validation/test split are approved across all four models.
+  training/validation/test split are approved across both models.
 - One fixed split seed (2026) across all datasets, plus pre-registered
-  nonoverlapping noise seeds (1000–1009, 1100–1109, 1200–1209, 1300–1309)
-  by model, is now recorded in the study configuration.
+  nonoverlapping noise seeds (1000–1009, 1100–1109) by model, is recorded
+  in the study configuration.
 - Model-specific GD learning rates will be selected once from independent
   calibration training/validation data, then frozen for the ten evaluation
   datasets; tuning is excluded from execution-time comparisons.
@@ -51,7 +52,11 @@
 - Model 2 overflow-resistant logistic prediction, approved 3-parameter truth,
   deterministic noise and split, metadata/CSV/plot export, analytical MSE
   gradient/exact Hessian, and independent finite-difference tests.
-  See `docs/MODEL2_DERIVATIVES.md`; optimizer support remains pending.
+  See `docs/MODEL2_DERIVATIVES.md`.
+- Model 2's objective/gradient/Hessian are now connected through explicit
+  callables to the existing GD, pure exact Newton, and separately labelled
+  safeguarded Newton. One-step unit checks validate each connection; no
+  controlled optimizer comparison has yet been performed.
 - Independent noise and split random generators.
 - CSV/JSON/plot export script.
 - Model 1 objective J(theta) using candidate parameters and training observations.
@@ -84,8 +89,8 @@ The two primary Model 1 optimizers and one explicitly separate safeguarded
 Newton variant are implemented, with a growing passing unit-test suite. Reproducible
 training-only pilot scripts exist for all three. On one illustrative start,
 full-step Newton reached a poor saddle while the safeguarded variant found
-a good training fit; neither is comparative evidence. Next: confirm
-starting-vector selection for Models 3–4, the GD calibration grid/seeds,
+a good training fit; neither is comparative evidence. The official study
+now consists of two model families only. Next: confirm the GD calibration grid/seeds,
 stopping rules, success criteria, and timing before the approved 10-seed × 5-start
 paired grid is executed.
 The dataset size, noise/split seeds, and 60/20/20 split are recorded; solver
