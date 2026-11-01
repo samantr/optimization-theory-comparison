@@ -69,7 +69,8 @@ to initialization?
   and the same 72/24/24 partition rule are reused. Evaluation/test noise
   seeds `1000`–`1009` and `1100`–`1109` remain completely excluded from
   rate selection. Exactly `3 × 5 × 8 = 120` GD calibration attempts per
-  model (240 total) are **planned**, not yet executed.
+  model (240 total) were preregistered and **subsequently executed**;
+  see `docs/CALIBRATION_RESULTS.md` for the results and frozen rates.
 - **GD calibration selection rule approved (stability first):** every
   seed/start/rate condition must be reported, including failures. Prefer
   the learning rate with the **fewest numerical failures**; among tied
@@ -112,7 +113,7 @@ to initialization?
   runs (including negative-k failures) in the final comparison.
 - **Not approved/frozen yet:** timing protocol, formal evaluation
   success/failure thresholds, and final statistical aggregation.
-  No calibration or controlled comparison has been run.
+  Calibration is complete; **no final paired optimizer comparison** has run.
 
 ### Model 2 synthetic curve (approved)
 
@@ -129,8 +130,8 @@ to initialization?
 - Model 2 approved optimizer starting points are recorded in the research
   manifest. The analytical gradient and exact Hessian are implemented and
   independently checked. Both algorithms and the safeguarded variant have
-  passed isolated Model 2 integration tests. Tuning and actual controlled
-  comparisons remain pending.
+  passed isolated Model 2 integration tests. GD calibration has now been
+  completed; actual paired optimizer comparisons remain pending.
 
 Machine-readable approved counts are in `config/experiment_plan.json`.
 The `opttheory.experiments.plan` module enumerates 50 matched Model 1
@@ -180,6 +181,14 @@ course requirements.
 
 No experiment, result, figure, or academic conclusion should be claimed until
 the corresponding computation has actually been performed and checked.
+
+**Post-registration execution note:** Full GD calibration ran from source
+commit `344154564ef380c800413426cc81141cde6ec82e`, without evaluation
+seeds or test labels. Rates are frozen at `0.1` for exponential decay and
+`0.03` for logistic growth. The original approved machine-readable manifest
+is intentionally preserved unchanged to retain its preregistration hash;
+execution metadata and SHA-256 digests are in
+`config/selected_gd_rates.json` and `docs/CALIBRATION_RESULTS.md`.
 
 Because the scope is limited to two model families, conclusions must be
 phrased as **conditional on these two nonlinear regression problems**;

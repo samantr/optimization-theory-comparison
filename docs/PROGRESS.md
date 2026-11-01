@@ -6,10 +6,10 @@
 | --- | --- | --- |
 | 1. Research question and foundations | Completed | Worked residuals, MSE, derivatives, curvature, local/global extrema, fairness |
 | 2. Model and data | Model 1 pilot and Model 2 derivatives verified | Both models' synthetic data, analytical MSE gradients and exact Hessians tested; Model 2 optimizer integration tests pass |
-| 3. Gradient Descent | Pilot implemented | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime and failure logging; experimental settings remain provisional |
+| 3. Gradient Descent | Implemented and calibrated | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime/failure logging, plus all 240 registered calibration attempts |
 | 4. Exact Newton | Pilot implemented | Full-step exact Newton preserved; separate safeguarded exact-Hessian hybrid with Armijo backtracking and explicit gradient fallback added |
 | 5. Validation | Partially completed | Finite-difference derivative checks and unit tests for all three pilot variants; broader empirical validation pending |
-| 6. Controlled comparisons | Two-model scope, GD calibration grid/seeds, stopping and failure-aware selection rules approved; no runs yet | 100 matched evaluation conditions, 200 primary and 100 exploratory planned method runs; 240 GD calibration attempts planned; timing and final analysis rules pending |
+| 6. Controlled comparisons | GD-only calibration finished; paired evaluation pending | Frozen rates: Model 1 = 0.1, Model 2 = 0.03. 100 matched evaluation conditions, 200 primary and 100 exploratory planned method runs; timing and final analysis rules pending |
 | 7. Results and plots | Not started | No controlled-comparison results exist yet; pilot diagnostics only |
 | 8. Literature and interpretation | Not started | Verified sources only |
 | 9. Report and presentation | Not started | Use validated results only |
@@ -34,12 +34,13 @@
 - One fixed split seed (2026) across all datasets, plus pre-registered
   nonoverlapping noise seeds (1000–1009, 1100–1109) by model, is recorded
   in the study configuration.
-- Model-specific GD learning rates will be selected once from independent
-  calibration training/validation data, then frozen for the ten evaluation
+- Model-specific GD learning rates were selected once from independent
+  calibration training/validation data and frozen for the ten evaluation
   datasets; tuning is excluded from execution-time comparisons.
 - Eight GD learning rates (0.0001–0.3) and disjoint calibration seeds
-  (Model 1: 2000–2002; Model 2: 2100–2102) are approved. The calibration
-  trial manifest contains 240 placeholders; no rate has been selected yet.
+  (Model 1: 2000–2002; Model 2: 2100–2102) were used for **240 actual runs**.
+  Frozen rates are **0.1** (Model 1) and **0.03** (Model 2). See
+  `docs/CALIBRATION_RESULTS.md` and `config/selected_gd_rates.json`.
 - The common stopping criterion is gradient norm <= 1e-4, with iteration
   ceilings of 10,000 (GD), 100 (exact Newton), and 100 (safeguarded Newton).
   Reaching tolerance is stationarity, not necessarily a minimum.
@@ -100,7 +101,11 @@
   than historical Model 1 pilot defaults.
 - Tested failure-aware `select_gd_learning_rate` requires the complete
   registered calibration grid and matches its ordering to the frozen
-  configuration. It has been tested with *hypothetical* outcomes only.
+  configuration. It has been unit tested with hypothetical outcomes, then
+  used to select model-specific rates from 240 actual recorded GD attempts.
+- Executed calibration runner `python -m scripts.calibrate_gd` with distinct
+  noise seeds and train/validation-only ranking; a test confirms modifying
+  held-out test targets does not change calibration results.
 - Unit tests and mathematical endpoint checks.
 
 ## Current learning checkpoint
@@ -110,11 +115,10 @@ Newton variant are implemented, with a growing passing unit-test suite. Reproduc
 training-only pilot scripts exist for all three. On one illustrative start,
 full-step Newton reached a poor saddle while the safeguarded variant found
 a good training fit; neither is comparative evidence. The official study
-now consists of two model families only. The GD calibration rates and seeds
-and stopping and calibration-selection rules are frozen. Next: approve
-success criteria, timing and statistical summaries before the 10-seed × 5-start
-paired grid is executed.
-The dataset size, noise/split seeds, and 60/20/20 split are recorded; solver
-tuning and evaluation policies remain pending. No **controlled** optimizer
-grid has run.
+now consists of two model families only. GD calibration is **complete** and
+the two chosen rates are frozen. Next: approve success criteria, timing,
+and statistical summaries before the 10-seed × 5-start paired grid is run.
+The dataset size, noise/split seeds, and 60/20/20 split are recorded;
+evaluation timing and analysis policies remain pending. No **paired
+GD-versus-Newton evaluation** grid has run.
 

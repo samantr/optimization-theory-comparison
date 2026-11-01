@@ -1,0 +1,42 @@
+{
+  "status": "frozen_after_complete_calibration_before_final_evaluation",
+  "purpose": "Fixed GD learning rates for all ten evaluation datasets and five starting points per model",
+  "learning_rates_by_model": {
+    "exponential_decay": 0.1,
+    "logistic": 0.03
+  },
+  "calibration_source_commit": "344154564ef380c800413426cc81141cde6ec82e",
+  "approved_experiment_plan_sha256": "a1ea5e34223e3847c9e69e6ca14022695d96b9b02716f3fb775715410c125ef3",
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5"
+  },
+  "selection_rule": "fewest numerical failures, then lowest mean nonfailed validation MSE, then smaller rate",
+  "models": {
+    "exponential_decay": {
+      "calibration_seed_count": 3,
+      "calibration_conditions": 120,
+      "chosen_rate_trials": 15,
+      "chosen_rate_numerical_failures": 0,
+      "chosen_rate_budget_exhaustions": 0,
+      "chosen_rate_mean_validation_mse": 0.011972704690827122,
+      "calibration_elapsed_seconds": 50.30987419600024,
+      "prototype_sha256": "eece6f24d057d5cfd7ddc79bf5e1aec98d9a1315cb93abec084b02e3a10fe1a1",
+      "runs_csv_sha256": "107eb53cbf7dea13363cd2814fc12d5c1c666145260f3f53bdfaa08b701ad9e7",
+      "summary_json_sha256": "b1d744e8eb587145f5c53166032284edefa344168c5f49625d3a4e95ff0f8ca9"
+    },
+    "logistic": {
+      "calibration_seed_count": 3,
+      "calibration_conditions": 120,
+      "chosen_rate_trials": 15,
+      "chosen_rate_numerical_failures": 0,
+      "chosen_rate_budget_exhaustions": 0,
+      "chosen_rate_mean_validation_mse": 0.008118999595779643,
+      "calibration_elapsed_seconds": 43.51332759199977,
+      "prototype_sha256": "dcc2e815dd421909958e50a2949054b583c6abf572cb5ced78918b438c75571c",
+      "runs_csv_sha256": "e1be3f582b40155af7bc99f45365530c1cd644f2727eef9fd8599dad558880fc",
+      "summary_json_sha256": "a4ae4f0547f78d33d8a9619a38b5d0b2f44d0c08ff25048ac69701d70cea8968"
+    }
+  },
+  "final_test_or_newton_results_used": false
+}

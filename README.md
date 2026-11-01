@@ -21,15 +21,16 @@ Already implemented and tested:
   residual-dependent curvature), checked by numerical differentiation.
 - Both models: explicit model-specific loss/gradient/Hessian callables accepted
   by the same optimizers, with Model 2 one-step integration tests.
-- GD calibration: eight approved candidate rates, three independent noise
-  seeds per model, all five starting points, and a validated manifest;
-  no learning-rate selection has run yet.
+- GD calibration **executed**: eight preregistered candidate rates, three
+  independent calibration noise seeds per model, all five starting points,
+  and 240 recorded attempts. Frozen rates: exponential decay **0.1**,
+  logistic growth **0.03**; see `docs/CALIBRATION_RESULTS.md`.
 - Shared stopping rules for future experiments: gradient norm <= 1e-4,
   maximum 10,000 GD or 100 Newton iterations, with early stopping and
   explicit nonconvergence/failure logging.
 - Failure-aware GD rate selection from a **complete** calibration grid:
   fewest numerical failures first, then lowest finite validation MSE;
-  unit tested on hypothetical outcomes, not real study data.
+  independently unit tested and applied to all 240 actual outcomes.
 - Synthetic Gaussian observations from known true parameters.
 - Parameter-dependent Model 1 training MSE, explicitly using candidate [a,b,c]
   and supplied observed training data (never known true parameters).
@@ -53,10 +54,10 @@ and oscillatory trend ideas are optional future work, not required models.
 
 The current Model 1 scripts are **pilots**, not final experimental results.
 The dataset size, noise level, 60/20/20 split, and random-seed schedule are
-recorded. GD learning-rate tuning will be model-specific using separate
-calibration data; candidate grid, seeds, stopping rules, and failure-aware
-rate selection are approved. Evaluation timing and statistical policies
-still need to be frozen.
+recorded. Model-specific GD learning-rate tuning is complete, using only
+separate calibration training/validation data. The two selected rates are
+frozen in `config/selected_gd_rates.json`. Evaluation timing and statistical
+policies still need to be frozen.
 
 ## Folder structure
 
@@ -69,11 +70,13 @@ optimization-theory-comparison/
     model1.json
     model2.json
     experiment_plan.json
+    selected_gd_rates.json
   opttheory/
     experiments/
       plan.py
       policy.py
       calibration.py
+      run_calibration.py
     models/
       exponential.py
       logistic.py
@@ -92,6 +95,7 @@ optimization-theory-comparison/
     generate_model1.py
     generate_model2.py
     preview_gd_calibration_plan.py
+    calibrate_gd.py
     preview_model2_plan.py
     preview_model1_plan.py
     run_model1_gd_pilot.py
@@ -105,6 +109,8 @@ optimization-theory-comparison/
     test_model2_optimizers.py
     test_stopping_policy.py
     test_calibration_selection.py
+    test_run_calibration.py
+    test_frozen_rates.py
     test_objective.py
     test_gradient_descent.py
     test_newton.py
@@ -117,6 +123,7 @@ optimization-theory-comparison/
     NEWTON.md
     NEWTON_SAFEGUARDED.md
     RESEARCH_PROTOCOL.md
+    CALIBRATION_RESULTS.md
     PROGRESS.md
   results/
     README.md
@@ -134,6 +141,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m scripts.generate_model2
 .\.venv\Scripts\python.exe -m scripts.preview_model2_plan
 .\.venv\Scripts\python.exe -m scripts.preview_gd_calibration_plan
+.\.venv\Scripts\python.exe -m scripts.calibrate_gd
 .\.venv\Scripts\python.exe -m scripts.run_model1_gd_pilot
 .\.venv\Scripts\python.exe -m scripts.run_model1_newton_pilot
 .\.venv\Scripts\python.exe -m scripts.run_model1_newton_safeguarded_pilot
@@ -193,6 +201,7 @@ python3 -m venv .venv
 ./.venv/bin/python -m scripts.generate_model2
 ./.venv/bin/python -m scripts.preview_model2_plan
 ./.venv/bin/python -m scripts.preview_gd_calibration_plan
+./.venv/bin/python -m scripts.calibrate_gd
 ./.venv/bin/python -m scripts.run_model1_gd_pilot
 ./.venv/bin/python -m scripts.run_model1_newton_pilot
 ./.venv/bin/python -m scripts.run_model1_newton_safeguarded_pilot
@@ -227,13 +236,13 @@ and the 72/24/24 seeded train/validation/test split are approved. Timing
 rules are **not yet frozen**. The noise seed schedule is explicitly recorded
 (Model 1: 1000–1009; Model 2: 1100–1109), with split seed 2026.
 The plan-preview scripts list matched conditions without fitting models.
-One GD learning rate per model will be tuned on separate calibration data and
-frozen for the evaluation grid; no test data will be used for tuning. The
+One GD learning rate per model was tuned on separate calibration data and
+frozen for the evaluation grid; no test data was used for tuning. The
 approved candidate rates are `0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03,
 0.1, 0.3`. Calibration seeds are `2000–2002` (Model 1) and `2100–2102`
-(Model 2); this creates 240 planned calibration attempts across all
-five starts, separate from the final evaluation grid. These are only
-manifest entries, not calibration results.
+(Model 2); the preregistered 240 attempts across all five starts were
+**executed and audited**. The selected rates are `0.1` and `0.03`,
+respectively. Full per-rate summaries are in `docs/CALIBRATION_RESULTS.md`.
 
 All study runs will use the approved `optimizer_stopping_kwargs` helper:
 stop once the gradient norm is at most `1e-4`, with iteration ceilings
@@ -246,8 +255,10 @@ rate with the fewest numerical failures across all 15 calibration
 conditions, then the lowest average finite nonfailed validation MSE,
 then the smaller rate if exactly tied. A run that reaches its iteration
 cap but retains finite parameters contributes its last validation MSE
-and is flagged as not converged. All 240 planned results must be present
-before selecting the two model-specific rates. No calibration has run yet.
+and is flagged as not converged. All 240 results were present before
+selecting the model-specific rates. Generated raw CSV/JSON remain ignored
+by Git, but are reproducible with `python -m scripts.calibrate_gd`;
+frozen decisions and SHA-256 digests are tracked in `config/selected_gd_rates.json`.
 
 The CSV retains the clean curve and the actual noise values for auditability. The metadata records configuration, true parameters, split counts, package/runtime versions, and a file hash.
 
