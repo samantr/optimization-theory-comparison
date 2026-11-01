@@ -33,8 +33,9 @@ Already implemented and tested:
   independently unit tested and applied to all 240 actual outcomes.
 - A **preview-only-by-default paired evaluation runner** enforcing the
   frozen GD rates, five optimizer-only timing repetitions, Hessian-based
-  stationary-point diagnostics, failure logging, and dataset-level paired
-  descriptive statistics. The final evaluation has NOT run.
+  stationary-point diagnostics, failure logging, dataset-level paired
+  descriptive statistics, and approved 10,000-draw 95% whole-dataset
+  bootstrap timing intervals. The final evaluation has NOT run.
 - Synthetic Gaussian observations from known true parameters.
 - Parameter-dependent Model 1 training MSE, explicitly using candidate [a,b,c]
   and supplied observed training data (never known true parameters).
@@ -53,7 +54,7 @@ Already implemented and tested:
 - Unit checks for the mathematical endpoints, seed reproducibility, and split counts.
 
 **Not yet executed:** controlled paired optimizer experiments. The final
-report and statistical inference are still pending. The **official scope is Models 1 and 2**. The Gaussian peak
+report and inferential *results* are still pending. The **official scope is Models 1 and 2**. The Gaussian peak
 and oscillatory trend ideas are optional future work, not required models.
 
 The current Model 1 scripts are **pilots**, not final experimental results.
@@ -61,8 +62,9 @@ The dataset size, noise level, 60/20/20 split, and random-seed schedule are
 recorded. Model-specific GD learning-rate tuning is complete, using only
 separate calibration training/validation data. The two selected rates are
 frozen in `config/selected_gd_rates.json`. The recorded timing and evaluation
-policies are in `config/evaluation_protocol.json`. The confidence-interval
-method remains to be approved before final statistical inference.
+policies are in `config/evaluation_protocol.json`. The dataset-cluster
+percentile bootstrap has been approved and pilot-tested; its small-sample
+limitations must be reported when the final study is executed.
 
 ## Folder structure
 
@@ -121,6 +123,7 @@ optimization-theory-comparison/
     test_run_calibration.py
     test_frozen_rates.py
     test_evaluation_runner.py
+    test_cluster_bootstrap.py
     test_objective.py
     test_gradient_descent.py
     test_newton.py
@@ -285,8 +288,8 @@ The CSV retains the clean curve and the actual noise values for auditability. Th
 
 1. Pull this scaffold; run the unit suite and the **preview-only** comparison command.
 2. Review the experimental output contract in `docs/EVALUATION_RUNNER.md`.
-3. Approve an inference method respecting the ten independent dataset seeds,
-   without treating five starts as independent datasets.
+3. Review the implemented 95% seed-cluster bootstrap and its small-sample
+   limitations, without treating five starts as independent datasets.
 4. Explicitly approve the first full paired evaluation execution. Only then
    run the `--execute` flag and inspect **all** successful and failed results.
 5. Build validated plots and the academic report from actual experiments.

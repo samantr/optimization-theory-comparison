@@ -95,9 +95,33 @@ time differences before combining across the ten independent dataset seeds:
 Negative differences indicate Newton was faster for that paired condition.
 The descriptive output reports all ten dataset-level differences, mean and
 median, and each method's fraction reaching the gradient tolerance. Five
-starts **do not count as five independent datasets**. No confidence
-intervals, p-values, superiority claim, or final report conclusions are
-generated before we separately approve an inference method.
+starts **do not count as five independent datasets**.
+
+### Approved 95% dataset-level bootstrap interval
+
+We additionally report a percentile interval for the **mean of those ten
+dataset-level paired timing differences**. For each of **10,000** bootstrap
+draws, sample ten complete dataset units *with replacement* and average
+their ten values of `mean_newton_minus_gd_seconds`. The original five
+starting-point results always stay within their own dataset unit; they are
+**never** resampled as independent observations. Use quantiles 0.025 and
+0.975 of the 10,000 resulting means (NumPy's `linear` quantile rule).
+
+The bootstrap has a fixed base seed `20261101`, with separate deterministic
+streams for the two models (offset 0 for exponential decay; 1 for logistic).
+The model-specific seed, sample count, method, point estimate, and interval
+endpoints are saved alongside the descriptive statistics. A negative
+time difference means Newton was faster, but we do **not** automatically
+translate a confidence interval into an unconditional superiority claim.
+
+**Small-sample caveat:** There are only **ten independent datasets** per
+model. The percentile bootstrap is transparent but its nominal 95% interval
+may not attain 95% coverage with so few groups. We will report all ten
+dataset-level differences and explicitly describe this limitation. We do
+not calculate p-values or treat five starts as independent. See MacKinnon,
+Nielsen, and Webb (2023), [*Cluster-robust inference: A guide to empirical
+practice*](https://doi.org/10.1016/j.jeconom.2022.04.001), on the challenges
+of inference with clustered and limited independent data.
 
 ## Files created only by an explicitly approved final run
 
@@ -106,8 +130,8 @@ Generated output is Git-ignored under `results/evaluation/`:
 - `model1_runs.csv`, `model2_runs.csv`: one row per method condition.
 - `model1_timings.csv`, `model2_timings.csv`: every one of the five raw times.
 - `model1_summary.json`, `model2_summary.json`: dataset-level descriptive
-  statistics, configuration hashes, data hashes, Python/NumPy versions,
-  and source-file SHA-256 hashes.
+  statistics, **seed-cluster bootstrap 95% timing intervals**, configuration
+  hashes, data hashes, Python/NumPy versions, and source-file SHA-256 hashes.
 
 Existing outputs are protected unless `--overwrite` is explicitly supplied.
 No evaluation files or final metrics were generated while implementing and

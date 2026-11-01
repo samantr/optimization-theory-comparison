@@ -97,6 +97,17 @@ def validate_evaluation_protocol(
             or protocol["analysis"]["dataset_seeds_per_model"] != plan["dataset_seeds_per_model"]
             or protocol["analysis"]["primary_time_difference"] != "newton_minus_gradient_descent"):
         raise ValueError("Dataset-level paired analysis contradicts the approved grid.")
+    analysis = protocol["analysis"]
+    bootstrap = analysis["bootstrap"]
+    if (analysis["confidence_interval_method"] != "paired_dataset_cluster_percentile_bootstrap"
+            or bootstrap["resampling_unit"] != "whole_dataset_noise_seed_with_all_five_paired_starts"
+            or bootstrap["statistic"] != "mean_of_ten_dataset_level_mean_newton_minus_gd_seconds"
+            or bootstrap["confidence_level"] != 0.95
+            or bootstrap["resamples"] != 10000
+            or bootstrap["quantile_method"] != "linear"
+            or type(bootstrap["base_seed"]) is not int or bootstrap["base_seed"] < 0
+            or bootstrap["model_seed_offset"] != {"exponential_decay": 0, "logistic": 1}):
+        raise ValueError("Approved cluster-bootstrap inference settings changed.")
     if protocol["final_evaluation_performed"] is not False:
         raise ValueError("The protocol is a frozen pre-execution document.")
 

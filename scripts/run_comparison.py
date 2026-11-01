@@ -13,7 +13,9 @@ import platform
 
 import numpy as np
 
-from opttheory.experiments.analysis import summarize_paired_primary
+from opttheory.experiments.analysis import (
+    bootstrap_dataset_time_difference, summarize_paired_primary,
+)
 from opttheory.experiments.evaluation import (
     run_full_model_evaluation, validate_evaluation_protocol,
 )
@@ -104,12 +106,14 @@ def main(argv=None) -> None:
             rows, expected_starts=plan["starting_points_per_dataset"],
             expected_datasets=plan["dataset_seeds_per_model"],
         )
+        interval = bootstrap_dataset_time_difference(model, descriptive[model], protocol)
         summary = {
             "model": model,
             "method_conditions": len(rows),
             "timed_invocations": len(timings),
             "dataset_sha256_by_noise_seed": result["dataset_sha256_by_noise_seed"],
             "dataset_aware_primary_summary": descriptive[model],
+            "paired_time_difference_95pct_cluster_bootstrap": interval,
             "experiment_plan_sha256": canonical_json_hash(plan),
             "frozen_rates_sha256": canonical_json_hash(frozen),
             "evaluation_protocol_sha256": canonical_json_hash(protocol),
@@ -118,7 +122,7 @@ def main(argv=None) -> None:
             "python_version": platform.python_version(),
             "numpy_version": np.__version__,
             "calibration_is_excluded_from_timing": True,
-            "inference_status": "descriptive_only_no_confidence_interval_or_p_value",
+            "inference_status": "approved_dataset_cluster_bootstrap_95pct_ci_no_p_value",
         }
         _csv(output / f"{prefix}_runs.csv", rows)
         _csv(output / f"{prefix}_timings.csv", timings)

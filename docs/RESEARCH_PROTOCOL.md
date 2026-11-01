@@ -115,8 +115,10 @@ to initialization?
   repetitions per condition, median runtime, and complete failure logging.
   Stationarity, Hessian curvature and prediction MSE are recorded separately,
   without inventing a post-hoc good-fit threshold. The descriptive analysis
-  respects dataset-level pairing. Formal confidence-interval/inference
-  choices are still pending. Calibration is complete; **no final paired
+  respects dataset-level pairing. A 10,000-draw 95% percentile bootstrap of
+  the ten independent dataset-level paired time differences has since been
+  approved. Only ten independent units means interval coverage may be
+  imperfect; no p-values are claimed. Calibration is complete; **no final paired
   optimizer comparison** has run.
 
 ### Model 2 synthetic curve (approved)
@@ -203,6 +205,16 @@ and its calibration SHA-256 remain unchanged. The command
 with **no** optimization or evaluation data generation. `--execute` is the
 explicit post-review gate; it has not been used. See
 `docs/EVALUATION_RUNNER.md`.
+
+**Pre-evaluation inference amendment (approved):** Resample ten *whole*
+dataset units with replacement per bootstrap draw, keeping all five starts
+paired and aggregated within each dataset. Use 10,000 draws, fixed seed
+`20261101` (model offsets 0/1), and the 2.5th/97.5th percentiles of the
+bootstrap mean paired time differences. This estimates uncertainty in the
+mean across noise datasets, **not** fifty independent starts. With only ten
+independent dataset seeds, interpret the interval cautiously and show all
+seed-level differences. See `config/evaluation_protocol.json` and
+`docs/EVALUATION_RUNNER.md`. The final paired study is **still not executed**.
 
 Because the scope is limited to two model families, conclusions must be
 phrased as **conditional on these two nonlinear regression problems**;

@@ -30,7 +30,20 @@
     "dataset_summary": "average_of_five_start_specific_paired_differences",
     "convergence_rate": "report_per_method_over_all_registered_conditions",
     "failure_handling": "never_exclude_failed_trials_from_timing_or_reliability_reports",
-    "confidence_interval_method": "pending_explicit_approval_before_final_statistical_inference"
+    "confidence_interval_method": "paired_dataset_cluster_percentile_bootstrap",
+    "bootstrap": {
+      "resampling_unit": "whole_dataset_noise_seed_with_all_five_paired_starts",
+      "statistic": "mean_of_ten_dataset_level_mean_newton_minus_gd_seconds",
+      "confidence_level": 0.95,
+      "resamples": 10000,
+      "base_seed": 20261101,
+      "model_seed_offset": {
+        "exponential_decay": 0,
+        "logistic": 1
+      },
+      "quantile_method": "linear",
+      "limitations": "only_ten_independent_datasets_percentile_cluster_interval_may_have_imperfect_coverage"
+    }
   },
   "execution_gate": "CLI_preview_only_unless_explicit_execute_flag",
   "final_evaluation_performed": false

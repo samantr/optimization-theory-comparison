@@ -9,7 +9,8 @@ Other generated artifacts:
   with raw CSV results and JSON reproducibility metadata. Frozen selected
   rates and checksums are **tracked** in `config/selected_gd_rates.json`.
 - `results/evaluation/`: reserved for paired optimizer records, five raw
-  timing repetitions per condition, and dataset-aware descriptive summaries.
+  timing repetitions per condition, dataset-aware descriptive summaries,
+  and 95% cluster-bootstrap intervals for mean paired timing differences.
   This directory is **not populated** until the user explicitly approves
   `python -m scripts.run_comparison --execute`. The safe default command
   without `--execute` previews the plan only.
