@@ -34,7 +34,9 @@ Already implemented and tested:
 
 The current Model 1 scripts are **pilots**, not final experimental results.
 The dataset size, noise level, 60/20/20 split, and random-seed schedule are
-recorded, but solver tuning and timing rules still need to be frozen.
+recorded. GD learning-rate tuning will be model-specific using separate
+calibration data; the candidate grid, stopping rules, and timing protocol
+still need to be frozen.
 
 ## Folder structure
 
@@ -182,6 +184,8 @@ vectors for Models 2–4 and timing rules are **not yet frozen**. The noise
 seed schedule is explicitly recorded (Model 1: 1000–1009; Models 2–4:
 1100–1109, 1200–1209, 1300–1309), with the split seed fixed at 2026.
 The plan-preview script lists matched Model 1 runs without fitting any model.
+One GD learning rate per model will be tuned on separate calibration data and
+frozen for the evaluation grid; no test data will be used for tuning.
 
 The CSV retains the clean curve and the actual noise values for auditability. The metadata records configuration, true parameters, split counts, package/runtime versions, and a file hash.
 

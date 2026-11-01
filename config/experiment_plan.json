@@ -28,6 +28,14 @@
       "oscillatory_trend": [1300, 1301, 1302, 1303, 1304, 1305, 1306, 1307, 1308, 1309]
     }
   },
+  "gradient_descent_learning_rate_tuning": {
+    "scope": "one_rate_per_model",
+    "selection_data": "separate_calibration_datasets_training_and_validation_only",
+    "selection_metric": "validation_mse",
+    "reuse_policy": "freeze_the_model_specific_rate_for_all_ten_evaluation_datasets_and_all_five_starts",
+    "tuning_timing": "report_separately_from_optimizer_execution_time",
+    "status": "strategy_approved_candidates_and_calibration_seeds_pending"
+  },
   "primary_noise": {
     "distribution": "gaussian",
     "sigma": 0.1,
@@ -53,7 +61,8 @@
   "pairing_rule": "All methods use identical training data and starting parameters for each model/dataset-seed/start-point condition.",
   "pending_decisions": [
     "Preregister five starting vectors for each of Models 2, 3, and 4",
-    "Tuning and stopping policies on training/validation only",
+    "GD learning-rate candidate grid and independent calibration seed schedule",
+    "Stopping policies for each optimizer",
     "Timing repetitions, failure criteria, and aggregation"
   ]
 }

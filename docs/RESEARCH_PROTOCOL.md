@@ -54,6 +54,13 @@ to initialization?
 - **Two primary methods:** fixed-step batch Gradient Descent and full-step
   exact Newton. **One separately labelled exploratory variant:** safeguarded
   exact-Hessian Newton with gradient fallback.
+- **GD learning-rate selection approved:** choose one learning rate **per
+  nonlinear model** using calibration datasets **separate from the ten
+  evaluation datasets**. Calibration may use training and validation only;
+  select by validation MSE, then freeze that learning rate for every final
+  seed/start of that model. Report the calibration cost separately from
+  measured optimizer execution time. The candidate grid and calibration
+  seeds remain to be specified before tuning.
 - This yields **50 paired conditions per model** or **200 conditions across
   four models**. If all three methods are run on each condition, the planned
   initial grid contains 400 primary method runs plus 200 safeguarded runs,
@@ -66,8 +73,8 @@ to initialization?
   `S4=[-1,-0.5,3]`, `S5=[2,0.4,0]`. These probe normal, extreme,
   sign-reversed, and growth-like initial conditions. They are kept even if
   an algorithm fails, and are not optimized against the test set.
-- **Not approved/frozen yet:** starting vectors for Models 2–4, optimizer
-  tuning budgets, timing
+- **Not approved/frozen yet:** starting vectors for Models 2–4, GD tuning
+  candidate rates and separate calibration seeds, optimizer stopping budgets, timing
   protocol, and success/failure thresholds. No controlled grid has been run.
 
 Machine-readable approved counts are in `config/experiment_plan.json`.

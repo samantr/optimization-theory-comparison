@@ -31,6 +31,11 @@ class ExperimentPlanTests(unittest.TestCase):
         self.assertEqual(p["primary_noise"]["distribution"], "gaussian")
         self.assertEqual(p["primary_noise"]["sigma"], 0.1)
         self.assertEqual(p["additional_noise_levels"], "deferred_robustness_study")
+        tuning = p["gradient_descent_learning_rate_tuning"]
+        self.assertEqual(tuning["scope"], "one_rate_per_model")
+        self.assertEqual(tuning["selection_metric"], "validation_mse")
+        self.assertIn("separate_calibration", tuning["selection_data"])
+        self.assertIn("all_ten_evaluation_datasets", tuning["reuse_policy"])
 
     def test_approved_observation_count_and_split(self):
         p = self.plan
