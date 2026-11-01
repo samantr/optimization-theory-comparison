@@ -1,9 +1,20 @@
 # Generated outputs
 
-Run the generator from the repository root. It writes its CSV, JSON metadata,
-and preview figure under results/model1 by default.
+Run the dataset generator from the repository root. It writes CSV, JSON
+metadata, and a preview figure under `results/model1/` or `results/model2/`.
 
-Outputs are reproducible from config/model1.json. Do not commit generated output
-by accident; preserve important finalized experiments in an explicitly named
-archive and record their dataset hash in the report.
+Other generated artifacts:
+
+- `results/calibration/`: 240 actually executed GD calibration attempts,
+  with raw CSV results and JSON reproducibility metadata. Frozen selected
+  rates and checksums are **tracked** in `config/selected_gd_rates.json`.
+- `results/evaluation/`: reserved for paired optimizer records, five raw
+  timing repetitions per condition, and dataset-aware descriptive summaries.
+  This directory is **not populated** until the user explicitly approves
+  `python -m scripts.run_comparison --execute`. The safe default command
+  without `--execute` previews the plan only.
+
+Outputs are reproducible from the frozen configurations and seeds. Do not
+commit generated output by accident; preserve important finalized experiments
+in an explicitly named archive and record their hashes in the report.
 

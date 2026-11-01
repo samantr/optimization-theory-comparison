@@ -111,9 +111,13 @@ to initialization?
   `S4=[10,-1,2]`, `S5=[7,0.15,0]`. They probe close, slow,
   steep/shifted, decreasing, and nearly flat initial curves. Keep all
   runs (including negative-k failures) in the final comparison.
-- **Not approved/frozen yet:** timing protocol, formal evaluation
-  success/failure thresholds, and final statistical aggregation.
-  Calibration is complete; **no final paired optimizer comparison** has run.
+- **Evaluation timing now approved and implemented:** five optimizer-only
+  repetitions per condition, median runtime, and complete failure logging.
+  Stationarity, Hessian curvature and prediction MSE are recorded separately,
+  without inventing a post-hoc good-fit threshold. The descriptive analysis
+  respects dataset-level pairing. Formal confidence-interval/inference
+  choices are still pending. Calibration is complete; **no final paired
+  optimizer comparison** has run.
 
 ### Model 2 synthetic curve (approved)
 
@@ -189,6 +193,16 @@ seeds or test labels. Rates are frozen at `0.1` for exponential decay and
 is intentionally preserved unchanged to retain its preregistration hash;
 execution metadata and SHA-256 digests are in
 `config/selected_gd_rates.json` and `docs/CALIBRATION_RESULTS.md`.
+
+**Pre-evaluation implementation note:** The five-repetition optimizer-only
+timing rule, complete failure categories, training-only Hessian diagnostics,
+and dataset-aware descriptive pairing are registered separately in
+`config/evaluation_protocol.json`; the original approved experiment manifest
+and its calibration SHA-256 remain unchanged. The command
+`python -m scripts.run_comparison` previews 1,500 possible solver invocations
+with **no** optimization or evaluation data generation. `--execute` is the
+explicit post-review gate; it has not been used. See
+`docs/EVALUATION_RUNNER.md`.
 
 Because the scope is limited to two model families, conclusions must be
 phrased as **conditional on these two nonlinear regression problems**;

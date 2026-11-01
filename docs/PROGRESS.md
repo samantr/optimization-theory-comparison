@@ -9,7 +9,7 @@
 | 3. Gradient Descent | Implemented and calibrated | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime/failure logging, plus all 240 registered calibration attempts |
 | 4. Exact Newton | Pilot implemented | Full-step exact Newton preserved; separate safeguarded exact-Hessian hybrid with Armijo backtracking and explicit gradient fallback added |
 | 5. Validation | Partially completed | Finite-difference derivative checks and unit tests for all three pilot variants; broader empirical validation pending |
-| 6. Controlled comparisons | GD-only calibration finished; paired evaluation pending | Frozen rates: Model 1 = 0.1, Model 2 = 0.03. 100 matched evaluation conditions, 200 primary and 100 exploratory planned method runs; timing and final analysis rules pending |
+| 6. Controlled comparisons | Evaluation runner implemented and pilot-tested; final grid NOT run | Frozen rates Model 1 = 0.1, Model 2 = 0.03; 100 matched conditions, 200 primary and 100 exploratory method runs. Five timing repetitions, post-hoc curvature checks, descriptive seed-level pairing. Formal inference pending. |
 | 7. Results and plots | Not started | No controlled-comparison results exist yet; pilot diagnostics only |
 | 8. Literature and interpretation | Not started | Verified sources only |
 | 9. Report and presentation | Not started | Use validated results only |
@@ -49,6 +49,16 @@
   Budget-exhausted trials contribute their last finite validation loss
   and are separately flagged as nonconverged. This policy was selected
   after Saman delegated the choice to the assistant.
+- Approved evaluation timing is five independent starts from identical
+  initial theta and training data **per method/condition**; measure only
+  the optimizer invocation and retain all five raw times plus their median.
+  Expected full workload: 300 method conditions × 5 = 1,500 invocations.
+- Report stationarity, curvature, prediction quality and termination status
+  separately. Keep failed/nonconverged cases in timing and reliability counts;
+  no arbitrary post-hoc binary test-MSE threshold has been defined.
+- Five starts share the dataset's noise seed and are not five independent
+  datasets. Seed-level descriptive pairing is implemented; a formal interval
+  estimation or hypothesis-testing method is **not** approved yet.
 
 ## Pilot settings and remaining confirmations
 
@@ -106,6 +116,13 @@
 - Executed calibration runner `python -m scripts.calibrate_gd` with distinct
   noise seeds and train/validation-only ranking; a test confirms modifying
   held-out test targets does not change calibration results.
+- Added `python -m scripts.run_comparison`: **preview only by default**,
+  checking 150 method conditions / 750 timings per model without generating
+  data, inspecting held-out labels or fitting an optimizer. Actual execution
+  requires `--execute` after explicit review. Five-repetition pilot tests
+  use noise seed 42, not the final registered evaluation seeds.
+- Paired dataset-level descriptive analysis and Hessian eigenvalue
+  diagnostics implemented; see `docs/EVALUATION_RUNNER.md`.
 - Unit tests and mathematical endpoint checks.
 
 ## Current learning checkpoint
@@ -116,9 +133,12 @@ training-only pilot scripts exist for all three. On one illustrative start,
 full-step Newton reached a poor saddle while the safeguarded variant found
 a good training fit; neither is comparative evidence. The official study
 now consists of two model families only. GD calibration is **complete** and
-the two chosen rates are frozen. Next: approve success criteria, timing,
-and statistical summaries before the 10-seed × 5-start paired grid is run.
+the two chosen rates are frozen. The evaluation runner is now implemented
+and tested, but only in preview mode and with pilot fixtures. Next: review
+the implementation and choose a dataset-aware inferential procedure before
+authorizing the 10-seed × 5-start paired grid.
 The dataset size, noise/split seeds, and 60/20/20 split are recorded;
-evaluation timing and analysis policies remain pending. No **paired
+timing and descriptive pairing are approved; statistical inference remains
+pending. No **paired
 GD-versus-Newton evaluation** grid has run.
 

@@ -1,0 +1,37 @@
+{
+  "status": "implementation_ready_not_executed",
+  "timing": {
+    "repetitions_per_condition": 5,
+    "clock": "time.perf_counter",
+    "scope": "optimizer_invocation_only_no_dataset_generation_or_posthoc_metrics",
+    "repeat_initialization": "same_data_same_theta0_every_repetition_no_warm_start",
+    "per_condition_summary": "median_of_five_elapsed_seconds",
+    "retain": "all_five_raw_measurements_including_failures",
+    "inconsistent_repeats": "stop_and_report_determinism_violation"
+  },
+  "evaluation": {
+    "same_data_and_initial_theta_for_all_methods": true,
+    "primary_methods": ["gradient_descent", "newton"],
+    "exploratory_methods": ["safeguarded_newton"],
+    "gradient_tolerance": 0.0001,
+    "stationarity": "gradient_tolerance_only_not_proof_of_minimum",
+    "curvature_eigenvalue_tolerance": 1e-8,
+    "curvature": "positive_definite_negative_definite_indefinite_or_inconclusive",
+    "solution_quality": "report_train_validation_test_mse_separately_without_posthoc_success_threshold",
+    "failures": "preserve_all_methods_all_starts_all_seeds_and_termination_reasons",
+    "held_out_test": "score_once_after_final_parameters_are_frozen_never_optimize_or_tune_on_test"
+  },
+  "analysis": {
+    "unit_of_independence": "dataset_noise_seed",
+    "paired_condition": "model_dataset_seed_start_id",
+    "starts_per_dataset": 5,
+    "dataset_seeds_per_model": 10,
+    "primary_time_difference": "newton_minus_gradient_descent",
+    "dataset_summary": "average_of_five_start_specific_paired_differences",
+    "convergence_rate": "report_per_method_over_all_registered_conditions",
+    "failure_handling": "never_exclude_failed_trials_from_timing_or_reliability_reports",
+    "confidence_interval_method": "pending_explicit_approval_before_final_statistical_inference"
+  },
+  "execution_gate": "CLI_preview_only_unless_explicit_execute_flag",
+  "final_evaluation_performed": false
+}

@@ -31,6 +31,10 @@ Already implemented and tested:
 - Failure-aware GD rate selection from a **complete** calibration grid:
   fewest numerical failures first, then lowest finite validation MSE;
   independently unit tested and applied to all 240 actual outcomes.
+- A **preview-only-by-default paired evaluation runner** enforcing the
+  frozen GD rates, five optimizer-only timing repetitions, Hessian-based
+  stationary-point diagnostics, failure logging, and dataset-level paired
+  descriptive statistics. The final evaluation has NOT run.
 - Synthetic Gaussian observations from known true parameters.
 - Parameter-dependent Model 1 training MSE, explicitly using candidate [a,b,c]
   and supplied observed training data (never known true parameters).
@@ -48,16 +52,17 @@ Already implemented and tested:
 - Deterministic CSV, metadata (including a SHA-256 digest), and an optional preview plot.
 - Unit checks for the mathematical endpoints, seed reproducibility, and split counts.
 
-**Not yet implemented:** controlled paired optimizer experiments or the
-final report. The **official scope is Models 1 and 2**. The Gaussian peak
+**Not yet executed:** controlled paired optimizer experiments. The final
+report and statistical inference are still pending. The **official scope is Models 1 and 2**. The Gaussian peak
 and oscillatory trend ideas are optional future work, not required models.
 
 The current Model 1 scripts are **pilots**, not final experimental results.
 The dataset size, noise level, 60/20/20 split, and random-seed schedule are
 recorded. Model-specific GD learning-rate tuning is complete, using only
 separate calibration training/validation data. The two selected rates are
-frozen in `config/selected_gd_rates.json`. Evaluation timing and statistical
-policies still need to be frozen.
+frozen in `config/selected_gd_rates.json`. The recorded timing and evaluation
+policies are in `config/evaluation_protocol.json`. The confidence-interval
+method remains to be approved before final statistical inference.
 
 ## Folder structure
 
@@ -71,12 +76,15 @@ optimization-theory-comparison/
     model2.json
     experiment_plan.json
     selected_gd_rates.json
+    evaluation_protocol.json
   opttheory/
     experiments/
       plan.py
       policy.py
       calibration.py
       run_calibration.py
+      evaluation.py
+      analysis.py
     models/
       exponential.py
       logistic.py
@@ -96,6 +104,7 @@ optimization-theory-comparison/
     generate_model2.py
     preview_gd_calibration_plan.py
     calibrate_gd.py
+    run_comparison.py
     preview_model2_plan.py
     preview_model1_plan.py
     run_model1_gd_pilot.py
@@ -111,6 +120,7 @@ optimization-theory-comparison/
     test_calibration_selection.py
     test_run_calibration.py
     test_frozen_rates.py
+    test_evaluation_runner.py
     test_objective.py
     test_gradient_descent.py
     test_newton.py
@@ -124,6 +134,7 @@ optimization-theory-comparison/
     NEWTON_SAFEGUARDED.md
     RESEARCH_PROTOCOL.md
     CALIBRATION_RESULTS.md
+    EVALUATION_RUNNER.md
     PROGRESS.md
   results/
     README.md
@@ -142,6 +153,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m scripts.preview_model2_plan
 .\.venv\Scripts\python.exe -m scripts.preview_gd_calibration_plan
 .\.venv\Scripts\python.exe -m scripts.calibrate_gd
+.\.venv\Scripts\python.exe -m scripts.run_comparison
 .\.venv\Scripts\python.exe -m scripts.run_model1_gd_pilot
 .\.venv\Scripts\python.exe -m scripts.run_model1_newton_pilot
 .\.venv\Scripts\python.exe -m scripts.run_model1_newton_safeguarded_pilot
@@ -158,6 +170,12 @@ The commands run the tests and create:
 - results/model2/model2_preview.png
 
 These generated files are intentionally ignored by Git; the script regenerates them from the configuration and seed. To rerun into the same folder, deliberately add the --overwrite flag. Otherwise, use a fresh --output directory to preserve previous outputs.
+
+`scripts.calibrate_gd` **reruns the full 240-condition calibration**, which
+may take minutes. `scripts.run_comparison` is **safe preview-only by default**:
+it prints the 1,500-invocation plan without fitting or reading evaluation
+observations. The `--execute` flag is intentionally withheld until review;
+see `docs/EVALUATION_RUNNER.md`.
 
 The newest automated tests also verify our manually solved example:
 theta = [3,-1,1], x = [0], observed y = [5.1], giving MSE = 1.21.
@@ -202,6 +220,7 @@ python3 -m venv .venv
 ./.venv/bin/python -m scripts.preview_model2_plan
 ./.venv/bin/python -m scripts.preview_gd_calibration_plan
 ./.venv/bin/python -m scripts.calibrate_gd
+./.venv/bin/python -m scripts.run_comparison
 ./.venv/bin/python -m scripts.run_model1_gd_pilot
 ./.venv/bin/python -m scripts.run_model1_newton_pilot
 ./.venv/bin/python -m scripts.run_model1_newton_safeguarded_pilot
@@ -233,7 +252,7 @@ model, and five paired starting points per dataset**. This is recorded in
 `config/experiment_plan.json` and `docs/RESEARCH_PROTOCOL.md`. Both models'
 starting vectors, Gaussian noise sigma=0.1, dataset size 120,
 and the 72/24/24 seeded train/validation/test split are approved. Timing
-rules are **not yet frozen**. The noise seed schedule is explicitly recorded
+rules are recorded in `config/evaluation_protocol.json`. The noise seed schedule is explicitly recorded
 (Model 1: 1000–1009; Model 2: 1100–1109), with split seed 2026.
 The plan-preview scripts list matched conditions without fitting models.
 One GD learning rate per model was tuned on separate calibration data and
@@ -264,17 +283,13 @@ The CSV retains the clean curve and the actual noise values for auditability. Th
 
 ## Next steps
 
-1. Inspect and understand the generated noisy observations.
-2. Confirm the independent random-seed schedule, optimization budgets, and timing protocol.
-3. Review and confirm the implemented training MSE J(theta).
-4. Review the independently tested Model 1 analytic gradient and exact Hessian.
-5. Review both implemented pilot solvers, especially exact Newton's singular
-   and indefinite-Hessian behavior; do not silently substitute Gauss-Newton.
-6. Evaluate the separately labelled safeguarded Newton variant without
-   replacing or disguising failures of the original full-step method.
-7. Keep any extra model families as optional future work after the two-model
-   controlled experiment has been completed and interpreted.
-8. Run paired comparisons and record failures as well as successes.
+1. Pull this scaffold; run the unit suite and the **preview-only** comparison command.
+2. Review the experimental output contract in `docs/EVALUATION_RUNNER.md`.
+3. Approve an inference method respecting the ten independent dataset seeds,
+   without treating five starts as independent datasets.
+4. Explicitly approve the first full paired evaluation execution. Only then
+   run the `--execute` flag and inspect **all** successful and failed results.
+5. Build validated plots and the academic report from actual experiments.
 
 See docs/PROGRESS.md for the cumulative checkpoint and docs/RESEARCH_PROTOCOL.md for controls.
 
