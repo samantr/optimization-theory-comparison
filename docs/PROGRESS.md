@@ -9,7 +9,7 @@
 | 3. Gradient Descent | Pilot implemented | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime and failure logging; experimental settings remain provisional |
 | 4. Exact Newton | Pilot implemented | Full-step exact Newton preserved; separate safeguarded exact-Hessian hybrid with Armijo backtracking and explicit gradient fallback added |
 | 5. Validation | Partially completed | Finite-difference derivative checks and unit tests for all three pilot variants; broader empirical validation pending |
-| 6. Controlled comparisons | Study size, Model 1 starts, and primary noise approved; not started | 4 models × 10 dataset seeds × 5 fixed model-specific starts; sigma_noise=0.1; other settings pending |
+| 6. Controlled comparisons | Study size, Model 1 starts, noise, and split approved; no runs yet | 120 observations with 72/24/24 seeded split; matched Model 1 run manifest prepared (150 placeholders); actual seed/tuning/timing settings pending |
 | 7. Results and plots | Not started | No controlled-comparison results exist yet; pilot diagnostics only |
 | 8. Literature and interpretation | Not started | Verified sources only |
 | 9. Report and presentation | Not started | Use validated results only |
@@ -26,11 +26,13 @@
   approved and recorded in `config/experiment_plan.json`.
 - Primary Gaussian noise sigma=0.1 across the ten noise seeds per model is
   approved; other noise levels are deferred to robustness analysis.
+- Exactly 120 observations per dataset and a seeded random 72/24/24
+  training/validation/test split are approved across all four models.
 
-## Provisional settings pending confirmation
+## Pilot settings and remaining confirmations
 
-- 120 x-values over [0,4].
-- 60% training, 20% validation, 20% test using a fixed random split.
+- 120 x-values per dataset and the 60/20/20 seeded random split are approved;
+  Model 1 currently uses x over [0,4].
 - Initial pilot sigma_noise = 0.1 is now also the **approved primary noise
   level**; additional levels may be tested later.
 - Pilot noise seed = 42 and split seed = 2026.
@@ -59,18 +61,20 @@
 - A separate **safeguarded exact-Hessian Newton** variant with positive-definite
   Hessian check, explicit gradient fallback, Armijo backtracking, and counters
   for the extra computational work; see `docs/NEWTON_SAFEGUARDED.md`.
+- A deterministic Model 1 *manifest builder* lists 50 paired conditions and
+  150 method placeholders without selecting noise seeds or running any solver.
 - Unit tests and mathematical endpoint checks.
 
 ## Current learning checkpoint
 
 The two primary Model 1 optimizers and one explicitly separate safeguarded
-Newton variant are implemented, with 40 passing unit tests. Reproducible
+Newton variant are implemented, with a growing passing unit-test suite. Reproducible
 training-only pilot scripts exist for all three. On one illustrative start,
 full-step Newton reached a poor saddle while the safeguarded variant found
-a good training fit; neither is comparative evidence. Next: confirm dataset,
-observation count/split, starting-vector selection for Models 2–4, seed schedule, learning-rate/line-search
+a good training fit; neither is comparative evidence. Next: confirm
+starting-vector selection for Models 2–4, seed schedule, learning-rate/line-search
 policies, success criteria, and timing before the approved 10-seed × 5-start
 paired grid is executed.
-The observation count/split settings remain provisional and need confirmation before
-controlled comparisons. No **controlled** optimizer grid has been executed yet.
+The dataset size and 60/20/20 split are approved; concrete independent seeds
+and other settings remain pending. No **controlled** optimizer grid has run.
 

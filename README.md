@@ -32,7 +32,9 @@ Already implemented and tested:
 
 **Not yet implemented:** Model 2 (logistic), Model 3 (Gaussian peak), Model 4 (oscillatory trend), controlled paired optimizer experiments, or the final report. These will be added after mathematical checkpoints.
 
-The current configuration is a **pilot**, not a frozen experiment protocol. The noise level and 60/20/20 split remain provisional until we discuss them.
+The current Model 1 scripts are **pilots**, not final experimental results.
+The dataset size, noise level, and 60/20/20 split are now approved, but seed
+schedules, solver tuning, and timing rules still need to be frozen.
 
 ## Folder structure
 
@@ -45,6 +47,8 @@ optimization-theory-comparison/
     model1.json
     experiment_plan.json
   opttheory/
+    experiments/
+      plan.py
     models/
       exponential.py
     datasets/
@@ -59,6 +63,7 @@ optimization-theory-comparison/
       newton_safeguarded.py
   scripts/
     generate_model1.py
+    preview_model1_plan.py
     run_model1_gd_pilot.py
     run_model1_newton_pilot.py
     run_model1_newton_safeguarded_pilot.py
@@ -92,6 +97,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m scripts.run_model1_gd_pilot
 .\.venv\Scripts\python.exe -m scripts.run_model1_newton_pilot
 .\.venv\Scripts\python.exe -m scripts.run_model1_newton_safeguarded_pilot
+.\.venv\Scripts\python.exe -m scripts.preview_model1_plan
 ~~~
 
 The commands run the tests and create:
@@ -144,6 +150,7 @@ python3 -m venv .venv
 ./.venv/bin/python -m scripts.run_model1_gd_pilot
 ./.venv/bin/python -m scripts.run_model1_newton_pilot
 ./.venv/bin/python -m scripts.run_model1_newton_safeguarded_pilot
+./.venv/bin/python -m scripts.preview_model1_plan
 ~~~
 
 ## How the code relates to the mathematics
@@ -169,17 +176,18 @@ The current pilot uses sigma = 0.1, noise seed 42, and split seed 2026. They are
 The approved study breadth is **four model families, ten dataset seeds per
 model, and five paired starting points per dataset**. This is recorded in
 `config/experiment_plan.json` and `docs/RESEARCH_PROTOCOL.md`. The five
-fixed Model 1 starting vectors and Gaussian noise level sigma=0.1 for the
-primary experiment are approved and recorded. Starting vectors for Models
-2–4, observation count/split, and timing rules are **not yet
-frozen**, and no controlled comparison has been run.
+fixed Model 1 starting vectors, Gaussian noise sigma=0.1, dataset size 120,
+and the 72/24/24 seeded train/validation/test split are approved. Starting
+vectors for Models 2–4, actual seed schedules, and timing rules are **not yet
+frozen**, and no controlled comparison has been run. The plan-preview script
+lists matched Model 1 runs without fitting any model.
 
 The CSV retains the clean curve and the actual noise values for auditability. The metadata records configuration, true parameters, split counts, package/runtime versions, and a file hash.
 
 ## Next steps
 
 1. Inspect and understand the generated noisy observations.
-2. Confirm dataset size, noise levels, split strategy, and multiple-seed protocol.
+2. Confirm the independent random-seed schedule, optimization budgets, and timing protocol.
 3. Review and confirm the implemented training MSE J(theta).
 4. Review the independently tested Model 1 analytic gradient and exact Hessian.
 5. Review both implemented pilot solvers, especially exact Newton's singular

@@ -29,6 +29,12 @@ to initialization?
 - **Four model families:** exponential decay, logistic, Gaussian peak, and
   sketch-inspired oscillatory trend.
 - **Ten independently seeded datasets per model.**
+- **Observation count approved:** exactly 120 input/target observations per
+  dataset for all four models. Each model may have a different appropriate
+  input domain, but the count remains matched.
+- **Random split approved:** seeded random allocation of 60% training (72),
+  20% validation (24), and 20% untouched final test (24) observations,
+  with no overlap. The specific split-seed schedule is pending.
 - **Primary noise setting approved:** additive zero-mean Gaussian noise with
   standard deviation \(\sigma_{noise}=0.1\) for all ten datasets per model;
   the noise realization changes with the dataset seed. Additional noise
@@ -54,11 +60,19 @@ to initialization?
   `S4=[-1,-0.5,3]`, `S5=[2,0.4,0]`. These probe normal, extreme,
   sign-reversed, and growth-like initial conditions. They are kept even if
   an algorithm fails, and are not optimized against the test set.
-- **Not approved/frozen yet:** starting vectors for Models 2–4, final
-  observation count and split settings, seed schedule, optimizer tuning budgets, timing
+- **Not approved/frozen yet:** starting vectors for Models 2–4, actual noise
+  and split seed schedule, optimizer tuning budgets, timing
   protocol, and success/failure thresholds. No controlled grid has been run.
 
 Machine-readable approved counts are in `config/experiment_plan.json`.
+The `opttheory.experiments.plan` module enumerates 50 matched Model 1
+conditions (150 method-run placeholders) **without** generating data,
+selecting seeds, or fitting any method. `D01`–`D10` are dataset labels,
+not approved random-seed values. Preview with:
+
+```powershell
+python -m scripts.preview_model1_plan
+```
 
 ## Required controls (future phases)
 
