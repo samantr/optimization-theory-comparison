@@ -82,6 +82,9 @@ to publisher/proceedings records, planned citations by report section, and
 the professor's minimum 10-page / 20-source requirements. This is a
 selection register, not yet a completed literature review. The original
 optimizer study and its archived evidence remain unchanged.
+The professor-aligned page budget, section-by-section outline, lecture-slide
+links, planned figures, and evidence checklist are in
+`docs/ACADEMIC_REPORT_OUTLINE.md`.
 
 ### Separate adaptive GD pilot (not part of the final study)
 
