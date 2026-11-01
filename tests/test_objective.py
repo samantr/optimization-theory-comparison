@@ -8,7 +8,7 @@ import unittest
 import numpy as np
 
 from opttheory.datasets.synthetic import generate_model1
-from opttheory.objectives.mse import gradient, objective
+from opttheory.objectives.mse import gradient, hessian, objective
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -86,6 +86,53 @@ class GradientTests(unittest.TestCase):
             gradient([1, 2], [0], [3])
         with self.assertRaises(ValueError):
             gradient([1, 2, 3], [0, 1], [3])
+
+
+class HessianTests(unittest.TestCase):
+    def test_single_x_zero_example_has_singular_hessian(self):
+        # J = (a + c - 5)^2; b has no effect, a and c are interchangeable.
+        actual = hessian([2.0, -0.5, 2.0], [0.0], [5.0])
+        expected = [[2.0, 0.0, 2.0],
+                    [0.0, 0.0, 0.0],
+                    [2.0, 0.0, 2.0]]
+        np.testing.assert_allclose(actual, expected, atol=1e-14)
+        self.assertEqual(np.linalg.det(actual), 0.0)
+
+    def test_hessian_is_symmetric(self):
+        actual = hessian([3.0, -0.7, 1.0], [0.0, 0.5, 1.0, 2.0],
+                         [5.1, 4.0, 3.2, 2.1])
+        np.testing.assert_array_equal(actual, actual.T)
+
+    def test_hessian_matches_central_differences_of_gradient(self):
+        x = np.array([0.0, 0.3, 1.0, 1.8, 3.7])
+        y = np.array([4.9, 4.5, 2.8, 2.3, 1.1])
+        step = 1e-5
+        for theta in (np.array([2.4, -0.4, 0.7]),
+                      np.array([4.0, math.log(0.5), 1.0]),
+                      np.array([0.0, -0.8, 1.0])):
+            numerical = np.empty((3, 3), dtype=np.float64)
+            for j in range(3):
+                positive = theta.copy()
+                negative = theta.copy()
+                positive[j] += step
+                negative[j] -= step
+                numerical[:, j] = (gradient(positive, x, y)
+                                   - gradient(negative, x, y)) / (2.0 * step)
+            np.testing.assert_allclose(hessian(theta, x, y), numerical,
+                                       rtol=1e-7, atol=1e-8)
+
+    def test_residuals_affect_exact_hessian(self):
+        # x=1, a=2, b=0: H_ab = 2*(a + residual), not merely 2*a.
+        theta = [2.0, 0.0, 1.0]
+        x = [1.0]
+        self.assertAlmostEqual(hessian(theta, x, [3.0])[0, 1], 4.0)
+        self.assertAlmostEqual(hessian(theta, x, [2.0])[0, 1], 6.0)
+
+    def test_hessian_rejects_invalid_inputs(self):
+        with self.assertRaises(ValueError):
+            hessian([1, 2], [0], [3])
+        with self.assertRaises(ValueError):
+            hessian([1, 2, 3], [0, 1], [3])
 
 
 if __name__ == "__main__":

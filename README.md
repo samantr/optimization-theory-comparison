@@ -18,11 +18,13 @@ Already implemented and tested:
   and supplied observed training data (never known true parameters).
 - Model 1 analytical MSE gradient in parameter order [a,b,c], checked against
   manual calculations and independent central finite differences.
+- Model 1 **exact Hessian** (all nine entries), verified against independent
+  central differences of the analytical gradient and a singular test case.
 - Separate random seeds for observation noise and train/validation/test assignment.
 - Deterministic CSV, metadata (including a SHA-256 digest), and an optional preview plot.
 - Unit checks for the mathematical endpoints, seed reproducibility, and split counts.
 
-**Not yet implemented:** Gradient Descent, exact Newton, the analytical Hessian, Model 2 (logistic), Model 3 (Gaussian peak), Model 4 (oscillatory trend), optimizer experiments, or the final report. These will be added after mathematical checkpoints.
+**Not yet implemented:** Gradient Descent, exact Newton optimizer, Model 2 (logistic), Model 3 (Gaussian peak), Model 4 (oscillatory trend), optimizer experiments, or the final report. These will be added after mathematical checkpoints.
 
 The current configuration is a **pilot**, not a frozen experiment protocol. The noise level and 60/20/20 split remain provisional until we discuss them.
 
@@ -51,6 +53,7 @@ optimization-theory-comparison/
     test_objective.py
   docs/
     MODELS.md
+    MODEL1_HESSIAN.md
     RESEARCH_PROTOCOL.md
     PROGRESS.md
   results/
@@ -88,6 +91,11 @@ a NumPy array with shape `(3,)`, ordered `[dJ/da, dJ/db, dJ/dc]`.
 The objective and gradient share input validation. A separate test estimates
 each derivative numerically using a centered difference of MSE evaluations.
 
+The function `opttheory.objectives.mse.hessian(theta, x, y_observed)` returns
+the exact symmetric `(3, 3)` Hessian, again in `[a, b, c]` order. Tests verify
+its entries against finite differences of the gradient. The derivation and a
+singular-Hessian example are in `docs/MODEL1_HESSIAN.md`.
+
 ## Run on macOS or Linux
 
 ~~~bash
@@ -124,7 +132,7 @@ The CSV retains the clean curve and the actual noise values for auditability. Th
 1. Inspect and understand the generated noisy observations.
 2. Confirm dataset size, noise levels, split strategy, and multiple-seed protocol.
 3. Review and confirm the implemented training MSE J(theta).
-4. Derive, independently check, and test the analytic Hessian (the gradient is verified).
+4. Review the independently tested Model 1 analytic gradient and exact Hessian.
 5. Implement Gradient Descent and **exact Newton**, explicitly; do not silently substitute Gauss-Newton.
 6. Add the other three model families only after the core method is verified.
 7. Run paired comparisons and record failures as well as successes.

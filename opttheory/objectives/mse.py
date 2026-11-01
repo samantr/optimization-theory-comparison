@@ -6,7 +6,7 @@ from opttheory.models.exponential import predict
 
 
 def _validated_inputs(theta, x, y_observed):
-    """Check the shared input contract for objective and analytical gradient."""
+    """Check the shared input contract for objective and its derivatives."""
     theta = np.asarray(theta, dtype=np.float64)
     x = np.asarray(x, dtype=np.float64)
     y_observed = np.asarray(y_observed, dtype=np.float64)
@@ -67,4 +67,45 @@ def gradient(theta, x, y_observed) -> np.ndarray:
     if not np.all(np.isfinite(derivatives)):
         raise FloatingPointError("Gradient is not finite at this parameter vector.")
     return derivatives
+
+
+def hessian(theta, x, y_observed) -> np.ndarray:
+    """Exact 3x3 Hessian of the Model 1 MSE in parameter order [a, b, c].
+
+    For E_i = exp(b*x_i) and r_i = a*E_i + c - y_i:
+
+        H_aa = 2 mean(E_i**2)
+        H_ab = 2 mean(a*x_i*E_i**2 + r_i*x_i*E_i)
+        H_ac = 2 mean(E_i)
+        H_bb = 2 mean((a*x_i*E_i)**2 + r_i*a*x_i**2*E_i)
+        H_bc = 2 mean(a*x_i*E_i)
+        H_cc = 2
+
+    The residual-dependent terms make this the *exact* Hessian, not the
+    Gauss-Newton approximation. Only supplied observations are used.
+    """
+    theta, x, y_observed = _validated_inputs(theta, x, y_observed)
+    a, b, c = theta
+
+    with np.errstate(over="raise", invalid="raise"):
+        exp_bx = np.exp(b * x)
+        residuals = a * exp_bx + c - y_observed
+        x_exp_bx = x * exp_bx
+        a_x_exp_bx = a * x_exp_bx
+
+        h_aa = 2.0 * np.mean(exp_bx ** 2)
+        h_ab = 2.0 * np.mean(a_x_exp_bx * exp_bx + residuals * x_exp_bx)
+        h_ac = 2.0 * np.mean(exp_bx)
+        h_bb = 2.0 * np.mean(a_x_exp_bx ** 2 + residuals * a * x * x_exp_bx)
+        h_bc = 2.0 * np.mean(a_x_exp_bx)
+
+        result = np.array([
+            [h_aa, h_ab, h_ac],
+            [h_ab, h_bb, h_bc],
+            [h_ac, h_bc, 2.0],
+        ], dtype=np.float64)
+
+    if not np.all(np.isfinite(result)):
+        raise FloatingPointError("Hessian is not finite at this parameter vector.")
+    return result
 

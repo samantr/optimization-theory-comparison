@@ -5,7 +5,7 @@
 | Phase | Status | Evidence / next action |
 | --- | --- | --- |
 | 1. Research question and foundations | Completed | Worked residuals, MSE, derivatives, curvature, local/global extrema, fairness |
-| 2. Model and data | Learning | Model 1 data, MSE, and analytical gradient verified; Hessian derivation next |
+| 2. Model and data | Completed for Model 1 pilot | Model, data, MSE, analytical gradient, and exact Hessian implemented and verified; other models and experimental settings remain for later phases |
 | 3. Gradient Descent | Not started | Derive and manually test updates before coding |
 | 4. Exact Newton | Not started | Study second-order Taylor model, Hessian solve and safeguards |
 | 5. Validation | Not started | Derivative checks and solver tests |
@@ -40,13 +40,18 @@
   parameters and observed input/target arrays.
 - Independent central-difference gradient checks and the hand-worked two-point
   example, giving [-1.2, -0.3, -1.3] at [3, ln(0.5), 1].
+- Exact analytical Hessian with all mixed second derivatives, including the
+  residual-dependent terms required by exact Newton (not Gauss–Newton).
+- Independent finite-difference Hessian checks, symmetry tests, and a singular
+  one-observation example; see `docs/MODEL1_HESSIAN.md`.
 - Unit tests and mathematical endpoint checks.
 
 ## Current learning checkpoint
 
-The Model 1 gradient has been derived by hand, implemented, and verified with
-17 passing unit tests. Next: learn what second derivatives mean, derive the
-exact Hessian of MSE, and verify its implementation before coding Newton.
+The Model 1 gradient and exact Hessian are implemented and verified with
+22 passing unit tests. The Hessian's six distinct entries and a singular case
+are documented in `docs/MODEL1_HESSIAN.md`. Next: review the Hessian's key
+behavior, then begin Phase 3 with a manually checked Gradient Descent step.
 The noise/split settings remain provisional and need confirmation before
 controlled comparisons. No optimizer has been implemented yet.
 
