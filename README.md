@@ -13,6 +13,8 @@ This is a **guided-learning scaffold, not a completed research project**.
 Already implemented and tested:
 
 - Model 1: the noise-free function f(x) = a exp(bx) + c.
+- Model 2: stable logistic function f(x) = L/(1+exp[-k(x-x0)]) and an
+  approved, independently seeded synthetic dataset (truth [10,1.5,2]).
 - Synthetic Gaussian observations from known true parameters.
 - Parameter-dependent Model 1 training MSE, explicitly using candidate [a,b,c]
   and supplied observed training data (never known true parameters).
@@ -30,7 +32,10 @@ Already implemented and tested:
 - Deterministic CSV, metadata (including a SHA-256 digest), and an optional preview plot.
 - Unit checks for the mathematical endpoints, seed reproducibility, and split counts.
 
-**Not yet implemented:** Model 2 (logistic), Model 3 (Gaussian peak), Model 4 (oscillatory trend), controlled paired optimizer experiments, or the final report. These will be added after mathematical checkpoints.
+**Not yet implemented:** Model 2 analytical gradient/Hessian and optimizer
+comparisons, Model 3 (Gaussian peak), Model 4 (oscillatory trend), controlled
+paired optimizer experiments, or the final report. These will be added after
+mathematical checkpoints.
 
 The current Model 1 scripts are **pilots**, not final experimental results.
 The dataset size, noise level, 60/20/20 split, and random-seed schedule are
@@ -47,12 +52,14 @@ optimization-theory-comparison/
   .gitignore
   config/
     model1.json
+    model2.json
     experiment_plan.json
   opttheory/
     experiments/
       plan.py
     models/
       exponential.py
+      logistic.py
     datasets/
       synthetic.py
     objectives/
@@ -65,12 +72,15 @@ optimization-theory-comparison/
       newton_safeguarded.py
   scripts/
     generate_model1.py
+    generate_model2.py
     preview_model1_plan.py
     run_model1_gd_pilot.py
     run_model1_newton_pilot.py
     run_model1_newton_safeguarded_pilot.py
   tests/
     test_model1.py
+    test_model2.py
+    test_model2_dataset.py
     test_objective.py
     test_gradient_descent.py
     test_newton.py
@@ -96,6 +106,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 .\.venv\Scripts\python.exe -m scripts.generate_model1
+.\.venv\Scripts\python.exe -m scripts.generate_model2
 .\.venv\Scripts\python.exe -m scripts.run_model1_gd_pilot
 .\.venv\Scripts\python.exe -m scripts.run_model1_newton_pilot
 .\.venv\Scripts\python.exe -m scripts.run_model1_newton_safeguarded_pilot
@@ -107,6 +118,9 @@ The commands run the tests and create:
 - results/model1/model1_dataset.csv
 - results/model1/model1_metadata.json
 - results/model1/model1_preview.png
+- results/model2/model2_dataset.csv
+- results/model2/model2_metadata.json
+- results/model2/model2_preview.png
 
 These generated files are intentionally ignored by Git; the script regenerates them from the configuration and seed. To rerun into the same folder, deliberately add the --overwrite flag. Otherwise, use a fresh --output directory to preserve previous outputs.
 
@@ -149,6 +163,7 @@ python3 -m venv .venv
 ./.venv/bin/python -m pip install -r requirements.txt
 ./.venv/bin/python -m unittest discover -s tests -v
 ./.venv/bin/python -m scripts.generate_model1
+./.venv/bin/python -m scripts.generate_model2
 ./.venv/bin/python -m scripts.run_model1_gd_pilot
 ./.venv/bin/python -m scripts.run_model1_newton_pilot
 ./.venv/bin/python -m scripts.run_model1_newton_safeguarded_pilot

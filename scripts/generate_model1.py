@@ -34,7 +34,7 @@ def write_csv(path: Path, dataset) -> None:
             ])
 
 
-def write_plot(path: Path, dataset) -> None:
+def write_plot(path: Path, dataset, *, title: str = "Model 1: reproducible synthetic observations (pilot)") -> None:
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -48,7 +48,7 @@ def write_plot(path: Path, dataset) -> None:
         ax.scatter(dataset.x[mask], dataset.y_observed[mask], s=18, alpha=0.8,
                    color=colors[split_name], label=split_name.title())
     ax.set(xlabel="Input x", ylabel="Output y",
-           title="Model 1: reproducible synthetic observations (pilot)")
+           title=title)
     ax.legend()
     ax.grid(alpha=0.2)
     fig.tight_layout()

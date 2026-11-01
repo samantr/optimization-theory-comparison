@@ -77,6 +77,21 @@ to initialization?
   candidate rates and separate calibration seeds, optimizer stopping budgets, timing
   protocol, and success/failure thresholds. No controlled grid has been run.
 
+### Model 2 synthetic curve (approved)
+
+- Continuous logistic regression curve:
+  `f(x)=10/(1+exp[-1.5(x-2)])`.
+- Parameter order is `[L,k,x0]` with true values `[10,1.5,2]`.
+- Input domain `[0,4]` with 120 equally spaced inputs.
+- Registered noise seed `1100` in `config/model2.json` is the first of the
+  approved ten dataset seeds (`1100`–`1109`); sigma is `0.1`.
+- Random split 72/24/24, using seed `2026` independently of the noise.
+- Synthetic truth is for data generation and recovery checks only: fitting
+  methods will receive candidate vectors and training observations, never
+  the true parameter values or held-out labels.
+- Model 2 optimizer starting points, analytical derivatives, tuning and
+  actual comparisons are not yet implemented.
+
 Machine-readable approved counts are in `config/experiment_plan.json`.
 The `opttheory.experiments.plan` module enumerates 50 matched Model 1
 conditions (150 method-run placeholders), including the fixed noise/split

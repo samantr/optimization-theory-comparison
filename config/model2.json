@@ -1,0 +1,21 @@
+{
+  "_status": "Approved Model 2 truth, domain, noise and split; initial study seed 1100 of 1100-1109",
+  "model": "logistic",
+  "n_observations": 120,
+  "x_min": 0.0,
+  "x_max": 4.0,
+  "true_parameters": {
+    "L": 10.0,
+    "k": 1.5,
+    "x0": 2.0
+  },
+  "noise": {
+    "sigma": 0.1,
+    "seed": 1100
+  },
+  "split": {
+    "train_fraction": 0.6,
+    "validation_fraction": 0.2,
+    "seed": 2026
+  }
+}

@@ -5,7 +5,7 @@
 | Phase | Status | Evidence / next action |
 | --- | --- | --- |
 | 1. Research question and foundations | Completed | Worked residuals, MSE, derivatives, curvature, local/global extrema, fairness |
-| 2. Model and data | Completed for Model 1 pilot; Model 2 function started | Model 1 model, data, MSE, gradient, and exact Hessian verified; Model 2 stable logistic prediction tested, with its dataset and derivatives still pending |
+| 2. Model and data | Completed for Model 1 pilot; Model 2 synthetic data generated | Model 1 model, data, MSE, gradient, exact Hessian verified; Model 2 stable logistic prediction and reproducible data generator tested, derivatives still pending |
 | 3. Gradient Descent | Pilot implemented | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime and failure logging; experimental settings remain provisional |
 | 4. Exact Newton | Pilot implemented | Full-step exact Newton preserved; separate safeguarded exact-Hessian hybrid with Armijo backtracking and explicit gradient fallback added |
 | 5. Validation | Partially completed | Finite-difference derivative checks and unit tests for all three pilot variants; broader empirical validation pending |
@@ -46,8 +46,9 @@
 ## Implemented in scaffold
 
 - Model 1 forward prediction and synthetic Gaussian data generation.
-- Model 2 overflow-resistant logistic forward prediction and endpoint/midpoint/
-  steepness unit checks (no dataset or derivative implementation yet).
+- Model 2 overflow-resistant logistic prediction, approved 3-parameter truth,
+  deterministic noise and split, metadata/CSV/plot export, and protocol tests.
+  Analytical derivatives and optimizer support remain pending.
 - Independent noise and split random generators.
 - CSV/JSON/plot export script.
 - Model 1 objective J(theta) using candidate parameters and training observations.
@@ -81,8 +82,7 @@ Newton variant are implemented, with a growing passing unit-test suite. Reproduc
 training-only pilot scripts exist for all three. On one illustrative start,
 full-step Newton reached a poor saddle while the safeguarded variant found
 a good training fit; neither is comparative evidence. Next: confirm
-Model 2 true curve and x range, starting-vector selection for Models 2–4,
-the GD calibration grid/seeds,
+starting-vector selection for Models 2–4, the GD calibration grid/seeds,
 stopping rules, success criteria, and timing before the approved 10-seed × 5-start
 paired grid is executed.
 The dataset size, noise/split seeds, and 60/20/20 split are recorded; solver
