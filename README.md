@@ -43,6 +43,7 @@ optimization-theory-comparison/
   .gitignore
   config/
     model1.json
+    experiment_plan.json
   opttheory/
     models/
       exponential.py
@@ -164,6 +165,12 @@ y_i=y_{\mathrm{clean},i}+\epsilon_i.
 \]
 
 The current pilot uses sigma = 0.1, noise seed 42, and split seed 2026. They are independent random streams. A single generated dataset must be reused by both algorithms in each paired comparison.
+
+The approved study breadth is **four model families, ten dataset seeds per
+model, and five paired starting points per dataset**. This is recorded in
+`config/experiment_plan.json` and `docs/RESEARCH_PROTOCOL.md`. The five
+starting-point choices, final data settings, and timing rules are **not yet
+frozen**, and no controlled comparison has been run.
 
 The CSV retains the clean curve and the actual noise values for auditability. The metadata records configuration, true parameters, split counts, package/runtime versions, and a file hash.
 

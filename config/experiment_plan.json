@@ -1,0 +1,26 @@
+{
+  "status": "approved_sample_counts_other_settings_pending",
+  "model_families": [
+    "exponential_decay",
+    "logistic",
+    "gaussian_peak",
+    "oscillatory_trend"
+  ],
+  "dataset_seeds_per_model": 10,
+  "starting_points_per_dataset": 5,
+  "primary_methods": [
+    "gradient_descent",
+    "newton"
+  ],
+  "exploratory_methods": [
+    "safeguarded_newton"
+  ],
+  "pairing_rule": "All methods use identical training data and starting parameters for each model/dataset-seed/start-point condition.",
+  "pending_decisions": [
+    "How to select and preregister the five starting points per model",
+    "Final observation count, noise levels, and data split",
+    "Seed schedule and independent random streams",
+    "Tuning and stopping policies on training/validation only",
+    "Timing repetitions, failure criteria, and aggregation"
+  ]
+}

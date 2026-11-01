@@ -24,6 +24,29 @@ to initialization?
 - Pilot split 72 train, 24 validation, 24 test
 - These settings require final confirmation before the comparative experiment.
 
+## Approved experimental breadth (2026-11-01)
+
+- **Four model families:** exponential decay, logistic, Gaussian peak, and
+  sketch-inspired oscillatory trend.
+- **Ten independently seeded datasets per model.**
+- **Five starting parameter vectors per dataset.**
+- **Same dataset and same start across methods within each paired condition.**
+- **Two primary methods:** fixed-step batch Gradient Descent and full-step
+  exact Newton. **One separately labelled exploratory variant:** safeguarded
+  exact-Hessian Newton with gradient fallback.
+- This yields **50 paired conditions per model** or **200 conditions across
+  four models**. If all three methods are run on each condition, the planned
+  initial grid contains 400 primary method runs plus 200 safeguarded runs,
+  before timing repetitions or tuning.
+- Dataset seeds are grouping units: five starts on the same dataset are **not
+  five independent datasets**. Summaries and uncertainty estimates must
+  respect this hierarchy.
+- **Not approved/frozen yet:** exact starting vectors/distribution, final
+  noise and split settings, seed schedule, optimizer tuning budgets, timing
+  protocol, and success/failure thresholds. No controlled grid has been run.
+
+Machine-readable approved counts are in `config/experiment_plan.json`.
+
 ## Required controls (future phases)
 
 1. Hold the data, training split, and initialization fixed within every paired

@@ -9,7 +9,7 @@
 | 3. Gradient Descent | Pilot implemented | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime and failure logging; experimental settings remain provisional |
 | 4. Exact Newton | Pilot implemented | Full-step exact Newton preserved; separate safeguarded exact-Hessian hybrid with Armijo backtracking and explicit gradient fallback added |
 | 5. Validation | Partially completed | Finite-difference derivative checks and unit tests for all three pilot variants; broader empirical validation pending |
-| 6. Controlled comparisons | Not started | Paired seeds, initializations, timing and failure logging |
+| 6. Controlled comparisons | Study size approved; not started | 4 models × 10 dataset seeds × 5 starts; paired across the two main methods and a separately labelled safeguarded variant; other settings pending |
 | 7. Results and plots | Not started | No optimizer results exist yet |
 | 8. Literature and interpretation | Not started | Verified sources only |
 | 9. Report and presentation | Not started | Use validated results only |
@@ -63,8 +63,9 @@ Newton variant are implemented, with 40 passing unit tests. Reproducible
 training-only pilot scripts exist for all three. On one illustrative start,
 full-step Newton reached a poor saddle while the safeguarded variant found
 a good training fit; neither is comparative evidence. Next: confirm dataset,
-noise, seeds, learning-rate/line-search policies, success criteria, and the
-paired multi-initialization protocol **before** final experiments.
+noise, starting-vector selection, seed schedule, learning-rate/line-search
+policies, success criteria, and timing before the approved 10-seed × 5-start
+paired grid is executed.
 The noise/split settings remain provisional and need confirmation before
 controlled comparisons. No optimizer has been implemented yet.
 
