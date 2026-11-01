@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | 1. Research question and foundations | Completed | Worked residuals, MSE, derivatives, curvature, local/global extrema, fairness |
 | 2. Model and data | Completed for Model 1 pilot | Model, data, MSE, analytical gradient, and exact Hessian implemented and verified; other models and experimental settings remain for later phases |
-| 3. Gradient Descent | Not started | Derive and manually test updates before coding |
+| 3. Gradient Descent | Pilot implemented | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime and failure logging; experimental settings remain provisional |
 | 4. Exact Newton | Not started | Study second-order Taylor model, Hessian solve and safeguards |
 | 5. Validation | Not started | Derivative checks and solver tests |
 | 6. Controlled comparisons | Not started | Paired seeds, initializations, timing and failure logging |
@@ -44,14 +44,19 @@
   residual-dependent terms required by exact Newton (not Gauss–Newton).
 - Independent finite-difference Hessian checks, symmetry tests, and a singular
   one-observation example; see `docs/MODEL1_HESSIAN.md`.
+- A first-order fixed-step batch GD optimizer with a common result contract,
+  a reproducible training-only pilot command, and independent tests for the
+  hand-computed step, singular Hessian independence, stopping, and overflow;
+  see `docs/GRADIENT_DESCENT.md`.
 - Unit tests and mathematical endpoint checks.
 
 ## Current learning checkpoint
 
-The Model 1 gradient and exact Hessian are implemented and verified with
-22 passing unit tests. The Hessian's six distinct entries and a singular case
-are documented in `docs/MODEL1_HESSIAN.md`. Next: review the Hessian's key
-behavior, then begin Phase 3 with a manually checked Gradient Descent step.
+The Model 1 gradient and exact Hessian and a first fixed-step GD optimizer are
+implemented, with 28 passing unit tests. The Hessian's six distinct entries
+and a singular case are documented in `docs/MODEL1_HESSIAN.md`, and a manually
+checked GD step in `docs/GRADIENT_DESCENT.md`. Next: interpret learning-rate
+effects before implementing **exact** Newton as a separate method.
 The noise/split settings remain provisional and need confirmation before
 controlled comparisons. No optimizer has been implemented yet.
 

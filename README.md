@@ -20,11 +20,13 @@ Already implemented and tested:
   manual calculations and independent central finite differences.
 - Model 1 **exact Hessian** (all nine entries), verified against independent
   central differences of the analytical gradient and a singular test case.
+- A from-scratch, fixed-step **batch Gradient Descent** pilot recording
+  iteration count, runtime, loss/gradient histories, and numerical failures.
 - Separate random seeds for observation noise and train/validation/test assignment.
 - Deterministic CSV, metadata (including a SHA-256 digest), and an optional preview plot.
 - Unit checks for the mathematical endpoints, seed reproducibility, and split counts.
 
-**Not yet implemented:** Gradient Descent, exact Newton optimizer, Model 2 (logistic), Model 3 (Gaussian peak), Model 4 (oscillatory trend), optimizer experiments, or the final report. These will be added after mathematical checkpoints.
+**Not yet implemented:** Exact Newton optimizer, Model 2 (logistic), Model 3 (Gaussian peak), Model 4 (oscillatory trend), paired optimizer experiments, or the final report. These will be added after mathematical checkpoints.
 
 The current configuration is a **pilot**, not a frozen experiment protocol. The noise level and 60/20/20 split remain provisional until we discuss them.
 
@@ -46,14 +48,19 @@ optimization-theory-comparison/
       mse.py
     optimizers/
       __init__.py
+      common.py
+      gradient_descent.py
   scripts/
     generate_model1.py
+    run_model1_gd_pilot.py
   tests/
     test_model1.py
     test_objective.py
+    test_gradient_descent.py
   docs/
     MODELS.md
     MODEL1_HESSIAN.md
+    GRADIENT_DESCENT.md
     RESEARCH_PROTOCOL.md
     PROGRESS.md
   results/
@@ -69,6 +76,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 .\.venv\Scripts\python.exe -m scripts.generate_model1
+.\.venv\Scripts\python.exe -m scripts.run_model1_gd_pilot
 ~~~
 
 The commands run the tests and create:
@@ -96,6 +104,11 @@ the exact symmetric `(3, 3)` Hessian, again in `[a, b, c]` order. Tests verify
 its entries against finite differences of the gradient. The derivation and a
 singular-Hessian example are in `docs/MODEL1_HESSIAN.md`.
 
+The GD teaching pilot uses the analytical gradient on **training data only**.
+It reports final candidate parameters, training MSE, gradient norm, iteration
+count, runtime, and termination reason; it does not inspect the test split.
+The formula and hand-worked update are in `docs/GRADIENT_DESCENT.md`.
+
 ## Run on macOS or Linux
 
 ~~~bash
@@ -103,6 +116,7 @@ python3 -m venv .venv
 ./.venv/bin/python -m pip install -r requirements.txt
 ./.venv/bin/python -m unittest discover -s tests -v
 ./.venv/bin/python -m scripts.generate_model1
+./.venv/bin/python -m scripts.run_model1_gd_pilot
 ~~~
 
 ## How the code relates to the mathematics
@@ -133,7 +147,7 @@ The CSV retains the clean curve and the actual noise values for auditability. Th
 2. Confirm dataset size, noise levels, split strategy, and multiple-seed protocol.
 3. Review and confirm the implemented training MSE J(theta).
 4. Review the independently tested Model 1 analytic gradient and exact Hessian.
-5. Implement Gradient Descent and **exact Newton**, explicitly; do not silently substitute Gauss-Newton.
+5. Review the implemented Gradient Descent, then implement **exact Newton** explicitly; do not silently substitute Gauss-Newton.
 6. Add the other three model families only after the core method is verified.
 7. Run paired comparisons and record failures as well as successes.
 

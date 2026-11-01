@@ -1,6 +1,9 @@
-"""Reserved for the explicitly derived GD and exact Newton implementations.
+"""From-scratch optimizers for the paired nonlinear regression experiments.
 
-Neither optimizer has been implemented yet. We will derive, test, and add them
-in their corresponding guided-learning phases.
+Gradient Descent is implemented; exact Newton will be added separately.
 """
+
+from opttheory.optimizers.gradient_descent import gradient_descent
+
+__all__ = ["gradient_descent"]
 
