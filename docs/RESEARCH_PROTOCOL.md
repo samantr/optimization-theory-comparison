@@ -60,8 +60,16 @@ to initialization?
   evaluation datasets**. Calibration may use training and validation only;
   select by validation MSE, then freeze that learning rate for every final
   seed/start of that model. Report the calibration cost separately from
-  measured optimizer execution time. The candidate grid and calibration
-  seeds remain to be specified before tuning.
+  measured optimizer execution time.
+- **GD calibration grid approved:** learning-rate candidates
+  `[0.0001,0.0003,0.001,0.003,0.01,0.03,0.1,0.3]`, independent
+  calibration noise seeds `2000`–`2002` for exponential decay and
+  `2100`–`2102` for logistic regression. All five registered starts are
+  included for every candidate and calibration seed. Split seed `2026`
+  and the same 72/24/24 partition rule are reused. Evaluation/test noise
+  seeds `1000`–`1009` and `1100`–`1109` remain completely excluded from
+  rate selection. Exactly `3 × 5 × 8 = 120` GD calibration attempts per
+  model (240 total) are **planned**, not yet executed.
 - This yields **50 paired conditions per model** or **100 conditions across
   two models**. If all three methods are run on each condition, the planned
   grid contains **200 primary method runs plus 100 safeguarded runs**,
@@ -79,9 +87,10 @@ to initialization?
   `S4=[10,-1,2]`, `S5=[7,0.15,0]`. They probe close, slow,
   steep/shifted, decreasing, and nearly flat initial curves. Keep all
   runs (including negative-k failures) in the final comparison.
-- **Not approved/frozen yet:** GD tuning candidate rates and separate
-  calibration seeds, optimizer stopping budgets, timing
-  protocol, and success/failure thresholds. No controlled grid has been run.
+- **Not approved/frozen yet:** stopping budgets and tolerance rules,
+  calibration failure handling and aggregation of validation MSE,
+  timing protocol, and evaluation success/failure thresholds.
+  No calibration or controlled comparison has been run.
 
 ### Model 2 synthetic curve (approved)
 
@@ -111,6 +120,7 @@ per model), including the fixed noise/split seed for each condition,
 ```powershell
 python -m scripts.preview_model1_plan
 python -m scripts.preview_model2_plan
+python -m scripts.preview_gd_calibration_plan
 ```
 
 ## Required controls (future phases)

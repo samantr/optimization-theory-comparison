@@ -21,6 +21,9 @@ Already implemented and tested:
   residual-dependent curvature), checked by numerical differentiation.
 - Both models: explicit model-specific loss/gradient/Hessian callables accepted
   by the same optimizers, with Model 2 one-step integration tests.
+- GD calibration: eight approved candidate rates, three independent noise
+  seeds per model, all five starting points, and a validated manifest;
+  no learning-rate selection has run yet.
 - Synthetic Gaussian observations from known true parameters.
 - Parameter-dependent Model 1 training MSE, explicitly using candidate [a,b,c]
   and supplied observed training data (never known true parameters).
@@ -45,8 +48,9 @@ and oscillatory trend ideas are optional future work, not required models.
 The current Model 1 scripts are **pilots**, not final experimental results.
 The dataset size, noise level, 60/20/20 split, and random-seed schedule are
 recorded. GD learning-rate tuning will be model-specific using separate
-calibration data; the candidate grid, stopping rules, and timing protocol
-still need to be frozen.
+calibration data; the candidate grid and seeds are approved, but stopping
+rules, calibration failure handling, and timing protocol still need to
+be frozen.
 
 ## Folder structure
 
@@ -79,6 +83,7 @@ optimization-theory-comparison/
   scripts/
     generate_model1.py
     generate_model2.py
+    preview_gd_calibration_plan.py
     preview_model2_plan.py
     preview_model1_plan.py
     run_model1_gd_pilot.py
@@ -118,6 +123,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m scripts.generate_model1
 .\.venv\Scripts\python.exe -m scripts.generate_model2
 .\.venv\Scripts\python.exe -m scripts.preview_model2_plan
+.\.venv\Scripts\python.exe -m scripts.preview_gd_calibration_plan
 .\.venv\Scripts\python.exe -m scripts.run_model1_gd_pilot
 .\.venv\Scripts\python.exe -m scripts.run_model1_newton_pilot
 .\.venv\Scripts\python.exe -m scripts.run_model1_newton_safeguarded_pilot
@@ -176,6 +182,7 @@ python3 -m venv .venv
 ./.venv/bin/python -m scripts.generate_model1
 ./.venv/bin/python -m scripts.generate_model2
 ./.venv/bin/python -m scripts.preview_model2_plan
+./.venv/bin/python -m scripts.preview_gd_calibration_plan
 ./.venv/bin/python -m scripts.run_model1_gd_pilot
 ./.venv/bin/python -m scripts.run_model1_newton_pilot
 ./.venv/bin/python -m scripts.run_model1_newton_safeguarded_pilot
@@ -211,7 +218,12 @@ rules are **not yet frozen**. The noise seed schedule is explicitly recorded
 (Model 1: 1000–1009; Model 2: 1100–1109), with split seed 2026.
 The plan-preview scripts list matched conditions without fitting models.
 One GD learning rate per model will be tuned on separate calibration data and
-frozen for the evaluation grid; no test data will be used for tuning.
+frozen for the evaluation grid; no test data will be used for tuning. The
+approved candidate rates are `0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03,
+0.1, 0.3`. Calibration seeds are `2000–2002` (Model 1) and `2100–2102`
+(Model 2); this creates 240 planned calibration attempts across all
+five starts, separate from the final evaluation grid. These are only
+manifest entries, not calibration results.
 
 The CSV retains the clean curve and the actual noise values for auditability. The metadata records configuration, true parameters, split counts, package/runtime versions, and a file hash.
 

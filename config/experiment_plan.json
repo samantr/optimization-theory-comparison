@@ -31,7 +31,15 @@
     "selection_metric": "validation_mse",
     "reuse_policy": "freeze_the_model_specific_rate_for_all_ten_evaluation_datasets_and_all_five_starts",
     "tuning_timing": "report_separately_from_optimizer_execution_time",
-    "status": "strategy_approved_candidates_and_calibration_seeds_pending"
+    "calibration_datasets_per_model": 3,
+    "candidate_learning_rates": [0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3],
+    "calibration_noise_seeds_by_model": {
+      "exponential_decay": [2000, 2001, 2002],
+      "logistic": [2100, 2101, 2102]
+    },
+    "starting_points": "reuse_all_five_approved_model_specific_starts",
+    "split_seed": 2026,
+    "status": "candidate_grid_and_calibration_seeds_approved_stopping_and_failure_policies_pending"
   },
   "primary_noise": {
     "distribution": "gaussian",
@@ -65,8 +73,8 @@
   ],
   "pairing_rule": "All methods use identical training data and starting parameters for each model/dataset-seed/start-point condition.",
   "pending_decisions": [
-    "GD learning-rate candidate grid and independent calibration seed schedule",
     "Stopping policies for each optimizer",
-    "Timing repetitions, failure criteria, and aggregation"
+    "Calibration failure handling and aggregation of validation MSE across calibration seeds and starts",
+    "Timing repetitions, evaluation failure criteria, and aggregation"
   ]
 }

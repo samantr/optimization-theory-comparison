@@ -9,7 +9,7 @@
 | 3. Gradient Descent | Pilot implemented | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime and failure logging; experimental settings remain provisional |
 | 4. Exact Newton | Pilot implemented | Full-step exact Newton preserved; separate safeguarded exact-Hessian hybrid with Armijo backtracking and explicit gradient fallback added |
 | 5. Validation | Partially completed | Finite-difference derivative checks and unit tests for all three pilot variants; broader empirical validation pending |
-| 6. Controlled comparisons | Two-model scope, size, starts, noise/split seeds, and GD tuning strategy approved; no runs yet | 100 matched conditions across two models, 200 primary and 100 exploratory planned method runs; model-specific rates to be tuned on separate calibration sets; execution rules pending |
+| 6. Controlled comparisons | Two-model scope and GD calibration grid/seeds approved; no runs yet | 100 matched evaluation conditions, 200 primary and 100 exploratory planned method runs; 240 separate GD calibration attempts planned; stopping, failure and timing rules pending |
 | 7. Results and plots | Not started | No controlled-comparison results exist yet; pilot diagnostics only |
 | 8. Literature and interpretation | Not started | Verified sources only |
 | 9. Report and presentation | Not started | Use validated results only |
@@ -37,6 +37,9 @@
 - Model-specific GD learning rates will be selected once from independent
   calibration training/validation data, then frozen for the ten evaluation
   datasets; tuning is excluded from execution-time comparisons.
+- Eight GD learning rates (0.0001–0.3) and disjoint calibration seeds
+  (Model 1: 2000–2002; Model 2: 2100–2102) are approved. The calibration
+  trial manifest contains 240 placeholders; no rate has been selected yet.
 
 ## Pilot settings and remaining confirmations
 
@@ -81,6 +84,9 @@
 - Deterministic Model 1 and Model 2 *manifest builders* each list 50 paired
   conditions and 150 method placeholders, including noise/split seeds and
   approved starting parameters, without running any solver.
+- A deterministic GD *calibration manifest* lists 120 seed/start/rate
+  combinations per model and checks that calibration seeds are disjoint
+  from evaluation seeds. It does not run or tune GD.
 - Unit tests and mathematical endpoint checks.
 
 ## Current learning checkpoint
@@ -90,8 +96,9 @@ Newton variant are implemented, with a growing passing unit-test suite. Reproduc
 training-only pilot scripts exist for all three. On one illustrative start,
 full-step Newton reached a poor saddle while the safeguarded variant found
 a good training fit; neither is comparative evidence. The official study
-now consists of two model families only. Next: confirm the GD calibration grid/seeds,
-stopping rules, success criteria, and timing before the approved 10-seed × 5-start
+now consists of two model families only. The GD calibration rates and seeds
+are frozen. Next: approve stopping rules, calibration failure handling,
+success criteria, and timing before the approved 10-seed × 5-start
 paired grid is executed.
 The dataset size, noise/split seeds, and 60/20/20 split are recorded; solver
 tuning and evaluation policies remain pending. No **controlled** optimizer

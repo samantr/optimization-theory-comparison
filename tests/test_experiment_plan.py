@@ -7,7 +7,11 @@ import unittest
 
 import numpy as np
 
-from opttheory.experiments import build_model1_plan, build_model2_plan
+from opttheory.experiments import (
+    build_gd_calibration_plan,
+    build_model1_plan,
+    build_model2_plan,
+)
 from opttheory.datasets.synthetic import generate_model1
 
 
@@ -154,6 +158,66 @@ class ExperimentPlanTests(unittest.TestCase):
         changed["model2_starting_points"][0]["theta"] = [9.0, float("nan"), 2.0]
         with self.assertRaisesRegex(ValueError, "Starting vectors"):
             build_model2_plan(changed)
+
+    def test_approved_calibration_grid_and_seed_separation(self):
+        tuning = self.plan["gradient_descent_learning_rate_tuning"]
+        self.assertEqual(tuning["candidate_learning_rates"],
+                         [0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3])
+        self.assertEqual(tuning["calibration_datasets_per_model"], 3)
+        self.assertEqual(tuning["calibration_noise_seeds_by_model"], {
+            "exponential_decay": [2000, 2001, 2002],
+            "logistic": [2100, 2101, 2102],
+        })
+        self.assertEqual(tuning["split_seed"], 2026)
+        evaluation = {
+            value for group in self.plan["seed_schedule"]["noise_seeds_by_model"].values()
+            for value in group
+        }
+        calibration = {
+            value for group in tuning["calibration_noise_seeds_by_model"].values()
+            for value in group
+        }
+        self.assertFalse(evaluation.intersection(calibration))
+        self.assertEqual(len(calibration), 6)
+
+    def test_gd_calibration_manifest_counts_and_approved_starts(self):
+        models = self.plan["model_families"]
+        for index, model in enumerate(models, start=1):
+            with self.subTest(model=model):
+                trials = build_gd_calibration_plan(self.plan, model)
+                self.assertEqual(len(trials), 3 * 5 * 8)
+                self.assertEqual(trials, build_gd_calibration_plan(self.plan, model))
+                self.assertEqual({t.dataset_id for t in trials}, {"C01", "C02", "C03"})
+                self.assertEqual({t.start_id for t in trials}, {"S1", "S2", "S3", "S4", "S5"})
+                self.assertEqual({t.split_seed for t in trials}, {2026})
+                self.assertEqual({t.method for t in trials}, {"gradient_descent"})
+                self.assertEqual({t.model for t in trials}, {model})
+                rates = self.plan["gradient_descent_learning_rate_tuning"]["candidate_learning_rates"]
+                for dataset_id in ("C01", "C02", "C03"):
+                    for start in self.plan[f"model{index}_starting_points"]:
+                        group = [t for t in trials if t.dataset_id == dataset_id
+                                 and t.start_id == start["id"]]
+                        self.assertEqual([t.learning_rate for t in group], rates)
+                        self.assertEqual({t.theta0 for t in group}, {tuple(start["theta"])})
+                if model == "logistic":
+                    self.assertEqual({t.theta0 for t in trials if t.start_id == "S4"},
+                                     {(10.0, -1.0, 2.0)})
+
+    def test_calibration_rejects_leakage_and_invalid_rates(self):
+        for bad_seed in (1000, 1100):
+            with self.subTest(bad_seed=bad_seed):
+                changed = deepcopy(self.plan)
+                changed["gradient_descent_learning_rate_tuning"][
+                    "calibration_noise_seeds_by_model"]["logistic"][0] = bad_seed
+                with self.assertRaisesRegex(ValueError, "separate"):
+                    build_gd_calibration_plan(changed, "logistic")
+        for rate in (0.0, -0.1, float("nan")):
+            with self.subTest(rate=rate):
+                changed = deepcopy(self.plan)
+                changed["gradient_descent_learning_rate_tuning"][
+                    "candidate_learning_rates"][0] = rate
+                with self.assertRaisesRegex(ValueError, "positive and finite"):
+                    build_gd_calibration_plan(changed, "exponential_decay")
 
 
 if __name__ == "__main__":
