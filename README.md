@@ -27,6 +27,9 @@ Already implemented and tested:
 - Shared stopping rules for future experiments: gradient norm <= 1e-4,
   maximum 10,000 GD or 100 Newton iterations, with early stopping and
   explicit nonconvergence/failure logging.
+- Failure-aware GD rate selection from a **complete** calibration grid:
+  fewest numerical failures first, then lowest finite validation MSE;
+  unit tested on hypothetical outcomes, not real study data.
 - Synthetic Gaussian observations from known true parameters.
 - Parameter-dependent Model 1 training MSE, explicitly using candidate [a,b,c]
   and supplied observed training data (never known true parameters).
@@ -51,8 +54,9 @@ and oscillatory trend ideas are optional future work, not required models.
 The current Model 1 scripts are **pilots**, not final experimental results.
 The dataset size, noise level, 60/20/20 split, and random-seed schedule are
 recorded. GD learning-rate tuning will be model-specific using separate
-calibration data; candidate grid, seeds, and stopping rules are approved.
-Calibration failure handling and timing protocol still need to be frozen.
+calibration data; candidate grid, seeds, stopping rules, and failure-aware
+rate selection are approved. Evaluation timing and statistical policies
+still need to be frozen.
 
 ## Folder structure
 
@@ -69,6 +73,7 @@ optimization-theory-comparison/
     experiments/
       plan.py
       policy.py
+      calibration.py
     models/
       exponential.py
       logistic.py
@@ -99,6 +104,7 @@ optimization-theory-comparison/
     test_model2_derivatives.py
     test_model2_optimizers.py
     test_stopping_policy.py
+    test_calibration_selection.py
     test_objective.py
     test_gradient_descent.py
     test_newton.py
@@ -234,6 +240,14 @@ stop once the gradient norm is at most `1e-4`, with iteration ceilings
 of `10000` for GD and `100` for each Newton variant. The helper prevents
 accidental use of older pilot defaults. Gradient-based termination
 is **not** proof of reaching a minimum; keep loss and Hessian checks.
+
+The calibration selector is also registered before evaluation: choose the
+rate with the fewest numerical failures across all 15 calibration
+conditions, then the lowest average finite nonfailed validation MSE,
+then the smaller rate if exactly tied. A run that reaches its iteration
+cap but retains finite parameters contributes its last validation MSE
+and is flagged as not converged. All 240 planned results must be present
+before selecting the two model-specific rates. No calibration has run yet.
 
 The CSV retains the clean curve and the actual noise values for auditability. The metadata records configuration, true parameters, split counts, package/runtime versions, and a file hash.
 

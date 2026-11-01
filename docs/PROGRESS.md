@@ -9,7 +9,7 @@
 | 3. Gradient Descent | Pilot implemented | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime and failure logging; experimental settings remain provisional |
 | 4. Exact Newton | Pilot implemented | Full-step exact Newton preserved; separate safeguarded exact-Hessian hybrid with Armijo backtracking and explicit gradient fallback added |
 | 5. Validation | Partially completed | Finite-difference derivative checks and unit tests for all three pilot variants; broader empirical validation pending |
-| 6. Controlled comparisons | Two-model scope, GD calibration grid/seeds, and stopping rules approved; no runs yet | 100 matched evaluation conditions, 200 primary and 100 exploratory planned method runs; 240 separate GD calibration attempts planned; failure selection and timing rules pending |
+| 6. Controlled comparisons | Two-model scope, GD calibration grid/seeds, stopping and failure-aware selection rules approved; no runs yet | 100 matched evaluation conditions, 200 primary and 100 exploratory planned method runs; 240 GD calibration attempts planned; timing and final analysis rules pending |
 | 7. Results and plots | Not started | No controlled-comparison results exist yet; pilot diagnostics only |
 | 8. Literature and interpretation | Not started | Verified sources only |
 | 9. Report and presentation | Not started | Use validated results only |
@@ -43,6 +43,11 @@
 - The common stopping criterion is gradient norm <= 1e-4, with iteration
   ceilings of 10,000 (GD), 100 (exact Newton), and 100 (safeguarded Newton).
   Reaching tolerance is stationarity, not necessarily a minimum.
+- GD calibration rate selection prioritizes fewest numerical failures,
+  then lowest mean finite nonfailed validation MSE, then smaller rate.
+  Budget-exhausted trials contribute their last finite validation loss
+  and are separately flagged as nonconverged. This policy was selected
+  after Saman delegated the choice to the assistant.
 
 ## Pilot settings and remaining confirmations
 
@@ -93,6 +98,9 @@
 - Validated `optimizer_stopping_kwargs` ensures future experiments apply
   the approved shared tolerance and method-specific iteration caps rather
   than historical Model 1 pilot defaults.
+- Tested failure-aware `select_gd_learning_rate` requires the complete
+  registered calibration grid and matches its ordering to the frozen
+  configuration. It has been tested with *hypothetical* outcomes only.
 - Unit tests and mathematical endpoint checks.
 
 ## Current learning checkpoint
@@ -103,8 +111,8 @@ training-only pilot scripts exist for all three. On one illustrative start,
 full-step Newton reached a poor saddle while the safeguarded variant found
 a good training fit; neither is comparative evidence. The official study
 now consists of two model families only. The GD calibration rates and seeds
-and stopping rules are frozen. Next: approve calibration failure handling,
-success criteria, and timing before the approved 10-seed × 5-start
+and stopping and calibration-selection rules are frozen. Next: approve
+success criteria, timing and statistical summaries before the 10-seed × 5-start
 paired grid is executed.
 The dataset size, noise/split seeds, and 60/20/20 split are recorded; solver
 tuning and evaluation policies remain pending. No **controlled** optimizer

@@ -70,6 +70,19 @@ to initialization?
   seeds `1000`–`1009` and `1100`–`1109` remain completely excluded from
   rate selection. Exactly `3 × 5 × 8 = 120` GD calibration attempts per
   model (240 total) are **planned**, not yet executed.
+- **GD calibration selection rule approved (stability first):** every
+  seed/start/rate condition must be reported, including failures. Prefer
+  the learning rate with the **fewest numerical failures**; among tied
+  rates, prefer the lowest **mean validation MSE of finite, nonfailed
+  trials**, and break exact ties in favor of the smaller rate. Runs that
+  exhaust the iteration budget are explicitly marked *not converged*
+  but still contribute their last finite validation MSE. Numerical
+  failures remain counted and are not silently excluded. If every
+  candidate fails all trials, no rate is selected. This reliability
+  priority was chosen by the assistant at Saman's request. The
+  `select_gd_learning_rate` function implements and tests the policy
+  independently of any optimizer execution; no final test labels are
+  accepted by its result data structure.
 - **Optimizer stopping rules approved:** all three variants stop immediately
   when `||gradient|| <= 1e-4`; otherwise the fixed iteration caps are
   10,000 for fixed-step GD, 100 for full-step exact Newton, and 100 for
@@ -97,9 +110,8 @@ to initialization?
   `S4=[10,-1,2]`, `S5=[7,0.15,0]`. They probe close, slow,
   steep/shifted, decreasing, and nearly flat initial curves. Keep all
   runs (including negative-k failures) in the final comparison.
-- **Not approved/frozen yet:** calibration failure handling and
-  aggregation of validation MSE,
-  timing protocol, and evaluation success/failure thresholds.
+- **Not approved/frozen yet:** timing protocol, formal evaluation
+  success/failure thresholds, and final statistical aggregation.
   No calibration or controlled comparison has been run.
 
 ### Model 2 synthetic curve (approved)
