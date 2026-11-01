@@ -1,4 +1,4 @@
-"""Validate approved study breadth and Model 1 pre-registered starting points."""
+"""Validate approved study breadth and Models 1/2 pre-registered starts."""
 
 import json
 from copy import deepcopy
@@ -7,7 +7,7 @@ import unittest
 
 import numpy as np
 
-from opttheory.experiments import build_model1_plan
+from opttheory.experiments import build_model1_plan, build_model2_plan
 from opttheory.datasets.synthetic import generate_model1
 
 
@@ -112,6 +112,47 @@ class ExperimentPlanTests(unittest.TestCase):
             self.assertEqual(len({r.dataset_id for r in group}), 1)
             self.assertEqual(len({r.noise_seed for r in group}), 1)
             self.assertEqual({r.split_seed for r in group}, {2026})
+
+    def test_model2_starting_vectors_match_approval(self):
+        p = self.plan
+        self.assertEqual(p["model2_parameter_order"], ["L", "k", "x0"])
+        starts = p["model2_starting_points"]
+        self.assertEqual([s["id"] for s in starts], ["S1", "S2", "S3", "S4", "S5"])
+        vectors = [tuple(s["theta"]) for s in starts]
+        self.assertEqual(vectors, [
+            (9.0, 1.0, 2.0),
+            (6.0, 0.5, 1.0),
+            (14.0, 3.0, 3.0),
+            (10.0, -1.0, 2.0),
+            (7.0, 0.15, 0.0),
+        ])
+        self.assertEqual(len(set(vectors)), 5)
+        self.assertTrue(np.all(np.isfinite(np.asarray(vectors, dtype=float))))
+
+    def test_model2_manifest_is_matched_and_keeps_negative_k_start(self):
+        runs = build_model2_plan(self.plan)
+        self.assertEqual(len(runs), 10 * 5 * 3)
+        self.assertEqual(runs, build_model2_plan(self.plan))
+        paired = {}
+        for run in runs:
+            paired.setdefault(run.pairing_key, []).append(run)
+        self.assertEqual(len(paired), 50)
+        self.assertEqual({run.model for run in runs}, {"logistic"})
+        self.assertEqual({run.noise_seed for run in runs}, set(range(1100, 1110)))
+        for group in paired.values():
+            self.assertEqual([r.method for r in group],
+                             ["gradient_descent", "newton", "safeguarded_newton"])
+            self.assertEqual(len({r.theta0 for r in group}), 1)
+            self.assertEqual(len({r.noise_seed for r in group}), 1)
+            self.assertEqual({r.split_seed for r in group}, {2026})
+        self.assertEqual({run.theta0 for run in runs if run.start_id == "S4"},
+                         {(10.0, -1.0, 2.0)})
+
+    def test_model2_invalid_start_is_rejected_before_experiments(self):
+        changed = deepcopy(self.plan)
+        changed["model2_starting_points"][0]["theta"] = [9.0, float("nan"), 2.0]
+        with self.assertRaisesRegex(ValueError, "Starting vectors"):
+            build_model2_plan(changed)
 
 
 if __name__ == "__main__":

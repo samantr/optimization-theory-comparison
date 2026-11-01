@@ -9,7 +9,7 @@
 | 3. Gradient Descent | Pilot implemented | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime and failure logging; experimental settings remain provisional |
 | 4. Exact Newton | Pilot implemented | Full-step exact Newton preserved; separate safeguarded exact-Hessian hybrid with Armijo backtracking and explicit gradient fallback added |
 | 5. Validation | Partially completed | Finite-difference derivative checks and unit tests for all three pilot variants; broader empirical validation pending |
-| 6. Controlled comparisons | Size, Model 1 starts, noise/split seeds, and GD tuning strategy approved; no runs yet | 120 observations, 72/24/24 split, matched manifest; one GD rate per model to be chosen on separate calibration sets; exact tuning grid and timing pending |
+| 6. Controlled comparisons | Size, Model 1/2 starts, noise/split seeds, and GD tuning strategy approved; no runs yet | 120 observations, 72/24/24 split, matched manifests for Models 1/2; one GD rate per model to be chosen on separate calibration sets; exact tuning grid and timing pending |
 | 7. Results and plots | Not started | No controlled-comparison results exist yet; pilot diagnostics only |
 | 8. Literature and interpretation | Not started | Verified sources only |
 | 9. Report and presentation | Not started | Use validated results only |
@@ -24,6 +24,8 @@
 - Both algorithms must use the same generated data and initial parameters.
 - Five Model 1 start vectors S1–S5 and the fixed-start-per-seed strategy are
   approved and recorded in `config/experiment_plan.json`.
+- Five Model 2 start vectors S1–S5 are also approved and frozen, including
+  a deliberately negative k for an initially decreasing S-curve.
 - Primary Gaussian noise sigma=0.1 across the ten noise seeds per model is
   approved; other noise levels are deferred to robustness analysis.
 - Exactly 120 observations per dataset and a seeded random 72/24/24
@@ -70,9 +72,9 @@
 - A separate **safeguarded exact-Hessian Newton** variant with positive-definite
   Hessian check, explicit gradient fallback, Armijo backtracking, and counters
   for the extra computational work; see `docs/NEWTON_SAFEGUARDED.md`.
-- A deterministic Model 1 *manifest builder* lists 50 paired conditions and
-  150 method placeholders, including their noise/split seed values, without
-  running any solver.
+- Deterministic Model 1 and Model 2 *manifest builders* each list 50 paired
+  conditions and 150 method placeholders, including noise/split seeds and
+  approved starting parameters, without running any solver.
 - Unit tests and mathematical endpoint checks.
 
 ## Current learning checkpoint
@@ -82,7 +84,7 @@ Newton variant are implemented, with a growing passing unit-test suite. Reproduc
 training-only pilot scripts exist for all three. On one illustrative start,
 full-step Newton reached a poor saddle while the safeguarded variant found
 a good training fit; neither is comparative evidence. Next: confirm
-starting-vector selection for Models 2–4, the GD calibration grid/seeds,
+starting-vector selection for Models 3–4, the GD calibration grid/seeds,
 stopping rules, success criteria, and timing before the approved 10-seed × 5-start
 paired grid is executed.
 The dataset size, noise/split seeds, and 60/20/20 split are recorded; solver

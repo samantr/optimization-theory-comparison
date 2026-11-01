@@ -73,7 +73,12 @@ to initialization?
   `S4=[-1,-0.5,3]`, `S5=[2,0.4,0]`. These probe normal, extreme,
   sign-reversed, and growth-like initial conditions. They are kept even if
   an algorithm fails, and are not optimized against the test set.
-- **Not approved/frozen yet:** starting vectors for Models 2–4, GD tuning
+- **Model 2 starting vectors approved** (parameter order `[L,k,x0]`):
+  `S1=[9,1,2]`, `S2=[6,0.5,1]`, `S3=[14,3,3]`,
+  `S4=[10,-1,2]`, `S5=[7,0.15,0]`. They probe close, slow,
+  steep/shifted, decreasing, and nearly flat initial curves. Keep all
+  runs (including negative-k failures) in the final comparison.
+- **Not approved/frozen yet:** starting vectors for Models 3–4, GD tuning
   candidate rates and separate calibration seeds, optimizer stopping budgets, timing
   protocol, and success/failure thresholds. No controlled grid has been run.
 
@@ -89,17 +94,20 @@ to initialization?
 - Synthetic truth is for data generation and recovery checks only: fitting
   methods will receive candidate vectors and training observations, never
   the true parameter values or held-out labels.
-- Model 2 optimizer starting points, analytical derivatives, tuning and
-  actual comparisons are not yet implemented.
+- Model 2 approved optimizer starting points are recorded in the research
+  manifest. Analytical derivatives, tuning, and actual comparisons are not
+  yet implemented.
 
 Machine-readable approved counts are in `config/experiment_plan.json`.
 The `opttheory.experiments.plan` module enumerates 50 matched Model 1
-conditions (150 method-run placeholders), including the fixed noise/split
-seed for each condition, **without** generating data or fitting any method.
+conditions and 50 matched Model 2 conditions (150 method-run placeholders
+per model), including the fixed noise/split seed for each condition,
+**without** generating data or fitting any method.
 `D01`–`D10` are dataset labels. Preview with:
 
 ```powershell
 python -m scripts.preview_model1_plan
+python -m scripts.preview_model2_plan
 ```
 
 ## Required controls (future phases)

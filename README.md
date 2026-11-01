@@ -15,6 +15,8 @@ Already implemented and tested:
 - Model 1: the noise-free function f(x) = a exp(bx) + c.
 - Model 2: stable logistic function f(x) = L/(1+exp[-k(x-x0)]) and an
   approved, independently seeded synthetic dataset (truth [10,1.5,2]).
+- Model 2: five approved starting vectors and a reproducible manifest of
+  50 paired dataset/start conditions (no optimization runs yet).
 - Synthetic Gaussian observations from known true parameters.
 - Parameter-dependent Model 1 training MSE, explicitly using candidate [a,b,c]
   and supplied observed training data (never known true parameters).
@@ -73,6 +75,7 @@ optimization-theory-comparison/
   scripts/
     generate_model1.py
     generate_model2.py
+    preview_model2_plan.py
     preview_model1_plan.py
     run_model1_gd_pilot.py
     run_model1_newton_pilot.py
@@ -107,6 +110,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
 .\.venv\Scripts\python.exe -m scripts.generate_model1
 .\.venv\Scripts\python.exe -m scripts.generate_model2
+.\.venv\Scripts\python.exe -m scripts.preview_model2_plan
 .\.venv\Scripts\python.exe -m scripts.run_model1_gd_pilot
 .\.venv\Scripts\python.exe -m scripts.run_model1_newton_pilot
 .\.venv\Scripts\python.exe -m scripts.run_model1_newton_safeguarded_pilot
@@ -164,6 +168,7 @@ python3 -m venv .venv
 ./.venv/bin/python -m unittest discover -s tests -v
 ./.venv/bin/python -m scripts.generate_model1
 ./.venv/bin/python -m scripts.generate_model2
+./.venv/bin/python -m scripts.preview_model2_plan
 ./.venv/bin/python -m scripts.run_model1_gd_pilot
 ./.venv/bin/python -m scripts.run_model1_newton_pilot
 ./.venv/bin/python -m scripts.run_model1_newton_safeguarded_pilot

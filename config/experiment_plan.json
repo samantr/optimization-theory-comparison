@@ -1,5 +1,5 @@
 {
-  "status": "approved_sample_counts_other_settings_pending",
+  "status": "model1_and_model2_starts_approved_other_settings_pending",
   "model_families": [
     "exponential_decay",
     "logistic",
@@ -51,6 +51,14 @@
     {"id": "S4", "theta": [-1.0, -0.5, 3.0], "purpose": "Negative amplitude"},
     {"id": "S5", "theta": [2.0, 0.4, 0.0], "purpose": "Initially increasing exponential"}
   ],
+  "model2_parameter_order": ["L", "k", "x0"],
+  "model2_starting_points": [
+    {"id": "S1", "theta": [9.0, 1.0, 2.0], "purpose": "Relatively close to the truth"},
+    {"id": "S2", "theta": [6.0, 0.5, 1.0], "purpose": "Low capacity and slow growth"},
+    {"id": "S3", "theta": [14.0, 3.0, 3.0], "purpose": "High capacity, steep growth, shifted midpoint"},
+    {"id": "S4", "theta": [10.0, -1.0, 2.0], "purpose": "Wrong decreasing shape to test initialization sensitivity"},
+    {"id": "S5", "theta": [7.0, 0.15, 0.0], "purpose": "Almost flat initial curve"}
+  ],
   "primary_methods": [
     "gradient_descent",
     "newton"
@@ -60,7 +68,7 @@
   ],
   "pairing_rule": "All methods use identical training data and starting parameters for each model/dataset-seed/start-point condition.",
   "pending_decisions": [
-    "Preregister five starting vectors for each of Models 2, 3, and 4",
+    "Preregister five starting vectors for each of Models 3 and 4",
     "GD learning-rate candidate grid and independent calibration seed schedule",
     "Stopping policies for each optimizer",
     "Timing repetitions, failure criteria, and aggregation"

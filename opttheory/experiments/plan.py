@@ -5,6 +5,7 @@ never draws observations or runs optimizers.
 """
 
 from dataclasses import dataclass
+from math import isfinite
 from typing import Mapping, Any
 
 
@@ -30,10 +31,26 @@ def build_model1_plan(config: Mapping[str, Any]) -> tuple[PlannedRun, ...]:
     This is only a *manifest*. It contains pre-registered seeds but no
     observations, runtimes, MSE values, or fabricated experimental results.
     """
+    return _build_plan(config, model="exponential_decay", model_number=1)
+
+
+def build_model2_plan(config: Mapping[str, Any]) -> tuple[PlannedRun, ...]:
+    """Enumerate Model 2's 10 datasets × 5 approved starts × 3 methods.
+
+    A negative initial k is deliberately retained, even if a method fails.
+    This constructs a manifest only; no data or results are produced.
+    """
+    return _build_plan(config, model="logistic", model_number=2)
+
+
+def _build_plan(
+    config: Mapping[str, Any], *, model: str, model_number: int
+) -> tuple[PlannedRun, ...]:
     n_datasets = int(config["dataset_seeds_per_model"])
     n_starts = int(config["starting_points_per_dataset"])
-    starts = config["model1_starting_points"]
-    seeds = config["seed_schedule"]["noise_seeds_by_model"]["exponential_decay"]
+    starts = config[f"model{model_number}_starting_points"]
+    n_params = len(config[f"model{model_number}_parameter_order"])
+    seeds = config["seed_schedule"]["noise_seeds_by_model"][model]
     split_seed = int(config["seed_schedule"]["split_seed"])
     methods = list(config["primary_methods"]) + list(config["exploratory_methods"])
     if n_datasets <= 0 or n_starts <= 0 or len(starts) != n_starts:
@@ -42,6 +59,10 @@ def build_model1_plan(config: Mapping[str, Any]) -> tuple[PlannedRun, ...]:
         raise ValueError("Method identifiers must be distinct and nonempty.")
     if len({item["id"] for item in starts}) != n_starts:
         raise ValueError("Starting-point identifiers must be distinct.")
+    vectors = [tuple(float(value) for value in entry["theta"]) for entry in starts]
+    if (any(len(v) != n_params or not all(isfinite(value) for value in v)
+            for v in vectors) or len(set(vectors)) != n_starts):
+        raise ValueError("Starting vectors must be finite, distinct, and match parameter count.")
     if (len(seeds) != n_datasets or len(set(seeds)) != n_datasets
             or any(not isinstance(seed, int) or isinstance(seed, bool) or seed < 0
                    for seed in seeds)):
@@ -51,7 +72,7 @@ def build_model1_plan(config: Mapping[str, Any]) -> tuple[PlannedRun, ...]:
 
     return tuple(
         PlannedRun(
-            model="exponential_decay",
+            model=model,
             dataset_id=f"D{dataset_number:02d}",
             noise_seed=seeds[dataset_number - 1],
             split_seed=split_seed,
