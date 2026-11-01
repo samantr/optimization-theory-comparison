@@ -7,7 +7,7 @@ From the repository root:
 import json
 from pathlib import Path
 
-from opttheory.experiments import build_gd_calibration_plan
+from opttheory.experiments import build_gd_calibration_plan, optimizer_stopping_kwargs
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def main() -> None:
     config = json.loads((ROOT / "config" / "experiment_plan.json").read_text(encoding="utf-8"))
+    print(f"Approved GD stopping: {optimizer_stopping_kwargs(config, 'gradient_descent')}")
     for model in config["model_families"]:
         trials = build_gd_calibration_plan(config, model)
         print(f"{model}: {len(trials)} planned GD calibration attempts")

@@ -24,6 +24,9 @@ Already implemented and tested:
 - GD calibration: eight approved candidate rates, three independent noise
   seeds per model, all five starting points, and a validated manifest;
   no learning-rate selection has run yet.
+- Shared stopping rules for future experiments: gradient norm <= 1e-4,
+  maximum 10,000 GD or 100 Newton iterations, with early stopping and
+  explicit nonconvergence/failure logging.
 - Synthetic Gaussian observations from known true parameters.
 - Parameter-dependent Model 1 training MSE, explicitly using candidate [a,b,c]
   and supplied observed training data (never known true parameters).
@@ -48,9 +51,8 @@ and oscillatory trend ideas are optional future work, not required models.
 The current Model 1 scripts are **pilots**, not final experimental results.
 The dataset size, noise level, 60/20/20 split, and random-seed schedule are
 recorded. GD learning-rate tuning will be model-specific using separate
-calibration data; the candidate grid and seeds are approved, but stopping
-rules, calibration failure handling, and timing protocol still need to
-be frozen.
+calibration data; candidate grid, seeds, and stopping rules are approved.
+Calibration failure handling and timing protocol still need to be frozen.
 
 ## Folder structure
 
@@ -66,6 +68,7 @@ optimization-theory-comparison/
   opttheory/
     experiments/
       plan.py
+      policy.py
     models/
       exponential.py
       logistic.py
@@ -95,6 +98,7 @@ optimization-theory-comparison/
     test_model2_dataset.py
     test_model2_derivatives.py
     test_model2_optimizers.py
+    test_stopping_policy.py
     test_objective.py
     test_gradient_descent.py
     test_newton.py
@@ -224,6 +228,12 @@ approved candidate rates are `0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03,
 (Model 2); this creates 240 planned calibration attempts across all
 five starts, separate from the final evaluation grid. These are only
 manifest entries, not calibration results.
+
+All study runs will use the approved `optimizer_stopping_kwargs` helper:
+stop once the gradient norm is at most `1e-4`, with iteration ceilings
+of `10000` for GD and `100` for each Newton variant. The helper prevents
+accidental use of older pilot defaults. Gradient-based termination
+is **not** proof of reaching a minimum; keep loss and Hessian checks.
 
 The CSV retains the clean curve and the actual noise values for auditability. The metadata records configuration, true parameters, split counts, package/runtime versions, and a file hash.
 

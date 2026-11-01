@@ -1,5 +1,5 @@
 {
-  "status": "two_model_scope_approved_tuning_and_execution_rules_pending",
+  "status": "two_model_scope_and_stopping_approved_failure_and_timing_rules_pending",
   "model_families": [
     "exponential_decay",
     "logistic"
@@ -39,7 +39,20 @@
     },
     "starting_points": "reuse_all_five_approved_model_specific_starts",
     "split_seed": 2026,
-    "status": "candidate_grid_and_calibration_seeds_approved_stopping_and_failure_policies_pending"
+    "status": "candidate_grid_seeds_and_stopping_approved_failure_policy_pending"
+  },
+  "optimizer_stopping": {
+    "gradient_norm_tolerance": 0.0001,
+    "max_iterations_by_method": {
+      "gradient_descent": 10000,
+      "newton": 100,
+      "safeguarded_newton": 100
+    },
+    "early_stop": "stop_as_soon_as_gradient_norm_meets_tolerance_even_if_iteration_cap_is_higher",
+    "interpretation": "small_gradient_is_stationarity_not_proof_of_a_minimum",
+    "budget_exhaustion": "mark_not_converged_and_retain_last_finite_loss_and_parameters",
+    "numerical_failures": "record_failure_reason_and_all_completed_updates",
+    "status": "approved_for_both_models_and_calibration"
   },
   "primary_noise": {
     "distribution": "gaussian",
@@ -73,7 +86,6 @@
   ],
   "pairing_rule": "All methods use identical training data and starting parameters for each model/dataset-seed/start-point condition.",
   "pending_decisions": [
-    "Stopping policies for each optimizer",
     "Calibration failure handling and aggregation of validation MSE across calibration seeds and starts",
     "Timing repetitions, evaluation failure criteria, and aggregation"
   ]

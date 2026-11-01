@@ -70,6 +70,16 @@ to initialization?
   seeds `1000`–`1009` and `1100`–`1109` remain completely excluded from
   rate selection. Exactly `3 × 5 × 8 = 120` GD calibration attempts per
   model (240 total) are **planned**, not yet executed.
+- **Optimizer stopping rules approved:** all three variants stop immediately
+  when `||gradient|| <= 1e-4`; otherwise the fixed iteration caps are
+  10,000 for fixed-step GD, 100 for full-step exact Newton, and 100 for
+  the separately labelled safeguarded Newton. These are maximums, not
+  mandatory numbers of steps. Report cap exhaustion as *not converged*,
+  and preserve the last finite candidate and failure reason. Reaching
+  the gradient threshold indicates *stationarity*, not necessarily a
+  minimum: assess final loss and Hessian curvature separately. The
+  shared values are in `config/experiment_plan.json`, accessed through
+  `optimizer_stopping_kwargs()` so future runs do not inherit pilot defaults.
 - This yields **50 paired conditions per model** or **100 conditions across
   two models**. If all three methods are run on each condition, the planned
   grid contains **200 primary method runs plus 100 safeguarded runs**,
@@ -87,8 +97,8 @@ to initialization?
   `S4=[10,-1,2]`, `S5=[7,0.15,0]`. They probe close, slow,
   steep/shifted, decreasing, and nearly flat initial curves. Keep all
   runs (including negative-k failures) in the final comparison.
-- **Not approved/frozen yet:** stopping budgets and tolerance rules,
-  calibration failure handling and aggregation of validation MSE,
+- **Not approved/frozen yet:** calibration failure handling and
+  aggregation of validation MSE,
   timing protocol, and evaluation success/failure thresholds.
   No calibration or controlled comparison has been run.
 
