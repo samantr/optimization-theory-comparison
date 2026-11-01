@@ -8,6 +8,12 @@
   ],
   "dataset_seeds_per_model": 10,
   "starting_points_per_dataset": 5,
+  "primary_noise": {
+    "distribution": "gaussian",
+    "sigma": 0.1,
+    "rule": "Use the same sigma for each of the ten datasets; distinct seeds yield distinct noise realizations."
+  },
+  "additional_noise_levels": "deferred_robustness_study",
   "starting_point_strategy": "Five preregistered model-specific vectors, repeated unchanged across the ten dataset seeds and used identically by all methods.",
   "model1_parameter_order": ["a", "b", "c"],
   "model1_starting_points": [
@@ -27,7 +33,7 @@
   "pairing_rule": "All methods use identical training data and starting parameters for each model/dataset-seed/start-point condition.",
   "pending_decisions": [
     "Preregister five starting vectors for each of Models 2, 3, and 4",
-    "Final observation count, noise levels, and data split",
+    "Final observation count and data split",
     "Seed schedule and independent random streams",
     "Tuning and stopping policies on training/validation only",
     "Timing repetitions, failure criteria, and aggregation"

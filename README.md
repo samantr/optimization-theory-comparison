@@ -169,8 +169,9 @@ The current pilot uses sigma = 0.1, noise seed 42, and split seed 2026. They are
 The approved study breadth is **four model families, ten dataset seeds per
 model, and five paired starting points per dataset**. This is recorded in
 `config/experiment_plan.json` and `docs/RESEARCH_PROTOCOL.md`. The five
-fixed Model 1 starting vectors are now approved and recorded. Starting
-vectors for Models 2–4, final data settings, and timing rules are **not yet
+fixed Model 1 starting vectors and Gaussian noise level sigma=0.1 for the
+primary experiment are approved and recorded. Starting vectors for Models
+2–4, observation count/split, and timing rules are **not yet
 frozen**, and no controlled comparison has been run.
 
 The CSV retains the clean curve and the actual noise values for auditability. The metadata records configuration, true parameters, split counts, package/runtime versions, and a file hash.

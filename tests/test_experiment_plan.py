@@ -23,6 +23,9 @@ class ExperimentPlanTests(unittest.TestCase):
         self.assertEqual(4 * 10 * 5, 200)
         self.assertEqual(p["primary_methods"], ["gradient_descent", "newton"])
         self.assertEqual(p["exploratory_methods"], ["safeguarded_newton"])
+        self.assertEqual(p["primary_noise"]["distribution"], "gaussian")
+        self.assertEqual(p["primary_noise"]["sigma"], 0.1)
+        self.assertEqual(p["additional_noise_levels"], "deferred_robustness_study")
 
     def test_model1_starts_are_fixed_distinct_and_finite(self):
         p = self.plan

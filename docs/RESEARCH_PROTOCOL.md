@@ -29,6 +29,11 @@ to initialization?
 - **Four model families:** exponential decay, logistic, Gaussian peak, and
   sketch-inspired oscillatory trend.
 - **Ten independently seeded datasets per model.**
+- **Primary noise setting approved:** additive zero-mean Gaussian noise with
+  standard deviation \(\sigma_{noise}=0.1\) for all ten datasets per model;
+  the noise realization changes with the dataset seed. Additional noise
+  intensities are deferred to a separate, explicitly labelled robustness
+  study rather than tripling the initial experimental grid.
 - **Five starting parameter vectors per dataset.**
 - **Starting-vector strategy approved:** five fixed, deliberately varied,
   model-specific vectors reused across the ten dataset seeds; all methods
@@ -50,7 +55,7 @@ to initialization?
   sign-reversed, and growth-like initial conditions. They are kept even if
   an algorithm fails, and are not optimized against the test set.
 - **Not approved/frozen yet:** starting vectors for Models 2–4, final
-  noise and split settings, seed schedule, optimizer tuning budgets, timing
+  observation count and split settings, seed schedule, optimizer tuning budgets, timing
   protocol, and success/failure thresholds. No controlled grid has been run.
 
 Machine-readable approved counts are in `config/experiment_plan.json`.
