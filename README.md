@@ -74,6 +74,15 @@ limitations are disclosed in the results document. The preregistered
 experiment plan and evaluation-protocol files remain **unchanged** after
 execution to preserve their SHA-256 provenance.
 
+### Academic report preparation
+
+The report's reference-first preparation is recorded in
+`docs/REPORT_REFERENCE_REGISTER.md`: 22 scholarly candidate sources, links
+to publisher/proceedings records, planned citations by report section, and
+the professor's minimum 10-page / 20-source requirements. This is a
+selection register, not yet a completed literature review. The original
+optimizer study and its archived evidence remain unchanged.
+
 ### Separate adaptive GD pilot (not part of the final study)
 
 Saman's gradient-reversal step-halving idea and a training-MSE backtracking
