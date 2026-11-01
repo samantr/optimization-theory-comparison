@@ -1,0 +1,138 @@
+{
+  "calibration_is_excluded_from_timing": true,
+  "dataset_aware_primary_summary": {
+    "confidence_intervals": "computed_separately_by_cluster_bootstrap",
+    "dataset_mean_newton_minus_gd_seconds": -0.08324299078001786,
+    "dataset_records": [
+      {
+        "dataset_id": "D01",
+        "gd_stationary_count": 5,
+        "mean_newton_minus_gd_seconds": -0.07779361360007897,
+        "newton_stationary_count": 4,
+        "paired_starts": 5
+      },
+      {
+        "dataset_id": "D02",
+        "gd_stationary_count": 5,
+        "mean_newton_minus_gd_seconds": -0.06868941820030158,
+        "newton_stationary_count": 5,
+        "paired_starts": 5
+      },
+      {
+        "dataset_id": "D03",
+        "gd_stationary_count": 5,
+        "mean_newton_minus_gd_seconds": -0.06838650360004976,
+        "newton_stationary_count": 5,
+        "paired_starts": 5
+      },
+      {
+        "dataset_id": "D04",
+        "gd_stationary_count": 5,
+        "mean_newton_minus_gd_seconds": -0.07791370439954334,
+        "newton_stationary_count": 5,
+        "paired_starts": 5
+      },
+      {
+        "dataset_id": "D05",
+        "gd_stationary_count": 5,
+        "mean_newton_minus_gd_seconds": -0.09940526359969226,
+        "newton_stationary_count": 5,
+        "paired_starts": 5
+      },
+      {
+        "dataset_id": "D06",
+        "gd_stationary_count": 5,
+        "mean_newton_minus_gd_seconds": -0.10299587300032727,
+        "newton_stationary_count": 5,
+        "paired_starts": 5
+      },
+      {
+        "dataset_id": "D07",
+        "gd_stationary_count": 5,
+        "mean_newton_minus_gd_seconds": -0.09403004980013066,
+        "newton_stationary_count": 5,
+        "paired_starts": 5
+      },
+      {
+        "dataset_id": "D08",
+        "gd_stationary_count": 5,
+        "mean_newton_minus_gd_seconds": -0.09885481499950402,
+        "newton_stationary_count": 5,
+        "paired_starts": 5
+      },
+      {
+        "dataset_id": "D09",
+        "gd_stationary_count": 5,
+        "mean_newton_minus_gd_seconds": -0.07607752479998453,
+        "newton_stationary_count": 5,
+        "paired_starts": 5
+      },
+      {
+        "dataset_id": "D10",
+        "gd_stationary_count": 5,
+        "mean_newton_minus_gd_seconds": -0.06828314180056623,
+        "newton_stationary_count": 4,
+        "paired_starts": 5
+      }
+    ],
+    "gd_stationary_fraction": 1.0,
+    "independent_dataset_count": 10,
+    "median_of_dataset_time_differences_seconds": -0.07785365899981116,
+    "newton_stationary_fraction": 0.96,
+    "paired_condition_count": 50
+  },
+  "dataset_sha256_by_noise_seed": {
+    "1000": "ab2cce0a17bfbf2a4fc379f381b782a802d8621a116eba550906af02818c165c",
+    "1001": "17718b7cb40624f50fa797f3083aecf5328e2abaa0a4313c9c4bdaa4052e95ca",
+    "1002": "00532e43ba658f62265a1b6a013ba71704a928d6e143702113bec9809f8f6a29",
+    "1003": "60fe8cced1f847bdede45d399a794b6881efd7d9f13510fda745255c95395f3f",
+    "1004": "80d041452e2a95cba58bb296b5433ed94ee98086c3374123b278afcb9de1f04f",
+    "1005": "de1f36b0c75eceb9f155db905d3fdc2d5bb1ae75fef299ffe852f86c630969ed",
+    "1006": "50cf15f5837a0b48f683f05785f18eba9743576008e5c988c2e0625099751f61",
+    "1007": "aabf8fc3c53e1873ee1171a0d87dd5dfdad65e3ed7703d16d9a5e75d20712753",
+    "1008": "5befa3928f6c7ffed1f93f85e107cfef5bd53f5e1fd047eacad30f90641e9118",
+    "1009": "ef935b294783a67508da5ddab50c38664b13ad641b4e1a2f67c51335c5581a6f"
+  },
+  "evaluation_protocol_sha256": "6fc7472937e74e98f4eb71e867bd025886f424e09319ca2b0a6dd4d6f62472ba",
+  "experiment_plan_sha256": "a1ea5e34223e3847c9e69e6ca14022695d96b9b02716f3fb775715410c125ef3",
+  "frozen_rates_sha256": "3804f45b94a9d1ce7d06fe855bb8497af398522a281728789be64784a9da7fcd",
+  "inference_status": "approved_dataset_cluster_bootstrap_95pct_ci_no_p_value",
+  "method_conditions": 150,
+  "model": "exponential_decay",
+  "model_config_sha256": "eece6f24d057d5cfd7ddc79bf5e1aec98d9a1315cb93abec084b02e3a10fe1a1",
+  "numpy_version": "2.3.5",
+  "paired_time_difference_95pct_cluster_bootstrap": {
+    "base_seed": 20261101,
+    "confidence_level": 0.95,
+    "independent_dataset_count": 10,
+    "lower_seconds": -0.09171770230618403,
+    "method": "paired_dataset_cluster_percentile_bootstrap",
+    "model_seed_offset": 0,
+    "p_value": null,
+    "point_estimate_seconds": -0.08324299078001787,
+    "quantile_method": "linear",
+    "resamples": 10000,
+    "small_cluster_caution": "Only ten independent datasets: percentile CI coverage may be imperfect.",
+    "starting_points_resampled_as_independent_units": false,
+    "statistic": "mean_of_ten_dataset_level_mean_newton_minus_gd_seconds",
+    "upper_seconds": -0.07536302757415342
+  },
+  "python_version": "3.12.14",
+  "source_file_sha256": {
+    "opttheory/datasets/synthetic.py": "79fa78ca847b4cbc8fc530530ebfe908e4860e98f727687cb4247ddca37f8e8a",
+    "opttheory/experiments/analysis.py": "5383b680050414d6a8de73be3a0f2a1babcebdb08f1a98e46b8c794cef30f75b",
+    "opttheory/experiments/evaluation.py": "28ec4ee1194157eb70a73ee6b9a680ae9a2a92be4c74f2a829314a9070580d68",
+    "opttheory/experiments/plan.py": "eb0ea928a6d43f78c83a5df14ab2ab8c30e691adf958cb25efa82d6f796f90e7",
+    "opttheory/experiments/policy.py": "6c06d0022d9a61e5a4ef097fe5160d0146c0a5e1330218f78d0fb8c3e6246345",
+    "opttheory/models/exponential.py": "4accdc88a1a153c96b942f9544e685d21dcb0c4a13b5d081dd810e9c391f3391",
+    "opttheory/models/logistic.py": "4bbbce8d37c4682c4f32f0ddf3c9b599f9d1a50809865eb34909b404fff3c641",
+    "opttheory/objectives/logistic_mse.py": "a41aac44de5a8ba5c428f0b9dc1e57156cf565cd87faa734cd4e716f5590318c",
+    "opttheory/objectives/mse.py": "d62b8bbbcaf775ed18c12d071c9ea2c1d946b4db7cb2a63408117987bd43da60",
+    "opttheory/optimizers/common.py": "55c393ba72780e03e94012be00ae31df6902a27603d9aa33f6a3292868eae216",
+    "opttheory/optimizers/gradient_descent.py": "64b05fc31f6d816fc17d14cb442dbd407577f914e129a07a62f997b9d56af9b6",
+    "opttheory/optimizers/newton.py": "321f48d02096778d713d331a133de84da1d1898e1855a81490c1404c895fddeb",
+    "opttheory/optimizers/newton_safeguarded.py": "bdeccdb59828fb1ab25b5c529d675edfcff408318d55fa9b4a710d179d7eeea1",
+    "scripts/run_comparison.py": "a57aa3db7a672289f01ef1ab94e8f438b937a320cccb92ad733ee404ba4b4726"
+  },
+  "timed_invocations": 750
+}

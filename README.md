@@ -16,7 +16,7 @@ Already implemented and tested:
 - Model 2: stable logistic function f(x) = L/(1+exp[-k(x-x0)]) and an
   approved, independently seeded synthetic dataset (truth [10,1.5,2]).
 - Model 2: five approved starting vectors and a reproducible manifest of
-  50 paired dataset/start conditions (no optimization runs yet).
+  50 paired dataset/start conditions, now evaluated with all three methods.
 - Model 2: analytical MSE gradient and **exact Hessian** (including
   residual-dependent curvature), checked by numerical differentiation.
 - Both models: explicit model-specific loss/gradient/Hessian callables accepted
@@ -35,7 +35,12 @@ Already implemented and tested:
   frozen GD rates, five optimizer-only timing repetitions, Hessian-based
   stationary-point diagnostics, failure logging, dataset-level paired
   descriptive statistics, and approved 10,000-draw 95% whole-dataset
-  bootstrap timing intervals. The final evaluation has NOT run.
+  bootstrap timing intervals. The **full final evaluation has now run and
+  passed an independent audit**; the preview command remains safe by default.
+- Original raw evidence (300 method conditions, 1,500 timing repetitions)
+  archived in `evidence/evaluation_2026-11-01/`, with SHA-256 digests in
+  `config/evaluation_provenance.json`; the first results and limitations are
+  documented in `docs/FINAL_EVALUATION_RESULTS.md`.
 - Synthetic Gaussian observations from known true parameters.
 - Parameter-dependent Model 1 training MSE, explicitly using candidate [a,b,c]
   and supplied observed training data (never known true parameters).
@@ -53,8 +58,9 @@ Already implemented and tested:
 - Deterministic CSV, metadata (including a SHA-256 digest), and an optional preview plot.
 - Unit checks for the mathematical endpoints, seed reproducibility, and split counts.
 
-**Not yet executed:** controlled paired optimizer experiments. The final
-report and inferential *results* are still pending. The **official scope is Models 1 and 2**. The Gaussian peak
+**Completed:** the registered paired optimizer comparison and independent
+numeric audit. Plots, interpretation exercises, the verified literature
+review, and academic report are still pending. The **official scope is Models 1 and 2**. The Gaussian peak
 and oscillatory trend ideas are optional future work, not required models.
 
 The current Model 1 scripts are **pilots**, not final experimental results.
@@ -63,8 +69,10 @@ recorded. Model-specific GD learning-rate tuning is complete, using only
 separate calibration training/validation data. The two selected rates are
 frozen in `config/selected_gd_rates.json`. The recorded timing and evaluation
 policies are in `config/evaluation_protocol.json`. The dataset-cluster
-percentile bootstrap has been approved and pilot-tested; its small-sample
-limitations must be reported when the final study is executed.
+percentile bootstrap was applied to the real study; its small-sample
+limitations are disclosed in the results document. The preregistered
+experiment plan and evaluation-protocol files remain **unchanged** after
+execution to preserve their SHA-256 provenance.
 
 ## Folder structure
 
@@ -79,6 +87,7 @@ optimization-theory-comparison/
     experiment_plan.json
     selected_gd_rates.json
     evaluation_protocol.json
+    evaluation_provenance.json
   opttheory/
     experiments/
       plan.py
@@ -138,9 +147,14 @@ optimization-theory-comparison/
     RESEARCH_PROTOCOL.md
     CALIBRATION_RESULTS.md
     EVALUATION_RUNNER.md
+    FINAL_EVALUATION_RESULTS.md
     PROGRESS.md
   results/
     README.md
+  evidence/
+    evaluation_2026-11-01/
+      model1_runs.csv, model1_timings.csv, model1_summary.json
+      model2_runs.csv, model2_timings.csv, model2_summary.json
 ~~~
 
 ## Run on Windows (PowerShell)
@@ -177,8 +191,10 @@ These generated files are intentionally ignored by Git; the script regenerates t
 `scripts.calibrate_gd` **reruns the full 240-condition calibration**, which
 may take minutes. `scripts.run_comparison` is **safe preview-only by default**:
 it prints the 1,500-invocation plan without fitting or reading evaluation
-observations. The `--execute` flag is intentionally withheld until review;
-see `docs/EVALUATION_RUNNER.md`.
+observations. The original approved `--execute` study is **already archived**;
+use the flag again only to perform a separately labelled replication on
+your computer. See `docs/EVALUATION_RUNNER.md` and
+`docs/FINAL_EVALUATION_RESULTS.md`.
 
 The newest automated tests also verify our manually solved example:
 theta = [3,-1,1], x = [0], observed y = [5.1], giving MSE = 1.21.
@@ -286,13 +302,13 @@ The CSV retains the clean curve and the actual noise values for auditability. Th
 
 ## Next steps
 
-1. Pull this scaffold; run the unit suite and the **preview-only** comparison command.
-2. Review the experimental output contract in `docs/EVALUATION_RUNNER.md`.
-3. Review the implemented 95% seed-cluster bootstrap and its small-sample
-   limitations, without treating five starts as independent datasets.
-4. Explicitly approve the first full paired evaluation execution. Only then
-   run the `--execute` flag and inspect **all** successful and failed results.
-5. Build validated plots and the academic report from actual experiments.
+1. Pull the archived full-run evidence and inspect
+   `docs/FINAL_EVALUATION_RESULTS.md`.
+2. Explain why exact Newton's very fast stationary points were often saddles
+   while GD found lower-loss minima. Use actual Hessian and MSE records.
+3. Build verified, clearly labelled figures from the archived CSV files.
+4. Draft the academic report incrementally, adding verified references and
+   stating the small-sample limitations of the timing bootstrap.
 
 See docs/PROGRESS.md for the cumulative checkpoint and docs/RESEARCH_PROTOCOL.md for controls.
 

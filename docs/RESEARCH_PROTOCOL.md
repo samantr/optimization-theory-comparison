@@ -118,8 +118,9 @@ to initialization?
   respects dataset-level pairing. A 10,000-draw 95% percentile bootstrap of
   the ten independent dataset-level paired time differences has since been
   approved. Only ten independent units means interval coverage may be
-  imperfect; no p-values are claimed. Calibration is complete; **no final paired
-  optimizer comparison** has run.
+  imperfect; no p-values are claimed. Calibration and the final paired
+  optimizer comparison have **subsequently completed and been audited**;
+  see `docs/FINAL_EVALUATION_RESULTS.md`.
 
 ### Model 2 synthetic curve (approved)
 
@@ -137,7 +138,8 @@ to initialization?
   manifest. The analytical gradient and exact Hessian are implemented and
   independently checked. Both algorithms and the safeguarded variant have
   passed isolated Model 2 integration tests. GD calibration has now been
-  completed; actual paired optimizer comparisons remain pending.
+  completed; the subsequent full paired optimizer results are documented
+  separately in `docs/FINAL_EVALUATION_RESULTS.md`.
 
 Machine-readable approved counts are in `config/experiment_plan.json`.
 The `opttheory.experiments.plan` module enumerates 50 matched Model 1
@@ -201,10 +203,11 @@ timing rule, complete failure categories, training-only Hessian diagnostics,
 and dataset-aware descriptive pairing are registered separately in
 `config/evaluation_protocol.json`; the original approved experiment manifest
 and its calibration SHA-256 remain unchanged. The command
-`python -m scripts.run_comparison` previews 1,500 possible solver invocations
-with **no** optimization or evaluation data generation. `--execute` is the
-explicit post-review gate; it has not been used. See
-`docs/EVALUATION_RUNNER.md`.
+`python -m scripts.run_comparison` previews 1,500 solver invocations
+with **no** optimization or evaluation data generation. The explicitly
+approved `--execute` operation was subsequently used once for the full
+registered grid, and its outputs were audited/archived. See
+`docs/EVALUATION_RUNNER.md` and `docs/FINAL_EVALUATION_RESULTS.md`.
 
 **Pre-evaluation inference amendment (approved):** Resample ten *whole*
 dataset units with replacement per bootstrap draw, keeping all five starts
@@ -214,7 +217,22 @@ bootstrap mean paired time differences. This estimates uncertainty in the
 mean across noise datasets, **not** fifty independent starts. With only ten
 independent dataset seeds, interpret the interval cautiously and show all
 seed-level differences. See `config/evaluation_protocol.json` and
-`docs/EVALUATION_RUNNER.md`. The final paired study is **still not executed**.
+`docs/EVALUATION_RUNNER.md`. This method was frozen **before** the full
+paired study was executed. The measured outcomes and provenance are in
+`docs/FINAL_EVALUATION_RESULTS.md` and `config/evaluation_provenance.json`.
+
+**Post-execution checkpoint (2026-11-01):** The registered two-model,
+ten-seed, five-start, three-method study completed: 300 method conditions,
+1,500 raw optimizer-only timing repetitions. A separate audit reproduced
+all 20 synthetic dataset hashes, all timing medians, and both bootstrap
+intervals. GD reached strict local minima in 50/50 conditions per model.
+Full-step exact Newton reached indefinite stationary saddles in 44/50
+Model 1 conditions and 24/50 Model 2 conditions. Although much faster per
+attempt, it often had far worse test MSE. **Speed is not evidence of
+successful minimization**; keep this key distinction in the academic
+interpretation. No optimizer settings were changed after accessing test
+labels. Raw and summarized evidence is archived under
+`evidence/evaluation_2026-11-01/`.
 
 Because the scope is limited to two model families, conclusions must be
 phrased as **conditional on these two nonlinear regression problems**;

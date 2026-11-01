@@ -8,9 +8,9 @@
 | 2. Model and data | Model 1 pilot and Model 2 derivatives verified | Both models' synthetic data, analytical MSE gradients and exact Hessians tested; Model 2 optimizer integration tests pass |
 | 3. Gradient Descent | Implemented and calibrated | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime/failure logging, plus all 240 registered calibration attempts |
 | 4. Exact Newton | Pilot implemented | Full-step exact Newton preserved; separate safeguarded exact-Hessian hybrid with Armijo backtracking and explicit gradient fallback added |
-| 5. Validation | Partially completed | Finite-difference derivative checks and unit tests for all three pilot variants; broader empirical validation pending |
-| 6. Controlled comparisons | Evaluation runner and cluster bootstrap implemented; final grid NOT run | Frozen rates Model 1 = 0.1, Model 2 = 0.03; 100 matched conditions, 200 primary and 100 exploratory method runs. Five timing repetitions, post-hoc curvature checks, descriptive seed-level pairing, and approved 10,000-draw 95% dataset-cluster bootstrap. |
-| 7. Results and plots | Not started | No controlled-comparison results exist yet; pilot diagnostics only |
+| 5. Validation | Unit and full-run audits passed | 101 unit tests and independent audits of 300 condition rows, 1,500 raw times, 20 dataset hashes, stopping/curvature labels, and reproduced bootstrap intervals |
+| 6. Controlled comparisons | **Full registered comparison executed and audited** | Frozen rates Model 1 = 0.1, Model 2 = 0.03; 100 matched conditions, 200 primary and 100 exploratory method runs. Five timing repetitions, post-hoc curvature, dataset-aware 10,000-draw bootstrap. Results archived unchanged. |
+| 7. Results and plots | First measured result tables prepared; figures pending | `docs/FINAL_EVALUATION_RESULTS.md` plus all raw evidence and hashes; prepare verified visuals and interpret within study limitations |
 | 8. Literature and interpretation | Not started | Verified sources only |
 | 9. Report and presentation | Not started | Use validated results only |
 
@@ -128,23 +128,29 @@
   diagnostics implemented; see `docs/EVALUATION_RUNNER.md`.
 - `bootstrap_dataset_time_difference()` independently tests whole-dataset
   resampling, fixed-seed determinism, input-order invariance, and rejection
-  of start-level resampling. Full evaluation results remain untouched.
+  of start-level resampling.
+- The **full final grid has now been executed**: 300 registered method
+  conditions, 1,500 raw timing repetitions, and all 20 independently seeded
+  synthetic evaluation datasets. The original frozen plan/protocol hashes
+  are retained in `config/evaluation_provenance.json`. Raw outputs are
+  explicitly archived in `evidence/evaluation_2026-11-01/`.
+- An independent audit verified each method/start/seed combination, five
+  timings per condition, median timing, original source SHA-256 files,
+  regenerated dataset hashes, stopping/curvature consistency, paired
+  summaries, and identical reproduction of both bootstrap intervals.
 - Unit tests and mathematical endpoint checks.
 
 ## Current learning checkpoint
 
-The two primary Model 1 optimizers and one explicitly separate safeguarded
-Newton variant are implemented, with a growing passing unit-test suite. Reproducible
-training-only pilot scripts exist for all three. On one illustrative start,
-full-step Newton reached a poor saddle while the safeguarded variant found
-a good training fit; neither is comparative evidence. The official study
-now consists of two model families only. GD calibration is **complete** and
-the two chosen rates are frozen. The evaluation runner is now implemented
-and tested, but only in preview mode and with pilot fixtures. Next: review
-the implementation (including the newly approved, implemented seed-level
-bootstrap) before authorizing the 10-seed × 5-start paired grid.
-The dataset size, noise/split seeds, and 60/20/20 split are recorded;
-timing, descriptive pairing, and dataset-cluster bootstrap are approved.
-No **paired
-GD-versus-Newton evaluation** grid has run.
+The first full controlled comparison is complete, with all registered
+conditions recorded and the data/test settings unchanged after calibration.
+The important **measured** outcome is that GD found strict low-loss minima
+on all 50 starts per model, whereas exact full-step Newton often reached
+small-gradient **saddles** (44/50 on Model 1 and 24/50 on Model 2).
+Despite dramatically lower wall-clock times per attempt, Newton's median
+test MSE was worse. This is conditional evidence for our two models,
+not a universal result. Safeguarded Newton is described separately.
+Next: examine individual Hessian examples with Saman, produce honest figures,
+then develop the 10–15-page academic report with independently verified
+sources. See `docs/FINAL_EVALUATION_RESULTS.md`.
 

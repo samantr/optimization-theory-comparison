@@ -1,0 +1,41 @@
+{
+  "status": "full_paired_evaluation_executed_and_audited",
+  "execution_date_utc": "2026-11-01",
+  "source_commit_before_evaluation": "f3c1310e5e096670eaf7df8c755494fc5361c931",
+  "original_experiment_plan_sha256": "a1ea5e34223e3847c9e69e6ca14022695d96b9b02716f3fb775715410c125ef3",
+  "frozen_gd_rates_sha256": "3804f45b94a9d1ce7d06fe855bb8497af398522a281728789be64784a9da7fcd",
+  "pre_execution_evaluation_protocol_sha256": "6fc7472937e74e98f4eb71e867bd025886f424e09319ca2b0a6dd4d6f62472ba",
+  "runtime": {"python": "3.12.14", "numpy": "2.3.5"},
+  "frozen_gd_learning_rates": {"exponential_decay": 0.1, "logistic": 0.03},
+  "independent_noise_datasets_per_model": 10,
+  "starts_per_dataset": 5,
+  "registered_method_conditions": 300,
+  "recorded_timing_repetitions": 1500,
+  "timing_repetitions_per_condition": 5,
+  "primary_methods": ["gradient_descent", "newton"],
+  "exploratory_method": "safeguarded_newton",
+  "raw_archive": "evidence/evaluation_2026-11-01",
+  "raw_archive_sha256": {
+    "model1_runs.csv": "bd90f686beab78fcb497a9747574e07457aab2f9e54b26b82cdcd5dde420f13c",
+    "model1_timings.csv": "b34d0ae1da789361c5fcdfb2333931ab51746f3861c90f161a772b92a3728416",
+    "model1_summary.json": "25e7683efe632db4a7f1b3204d29b5ed8d8e4f4d86db96cac75722202912fe96",
+    "model2_runs.csv": "2632251fa83b2709449b4d312f2cefc1281e20fd0a217d5f83802a1a98cd3a0c",
+    "model2_timings.csv": "328f170dbe0dd2c2b8bb115b743f83b9adad0a7631583f19f7cb6881c62e6568",
+    "model2_summary.json": "797522bf6763a846b25cd5a3c34b6dddece13d3eed4f174ab4428c5d70a3dde3"
+  },
+  "audit_checks": [
+    "exactly_150_unique_registered_method_conditions_per_model",
+    "exactly_five_timing_repetitions_per_condition",
+    "recorded_medians_recomputed_from_raw_timings",
+    "all_seed_start_method_pairings_match_the_original_manifest",
+    "all_20_generated_dataset_sha256_digests_reproduced",
+    "stationarity_and_hessian_labels_consistent_with_termination_reasons",
+    "training_validation_test_mse_nonnegative_and_finite_when_recorded",
+    "all_recorded_source_file_hashes_match_executed_source",
+    "all_dataset_level_paired_summaries_recomputed",
+    "both_10000_draw_bootstrap_intervals_reproduced"
+  ],
+  "held_out_test_used_only_for_post_optimization_scoring": true,
+  "posthoc_rate_or_algorithm_changes": false,
+  "small_cluster_inference_caution": "Only ten independent datasets per model; percentile bootstrap coverage may be imperfect."
+}

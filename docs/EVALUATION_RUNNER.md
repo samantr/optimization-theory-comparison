@@ -1,6 +1,8 @@
 # Paired evaluation runner — implementation and review checkpoint
 
-**Status: implementation and pilot tests complete; FINAL evaluation NOT executed.**
+**Status: implementation tested; the originally gated FINAL evaluation was
+subsequently executed and audited.** See `docs/FINAL_EVALUATION_RESULTS.md`
+for outcomes, limitations, and the archived evidence.
 This is the next step after `docs/CALIBRATION_RESULTS.md`. The study's
 precalibration experiment plan remains unchanged, and its SHA-256 is checked
 against the frozen GD rate record at startup.
@@ -14,10 +16,11 @@ python -m unittest discover -s tests -q
 python -m scripts.run_comparison
 ```
 
-The second command is **preview only**. It does not generate final datasets,
-start optimizers, score held-out test data, or create result files. The full
-comparison requires an explicit `--execute` flag **after** methodological
-review. Please do not run it yet; we are reviewing the implementation first.
+The second command remains **preview only**. It does not generate final datasets,
+start optimizers, score held-out test data, or create result files. The
+original full comparison was executed once after explicit user approval.
+Running with `--execute` again constitutes a **new replication** and must
+not overwrite or silently replace the archived original study.
 
 The preview checks `config/evaluation_protocol.json` against
 `config/experiment_plan.json` and the already calibrated rates in
@@ -123,7 +126,7 @@ Nielsen, and Webb (2023), [*Cluster-robust inference: A guide to empirical
 practice*](https://doi.org/10.1016/j.jeconom.2022.04.001), on the challenges
 of inference with clustered and limited independent data.
 
-## Files created only by an explicitly approved final run
+## Files created by the explicitly approved final run
 
 Generated output is Git-ignored under `results/evaluation/`:
 
@@ -134,6 +137,9 @@ Generated output is Git-ignored under `results/evaluation/`:
   hashes, data hashes, Python/NumPy versions, and source-file SHA-256 hashes.
 
 Existing outputs are protected unless `--overwrite` is explicitly supplied.
-No evaluation files or final metrics were generated while implementing and
-testing this runner. Tests use pilot noise seed `42`, never evaluation seeds
-`1000`–`1009` or `1100`–`1109`.
+The new evaluation-runner unit tests use pilot seed `42` instead of running
+the final registered seed/start grid. The complete final grid was executed
+only after explicit authorization. The original
+outputs were independently checked and explicitly archived in
+`evidence/evaluation_2026-11-01/`, with SHA-256 digests recorded in
+`config/evaluation_provenance.json`.

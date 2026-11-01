@@ -11,9 +11,10 @@ Other generated artifacts:
 - `results/evaluation/`: reserved for paired optimizer records, five raw
   timing repetitions per condition, dataset-aware descriptive summaries,
   and 95% cluster-bootstrap intervals for mean paired timing differences.
-  This directory is **not populated** until the user explicitly approves
-  `python -m scripts.run_comparison --execute`. The safe default command
-  without `--execute` previews the plan only.
+  The first fully approved evaluation has been executed and **archived**
+  under tracked `evidence/evaluation_2026-11-01/`. The safe default command
+  without `--execute` still previews the plan only. Re-execution should be
+  documented as a separately labelled replication, not an overwrite.
 
 Outputs are reproducible from the frozen configurations and seeds. Do not
 commit generated output by accident; preserve important finalized experiments
