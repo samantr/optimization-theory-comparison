@@ -24,11 +24,13 @@ Already implemented and tested:
   iteration count, runtime, loss/gradient histories, and numerical failures.
 - A from-scratch **full-step exact Newton** pilot using a Hessian linear-system
   solve, singular/ill-conditioned detection, and explicit failure logging.
+- A separate, labelled **safeguarded Newton** pilot with Armijo backtracking,
+  an explicit gradient fallback, and detailed extra-work counters.
 - Separate random seeds for observation noise and train/validation/test assignment.
 - Deterministic CSV, metadata (including a SHA-256 digest), and an optional preview plot.
 - Unit checks for the mathematical endpoints, seed reproducibility, and split counts.
 
-**Not yet implemented:** Model 2 (logistic), Model 3 (Gaussian peak), Model 4 (oscillatory trend), safeguarded Newton variants, controlled paired optimizer experiments, or the final report. These will be added after mathematical checkpoints.
+**Not yet implemented:** Model 2 (logistic), Model 3 (Gaussian peak), Model 4 (oscillatory trend), controlled paired optimizer experiments, or the final report. These will be added after mathematical checkpoints.
 
 The current configuration is a **pilot**, not a frozen experiment protocol. The noise level and 60/20/20 split remain provisional until we discuss them.
 
@@ -53,20 +55,24 @@ optimization-theory-comparison/
       common.py
       gradient_descent.py
       newton.py
+      newton_safeguarded.py
   scripts/
     generate_model1.py
     run_model1_gd_pilot.py
     run_model1_newton_pilot.py
+    run_model1_newton_safeguarded_pilot.py
   tests/
     test_model1.py
     test_objective.py
     test_gradient_descent.py
     test_newton.py
+    test_newton_safeguarded.py
   docs/
     MODELS.md
     MODEL1_HESSIAN.md
     GRADIENT_DESCENT.md
     NEWTON.md
+    NEWTON_SAFEGUARDED.md
     RESEARCH_PROTOCOL.md
     PROGRESS.md
   results/
@@ -84,6 +90,7 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m scripts.generate_model1
 .\.venv\Scripts\python.exe -m scripts.run_model1_gd_pilot
 .\.venv\Scripts\python.exe -m scripts.run_model1_newton_pilot
+.\.venv\Scripts\python.exe -m scripts.run_model1_newton_safeguarded_pilot
 ~~~
 
 The commands run the tests and create:
@@ -121,6 +128,11 @@ records all full-step losses, and checks for singular or badly conditioned
 Hessians. It can reach a stationary **saddle** rather than a minimum; see
 `docs/NEWTON.md`. A small gradient alone does not imply a good fit.
 
+The separately named safeguarded Newton variant combines the exact-Hessian
+direction with a declared negative-gradient fallback and sufficient-decrease
+line search. Its fallback and extra objective evaluations are reported; it is
+**not** the full-step Newton baseline. See `docs/NEWTON_SAFEGUARDED.md`.
+
 ## Run on macOS or Linux
 
 ~~~bash
@@ -130,6 +142,7 @@ python3 -m venv .venv
 ./.venv/bin/python -m scripts.generate_model1
 ./.venv/bin/python -m scripts.run_model1_gd_pilot
 ./.venv/bin/python -m scripts.run_model1_newton_pilot
+./.venv/bin/python -m scripts.run_model1_newton_safeguarded_pilot
 ~~~
 
 ## How the code relates to the mathematics
@@ -162,7 +175,8 @@ The CSV retains the clean curve and the actual noise values for auditability. Th
 4. Review the independently tested Model 1 analytic gradient and exact Hessian.
 5. Review both implemented pilot solvers, especially exact Newton's singular
    and indefinite-Hessian behavior; do not silently substitute Gauss-Newton.
-6. Decide whether to test a separately labelled safeguarded Newton variant.
+6. Evaluate the separately labelled safeguarded Newton variant without
+   replacing or disguising failures of the original full-step method.
 7. Add the other three model families only after the core method is verified.
 8. Run paired comparisons and record failures as well as successes.
 

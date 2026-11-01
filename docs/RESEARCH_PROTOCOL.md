@@ -46,6 +46,10 @@ to initialization?
     final loss and Hessian curvature, and record saddle/poor stationary points.
 14. Clearly distinguish unsafeguarded full-step Newton from any later
     safeguarded or damped variant; do not silently alter the baseline.
+15. Keep the primary two-way analysis as GD versus full-step exact Newton.
+    Treat safeguarded Newton with gradient fallback as a **separate third
+    variant**, reporting its extra line-search/function evaluations and
+    fallback steps instead of using its iteration count alone.
 
 ## Report target
 

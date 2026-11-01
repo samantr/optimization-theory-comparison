@@ -7,8 +7,8 @@
 | 1. Research question and foundations | Completed | Worked residuals, MSE, derivatives, curvature, local/global extrema, fairness |
 | 2. Model and data | Completed for Model 1 pilot | Model, data, MSE, analytical gradient, and exact Hessian implemented and verified; other models and experimental settings remain for later phases |
 | 3. Gradient Descent | Pilot implemented | Fixed-step batch GD, hand-checked update, loss/gradient histories, runtime and failure logging; experimental settings remain provisional |
-| 4. Exact Newton | Pilot implemented | Full-step exact Hessian solve with singular/ill-conditioned detection and loss/failure history; later safeguards to be explicitly designed |
-| 5. Validation | Partially completed | Finite-difference gradient/Hessian checks and unit tests for both pilot solvers; broader empirical validation pending |
+| 4. Exact Newton | Pilot implemented | Full-step exact Newton preserved; separate safeguarded exact-Hessian hybrid with Armijo backtracking and explicit gradient fallback added |
+| 5. Validation | Partially completed | Finite-difference derivative checks and unit tests for all three pilot variants; broader empirical validation pending |
 | 6. Controlled comparisons | Not started | Paired seeds, initializations, timing and failure logging |
 | 7. Results and plots | Not started | No optimizer results exist yet |
 | 8. Literature and interpretation | Not started | Verified sources only |
@@ -51,17 +51,20 @@
 - A full-step **exact** Newton optimizer with an explicit linear system solve,
   condition-number/singularity safeguards, history/counter logging, and tests
   for a manually checkable three-parameter update; see `docs/NEWTON.md`.
+- A separate **safeguarded exact-Hessian Newton** variant with positive-definite
+  Hessian check, explicit gradient fallback, Armijo backtracking, and counters
+  for the extra computational work; see `docs/NEWTON_SAFEGUARDED.md`.
 - Unit tests and mathematical endpoint checks.
 
 ## Current learning checkpoint
 
-Both Model 1 optimizers are implemented and verified with 34 passing unit
-tests. Reproducible training-only pilot scripts are available for GD and
-full-step exact Newton. From the same illustrative initialization, Newton
-can reach an indefinite-Hessian stationary point with poor MSE. This is a
-pilot **failure mode**, not comparative evidence. Next: discuss what a
-gradient-norm stopping rule proves, plan clearly labelled Newton safeguards,
-and then freeze the paired multi-seed experiment protocol.
+The two primary Model 1 optimizers and one explicitly separate safeguarded
+Newton variant are implemented, with 40 passing unit tests. Reproducible
+training-only pilot scripts exist for all three. On one illustrative start,
+full-step Newton reached a poor saddle while the safeguarded variant found
+a good training fit; neither is comparative evidence. Next: confirm dataset,
+noise, seeds, learning-rate/line-search policies, success criteria, and the
+paired multi-initialization protocol **before** final experiments.
 The noise/split settings remain provisional and need confirmation before
 controlled comparisons. No optimizer has been implemented yet.
 

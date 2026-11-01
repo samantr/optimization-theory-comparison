@@ -23,5 +23,8 @@ class OptimizationResult:
     objective_evaluations: int
     gradient_evaluations: int
     hessian_evaluations: int = 0
+    line_search_backtracks: int = 0
+    gradient_fallback_steps: int = 0
+    step_sizes: tuple[float, ...] = ()
 
 
