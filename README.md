@@ -16,11 +16,13 @@ Already implemented and tested:
 - Synthetic Gaussian observations from known true parameters.
 - Parameter-dependent Model 1 training MSE, explicitly using candidate [a,b,c]
   and supplied observed training data (never known true parameters).
+- Model 1 analytical MSE gradient in parameter order [a,b,c], checked against
+  manual calculations and independent central finite differences.
 - Separate random seeds for observation noise and train/validation/test assignment.
 - Deterministic CSV, metadata (including a SHA-256 digest), and an optional preview plot.
 - Unit checks for the mathematical endpoints, seed reproducibility, and split counts.
 
-**Not yet implemented:** Gradient Descent, exact Newton, analytic gradient/Hessian, Model 2 (logistic), Model 3 (Gaussian peak), Model 4 (oscillatory trend), optimizer experiments, or the final report. These will be added after mathematical checkpoints.
+**Not yet implemented:** Gradient Descent, exact Newton, the analytical Hessian, Model 2 (logistic), Model 3 (Gaussian peak), Model 4 (oscillatory trend), optimizer experiments, or the final report. These will be added after mathematical checkpoints.
 
 The current configuration is a **pilot**, not a frozen experiment protocol. The noise level and 60/20/20 split remain provisional until we discuss them.
 
@@ -77,6 +79,15 @@ These generated files are intentionally ignored by Git; the script regenerates t
 The newest automated tests also verify our manually solved example:
 theta = [3,-1,1], x = [0], observed y = [5.1], giving MSE = 1.21.
 
+They also verify the analytical gradient at candidate theta =
+[3, ln(0.5), 1] on two illustrative observations x = [0, 1],
+y = [5.1, 2.7]. The expected gradient is [-1.2, -0.3, -1.3].
+
+The function `opttheory.objectives.mse.gradient(theta, x, y_observed)` returns
+a NumPy array with shape `(3,)`, ordered `[dJ/da, dJ/db, dJ/dc]`.
+The objective and gradient share input validation. A separate test estimates
+each derivative numerically using a centered difference of MSE evaluations.
+
 ## Run on macOS or Linux
 
 ~~~bash
@@ -113,7 +124,7 @@ The CSV retains the clean curve and the actual noise values for auditability. Th
 1. Inspect and understand the generated noisy observations.
 2. Confirm dataset size, noise levels, split strategy, and multiple-seed protocol.
 3. Review and confirm the implemented training MSE J(theta).
-4. Derive, independently check, and test the analytic gradient and Hessian.
+4. Derive, independently check, and test the analytic Hessian (the gradient is verified).
 5. Implement Gradient Descent and **exact Newton**, explicitly; do not silently substitute Gauss-Newton.
 6. Add the other three model families only after the core method is verified.
 7. Run paired comparisons and record failures as well as successes.

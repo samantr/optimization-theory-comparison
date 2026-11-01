@@ -8,7 +8,7 @@ import unittest
 import numpy as np
 
 from opttheory.datasets.synthetic import generate_model1
-from opttheory.objectives.mse import objective
+from opttheory.objectives.mse import gradient, objective
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,6 +45,47 @@ class ObjectiveTests(unittest.TestCase):
             objective([1, 2], [0, 1], [1, 2])
         with self.assertRaises(ValueError):
             objective([1, 2, 3], [0, 1], [1])
+
+
+class GradientTests(unittest.TestCase):
+    def test_hand_calculated_two_observation_gradient(self):
+        # Current lesson: x=[0,1], theta=[3,ln(0.5),1], y=[5.1,2.7].
+        # Residuals [-1.1,-0.2] yield gradient [-1.2,-0.3,-1.3].
+        actual = gradient([3.0, math.log(0.5), 1.0], [0.0, 1.0], [5.1, 2.7])
+        np.testing.assert_allclose(actual, [-1.2, -0.3, -1.3], atol=1e-12)
+
+    def test_gradient_zero_when_predictions_match_observations(self):
+        theta = [3.0, math.log(0.5), 1.0]
+        x = np.array([0.0, 1.0, 2.0])
+        y_exact = theta[0] * np.exp(theta[1] * x) + theta[2]
+        np.testing.assert_allclose(gradient(theta, x, y_exact), np.zeros(3), atol=1e-14)
+
+    def test_b_component_zero_when_all_x_are_zero(self):
+        actual = gradient([3.0, -0.8, 1.0], [0.0, 0.0], [5.1, 4.7])
+        self.assertEqual(actual[1], 0.0)
+
+    def test_central_finite_differences_independently_check_gradient(self):
+        x = np.array([0.0, 0.3, 1.0, 1.8, 3.7])
+        y = np.array([4.9, 4.5, 2.8, 2.3, 1.1])
+        step = 1e-6
+        for theta in (np.array([2.4, -0.4, 0.7]),
+                      np.array([4.0, math.log(0.5), 1.0])):
+            approx = np.empty(3)
+            for j in range(3):
+                positive = theta.copy()
+                negative = theta.copy()
+                positive[j] += step
+                negative[j] -= step
+                approx[j] = (objective(positive, x, y)
+                             - objective(negative, x, y)) / (2.0 * step)
+            np.testing.assert_allclose(gradient(theta, x, y), approx,
+                                       rtol=1e-6, atol=1e-7)
+
+    def test_gradient_rejects_invalid_inputs(self):
+        with self.assertRaises(ValueError):
+            gradient([1, 2], [0], [3])
+        with self.assertRaises(ValueError):
+            gradient([1, 2, 3], [0, 1], [3])
 
 
 if __name__ == "__main__":

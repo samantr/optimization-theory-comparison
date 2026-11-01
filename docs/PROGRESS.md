@@ -5,7 +5,7 @@
 | Phase | Status | Evidence / next action |
 | --- | --- | --- |
 | 1. Research question and foundations | Completed | Worked residuals, MSE, derivatives, curvature, local/global extrema, fairness |
-| 2. Model and data | Learning | Four model families selected; Model 1 synthetic data and candidate-dependent MSE verified |
+| 2. Model and data | Learning | Model 1 data, MSE, and analytical gradient verified; Hessian derivation next |
 | 3. Gradient Descent | Not started | Derive and manually test updates before coding |
 | 4. Exact Newton | Not started | Study second-order Taylor model, Hessian solve and safeguards |
 | 5. Validation | Not started | Derivative checks and solver tests |
@@ -36,10 +36,17 @@
 - Independent noise and split random generators.
 - CSV/JSON/plot export script.
 - Model 1 objective J(theta) using candidate parameters and training observations.
+- Model 1 analytical gradient [dJ/da, dJ/db, dJ/dc], using only candidate
+  parameters and observed input/target arrays.
+- Independent central-difference gradient checks and the hand-worked two-point
+  example, giving [-1.2, -0.3, -1.3] at [3, ln(0.5), 1].
 - Unit tests and mathematical endpoint checks.
 
 ## Current learning checkpoint
 
-Confirm noise/split settings; then derive the Model 1 gradient by hand before
-implementing or testing optimization updates.
+The Model 1 gradient has been derived by hand, implemented, and verified with
+17 passing unit tests. Next: learn what second derivatives mean, derive the
+exact Hessian of MSE, and verify its implementation before coding Newton.
+The noise/split settings remain provisional and need confirmation before
+controlled comparisons. No optimizer has been implemented yet.
 
