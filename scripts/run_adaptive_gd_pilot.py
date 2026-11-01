@@ -23,7 +23,9 @@ PILOT_SEEDS = {"exponential_decay": 3000, "logistic": 3100}
 VARIANTS = ("fixed_gd", "gradient_reversal", "backtracking")
 
 
-def execute_pilot():
+def execute_pilot(*, pilot_seeds=PILOT_SEEDS, variants=VARIANTS,
+                  filename="adaptive_gd_pilot.csv"):
+    """Use explicit disjoint pilot seeds/variants; original defaults stay intact."""
     plan = json.loads((ROOT / "config/experiment_plan.json").read_text())
     frozen = json.loads((ROOT / "config/selected_gd_rates.json").read_text())
     model_settings = {
@@ -33,14 +35,14 @@ def execute_pilot():
     rows = []
     for model, (config_name, generator, functions, model_number) in model_settings.items():
         config = deepcopy(json.loads((ROOT / "config" / config_name).read_text()))
-        config["noise"]["seed"] = PILOT_SEEDS[model]
+        config["noise"]["seed"] = pilot_seeds[model]
         data = generator(config)
         train = data.split == "train"
         validation = data.split == "validation"
         x_train, y_train = data.x[train], data.y_observed[train]
         x_valid, y_valid = data.x[validation], data.y_observed[validation]
         for start in plan[f"model{model_number}_starting_points"]:
-            for variant in VARIANTS:
+            for variant in variants:
                 kwargs = dict(objective_fn=functions.objective,
                               gradient_fn=functions.gradient,
                               gradient_tolerance=1e-4,
@@ -57,7 +59,7 @@ def execute_pilot():
                         strategy=variant, initial_learning_rate=1.0, **kwargs,
                     )
                 rows.append({
-                    "model": model, "noise_seed": PILOT_SEEDS[model],
+                    "model": model, "noise_seed": pilot_seeds[model],
                     "start": start["id"], "method": variant,
                     "reason": result.reason, "converged": result.converged,
                     "iterations": result.iterations,
@@ -71,24 +73,24 @@ def execute_pilot():
                     "train_mse": result.loss_history[-1],
                     "validation_mse": functions.objective(result.theta, x_valid, y_valid),
                 })
-    out = ROOT / "results" / "adaptive_gd_pilot.csv"
+    out = ROOT / "results" / filename
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=rows[0].keys(), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
     print(f"Pilot complete: {len(rows)} paired model/start/method runs")
-    print("All three methods used the same training observations and start within each condition.")
+    print("All methods used the same training observations and start within each condition.")
     print("Only training and validation labels were accessed; no evaluation seeds or test labels.")
     print(f"Results: {out}")
     for model in model_settings:
-        for method in VARIANTS:
+        for method in variants:
             selected = [r for r in rows if r["model"] == model and r["method"] == method]
             converged = sum(r["converged"] for r in selected)
             med_mse = float(np.median([r["validation_mse"] for r in selected]))
             med_iterations = float(np.median([r["iterations"] for r in selected]))
             med_objectives = float(np.median([r["objective_evaluations"] for r in selected]))
-            print(f"{model:18s} {method:20s} gradient_tol={converged}/5 "
+            print(f"{model:18s} {method:24s} gradient_tol={converged}/5 "
                   f"median_val_mse={med_mse:.6g} median_updates={med_iterations:.0f} "
                   f"median_MSE_evals={med_objectives:.0f}")
     return rows

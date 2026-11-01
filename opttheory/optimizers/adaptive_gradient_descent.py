@@ -1,4 +1,4 @@
-"""Two exploratory learning-rate adaptations, separate from the frozen study.
+"""Three exploratory learning-rate adaptations, separate from the frozen study.
 
 gradient_reversal: accept every finite step, then halve the global learning
 rate if successive full gradient vectors have a negative dot product. This is
@@ -7,6 +7,12 @@ an operationalization of an overshoot heuristic, not proof of crossing a min.
 backtracking: reject a trial unless it strictly reduces *training* MSE;
 halve the global rate and retry from the previous accepted point. This is a
 simple monotone line search, not the Armijo sufficient-decrease condition.
+
+recovering_backtracking: use the same trial rejection as backtracking, but
+after accepting a step, recover half the gap to the most recently rejected
+rate: alpha_next = (alpha_accepted + alpha_rejected_upper) / 2.
+This experimental heuristic remembers a rate from a previous theta; its
+"upper" bound is not a mathematically valid bracket at the current theta.
 """
 
 from time import perf_counter
@@ -24,14 +30,14 @@ def adaptive_gradient_descent(
     max_backtracks_per_iteration=50,
     objective_fn=model1_objective, gradient_fn=model1_gradient,
 ) -> OptimizationResult:
-    """Minimize MSE with one of two explicit, first-order step-size rules.
+    """Minimize MSE with one of three explicit, first-order step-size rules.
 
     `iterations` counts accepted updates, not rejected trials.
     `line_search_backtracks` counts rejected trials of backtracking.
     `step_sizes` stores the rate actually used for each accepted update.
     """
-    if strategy not in {"gradient_reversal", "backtracking"}:
-        raise ValueError("strategy must be 'gradient_reversal' or 'backtracking'.")
+    if strategy not in {"gradient_reversal", "backtracking", "recovering_backtracking"}:
+        raise ValueError("strategy must be gradient_reversal, backtracking, or recovering_backtracking.")
     if not np.isfinite(initial_learning_rate) or initial_learning_rate <= 0:
         raise ValueError("initial_learning_rate must be finite and positive.")
     if not np.isfinite(min_learning_rate) or min_learning_rate <= 0:
@@ -63,6 +69,7 @@ def adaptive_gradient_descent(
     gradient_evaluations = 1
     backtracks = 0
     rate = float(initial_learning_rate)
+    last_rejected_rate = None
     reason = "gradient_tolerance" if norm <= gradient_tolerance else "max_iterations"
 
     if reason != "gradient_tolerance":
@@ -72,7 +79,7 @@ def adaptive_gradient_descent(
             trial_rate = rate
             accepted = False
             trial_count = (max_backtracks_per_iteration + 1
-                           if strategy == "backtracking" else 1)
+                           if strategy != "gradient_reversal" else 1)
             for _ in range(trial_count):
                 if trial_rate < min_learning_rate:
                     break
@@ -97,10 +104,12 @@ def adaptive_gradient_descent(
 
                 # Backtracking retries from theta, not the rejected candidate.
                 backtracks += 1
+                if strategy == "recovering_backtracking":
+                    last_rejected_rate = trial_rate
                 trial_rate *= 0.5
 
             if not accepted:
-                if strategy == "backtracking":
+                if strategy != "gradient_reversal":
                     reason = "line_search_failed"
                 break
 
@@ -122,6 +131,11 @@ def adaptive_gradient_descent(
             rate = trial_rate
             if strategy == "gradient_reversal" and reversal:
                 rate *= 0.5
+            elif (strategy == "recovering_backtracking" and
+                  last_rejected_rate is not None and last_rejected_rate > rate):
+                # Saman's rule: regain half of what was previously removed.
+                # This influences the *next* attempt, not the accepted step.
+                rate = (rate + last_rejected_rate) * 0.5
             if norm <= gradient_tolerance:
                 reason = "gradient_tolerance"
                 break

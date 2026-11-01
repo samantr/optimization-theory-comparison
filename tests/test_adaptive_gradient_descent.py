@@ -56,6 +56,22 @@ class AdaptiveGradientDescentTests(unittest.TestCase):
         self.assertEqual(result.step_sizes, (0.5,))
         self.assertAlmostEqual(result.loss_history[-1], 0.0)
 
+    def test_recovery_raises_rate_halfway_after_acceptance(self):
+        # At theta=0, alpha=1.2 fails; alpha=.6 succeeds at theta=3.6.
+        # The next proposed rate is (.6+1.2)/2=.9; it too succeeds.
+        result = solve(strategy="recovering_backtracking", alpha=1.2, steps=2)
+        np.testing.assert_allclose(result.theta, [2.52])
+        np.testing.assert_allclose(result.step_sizes, (0.6, 0.9))
+        self.assertEqual(result.line_search_backtracks, 1)
+        self.assertTrue(all(b < a for a, b in zip(result.loss_history, result.loss_history[1:])))
+
+    def test_recovery_shrinks_again_after_another_bad_trial(self):
+        result = solve(strategy="recovering_backtracking", alpha=1.2, steps=3)
+        # Third proposed rate 1.05 is worse; halve to .525, then accept.
+        np.testing.assert_allclose(result.step_sizes, (0.6, 0.9, 0.525))
+        self.assertEqual(result.line_search_backtracks, 2)
+        self.assertLess(result.loss_history[-1], result.loss_history[-2])
+
     def test_failed_search_is_recorded_without_moving(self):
         result = adaptive_gradient_descent(
             [0.0], [0], [0], strategy="backtracking", initial_learning_rate=1,
@@ -69,7 +85,7 @@ class AdaptiveGradientDescentTests(unittest.TestCase):
         self.assertEqual(result.objective_evaluations, 4)
 
     def test_stationary_start_requires_no_updates(self):
-        for strategy in ("gradient_reversal", "backtracking"):
+        for strategy in ("gradient_reversal", "backtracking", "recovering_backtracking"):
             with self.subTest(strategy=strategy):
                 result = adaptive_gradient_descent(
                     [3.0], [0], [0], strategy=strategy,

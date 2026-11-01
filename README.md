@@ -88,6 +88,17 @@ python -m scripts.run_adaptive_gd_pilot
 python -m scripts.run_adaptive_gd_pilot --execute
 ```
 
+After selecting **rejection of harmful steps**, Saman additionally proposed
+recovering half the lost learning rate after successful steps. This was
+implemented as a **separate** second pilot with new noise seeds (3200/3300)
+and a fourth method, `recovering_backtracking`. See
+`docs/RECOVERING_ADAPTIVE_GD_PILOT.md` and run:
+
+```powershell
+python -m scripts.run_recovering_gd_pilot
+python -m scripts.run_recovering_gd_pilot --execute
+```
+
 ## Folder structure
 
 ~~~text
