@@ -27,7 +27,7 @@ sources. We currently plan zero such sources.
 
 ## Verified candidates and how each will be used
 
-All 22 items below are different scholarly works. The numeric IDs are
+The 24 works below are distinct scholarly publications: the initial 22 candidates and two additional texts explicitly recommended by the instructor. The numeric IDs are
 provisional; final reference numbering will follow the manuscript's citation
 order (likely IEEE numbered references). The stated use is a *plan*, not a
 claim that every paper has already been analyzed in full.
@@ -203,13 +203,31 @@ https://doi.org/10.1137/17M1150116
   eigenvalues; contrast the paper's modified Newton step against our
   **unmodified exact full-step Newton** baseline.
 
+### D. Additional instructor-recommended optimization texts (2)
+
+**R23.** Gill, P. E., Murray, W., and Wright, M. H. (1981). *Practical
+Optimization*. Academic Press. The SIAM Classics reprint appeared in 2019.
+Publisher: https://doi.org/10.1137/1.9781611975604
+
+- **Course source:** `yOptmT-h1.pdf`, p. 3. The slide lists 1986,
+  while library and publisher records establish **1981** as the original
+  publication year. Cite the edition consulted. Use for numerical Hessian
+  conditioning, linear algebra, implementation and stopping rules.
+
+**R24.** Rao, S. S. (2009). *Engineering Optimization: Theory and
+Practice*, 4th ed. Wiley.
+https://doi.org/10.1002/9780470549124
+
+- **Course source:** `yOptmT-h1.pdf`, p. 3. Use for engineering
+  optimization context and the first/second-order method discussion.
+
 ## Planned report mapping
 
 | Report section | Reference IDs | Intended claim types |
 |---|---|---|
-| Introduction | R01, R03, R04, R06 | Nonlinear regression as parameter estimation via minimization |
+| Introduction | R01, R03, R04, R06, R24 | Nonlinear regression as parameter estimation via minimization |
 | Literature review | R02, R07, R08, R10–R19, R22 | First/second-order tradeoffs, alternatives, nonconvex pitfalls |
-| Mathematical foundations | R01–R06, R10, R14–R16 | Residuals/MSE, gradients, exact Hessian, stationary points |
+| Mathematical foundations | R01–R06, R10, R14–R16, R23–R24 | Residuals/MSE, gradients, exact Hessian, stationary points |
 | Experimental methodology | R01, R05, R06, R09, R20, R21 | Paired starts, validation/test isolation, timing and clustered uncertainty |
 | Results & discussion | R01, R07, R08, R17–R22 | Interpret measured speed, saddle cases, initial conditions and limits |
 
@@ -242,7 +260,20 @@ labelled appendix/future-work note, **not** in the primary comparison.
 3. Cite exact publications in the report (author, year, venue/publisher,
    DOI), not generic search-results pages.
 4. Use a manageable set of references per paragraph rather than citing
-   all 22 for every broad statement.
+   all 24 for every broad statement.
 5. Verify the page budget after formatting: the professor's **minimum** is
    ten pages; the working target is approximately 10–15 including a proper
    cover and reference pages unless further formatting guidance is supplied.
+
+## Source access checkpoint (2026-11-21)
+
+**24 verified scholarly candidates; 11 publicly accessible full-text
+pointers** are in `docs/REPORT_FULLTEXT_ACCESS.md`. A link does not
+imply redistribution permission, and listing a verified book or article
+does not mean its full text has been critically read. The next step is
+claim-level full-text reading before drafting the Introduction.
+
+**Edition caution:** Seber and Wild's *Nonlinear Regression* was
+originally published in 1989 and reissued in 2003. Cite whichever
+edition is actually consulted. The instructor's `Practical
+Optimization` date (1986) differs from the original year (1981).
