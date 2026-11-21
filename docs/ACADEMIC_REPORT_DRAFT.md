@@ -165,46 +165,46 @@ Two smooth, three-parameter regression functions were chosen to compare optimiza
 
 The first model is an **exponential decay with an offset**:
 
-$
+$$
 f_1(x;a,b,c)=ae^{bx}+c,\qquad \boldsymbol{\theta}_1=(a,b,c)^T.
 \tag{11}
-$
+$$
 
-Here \(a\) determines the initial contribution above the offset, \(b\) controls exponential growth or decay, and \(c\) is the additive baseline. The data-generating parameters were \(a=4\), \(b=-\ln(2)\approx-0.693147\), and \(c=1\), corresponding to a decay half-life of one input unit. Thus, for example, the noise-free prediction at \(x=0\) is \(f_1(0)=5\).
+Here $a$ determines the initial contribution above the offset, $b$ controls exponential growth or decay, and $c$ is the additive baseline. The data-generating parameters were $a=4$, $b=-\ln(2)\approx-0.693147$, and $c=1$, corresponding to a decay half-life of one input unit. Thus, for example, the noise-free prediction at $x=0$ is $f_1(0)=5$.
 
 The second model is a **logistic growth curve**:
 
-$
+$$
 f_2(x;L,k,x_0)=\frac{L}{1+\exp[-k(x-x_0)]},
 \qquad \boldsymbol{\theta}_2=(L,k,x_0)^T.
 \tag{12}
-$
+$$
 
-With positive \(L\) and \(k\), \(L\) is the upper asymptote, \(k\) controls steepness, and \(x_0\) identifies the midpoint where the prediction equals \(L/2\). The data-generating values were \((L,k,x_0)=(10,1.5,2)\), giving a midpoint prediction of \(f_2(2)=5\). The optimization code does not constrain candidate vectors to these positive generating values; deliberately difficult initializations, including negative \(k\), remain part of the registered comparison.
+With positive $L$ and $k$, $L$ is the upper asymptote, $k$ controls steepness, and $x_0$ identifies the midpoint where the prediction equals $L/2$. The data-generating values were $(L,k,x_0)=(10,1.5,2)$, giving a midpoint prediction of $f_2(2)=5$. The optimization code does not constrain candidate vectors to these positive generating values; deliberately difficult initializations, including negative $k$, remain part of the registered comparison.
 
 ### 4.2. Synthetic observations and noise
 
-For each model, 120 equally spaced input locations were constructed over \(x\in[0,4]\). Observed responses were generated from the corresponding known curve with additive Gaussian noise:
+For each model, 120 equally spaced input locations were constructed over $x\in[0,4]$. Observed responses were generated from the corresponding known curve with additive Gaussian noise:
 
-$
+$$
 y_i=f_m(x_i;\boldsymbol{\theta}_{m,\mathrm{true}})+\varepsilon_i,
 \qquad \varepsilon_i\overset{\mathrm{iid}}{\sim}\mathcal{N}(0,0.1^2),
 \qquad m\in\{1,2\}.
 \tag{13}
-$
+$$
 
-The noise standard deviation was fixed at \(0.1\) for both model families, but each dataset used a distinct pseudorandom noise seed. Ten datasets were generated for each family, yielding **20 distinct model-and-noise realizations** in total. The exponential datasets used seeds 1000–1009, and logistic datasets used seeds 1100–1109. The input grid and clean generating curve remained fixed *within each model* across noise seeds. This controlled design isolates the effect of different noise realizations from changes in the input domain or sample count.
+The noise standard deviation was fixed at $0.1$ for both model families, but each dataset used a distinct pseudorandom noise seed. Ten datasets were generated for each family, yielding **20 distinct model-and-noise realizations** in total. The exponential datasets used seeds 1000–1009, and logistic datasets used seeds 1100–1109. The input grid and clean generating curve remained fixed *within each model* across noise seeds. This controlled design isolates the effect of different noise realizations from changes in the input domain or sample count.
 
 **Table 1. Registered data-generation settings**
 
 | Setting | Exponential decay (Model 1) | Logistic growth (Model 2) |
 |---|---|---|
-| Prediction function | \(ae^{bx}+c\) | \(L/[1+\exp(-k(x-x_0))]\) |
-| True generating parameters | \((4,-\ln2,1)\) | \((10,1.5,2)\) |
-| Input range and observations | \([0,4]\), \(120\) | \([0,4]\), \(120\) |
-| Additive noise standard deviation | \(0.1\) | \(0.1\) |
+| Prediction function | $ae^{bx}+c$ | $L/[1+\exp(-k(x-x_0))]$ |
+| True generating parameters | $(4,-\ln2,1)$ | $(10,1.5,2)$ |
+| Input range and observations | $[0,4]$, $120$ | $[0,4]$, $120$ |
+| Additive noise standard deviation | $0.1$ | $0.1$ |
 | Evaluation noise seeds | 1000–1009 | 1100–1109 |
-| Training / validation / test | \(72/24/24\) | \(72/24/24\) |
+| Training / validation / test | $72/24/24$ | $72/24/24$ |
 
 ### 4.3. Dataset partitioning and information isolation
 
@@ -269,10 +269,10 @@ The Newton solver **does not demand a positive-definite Hessian**, and it **does
 
 Both primary algorithms stop as soon as the Euclidean gradient norm meets the same tolerance,
 
-$
+$$
 \|\nabla J(\boldsymbol{\theta}_k)\|_2\le 10^{-4}.
 \tag{14}
-$
+$$
 
 The iteration caps are **not equal**: 10,000 updates for GD and 100 for Newton. They are safety limits, not numbers of iterations that every run must execute. An exhausted cap is recorded as **not converged**. Numerical overflow, a nonfinite candidate, and Hessian-system problems are recorded rather than dropped. In either case, the recorded solution is the **last completed finite update** when available. Crucially, the optimizer's internal `converged` field means only *gradient-tolerance termination*, not arrival at a local or global minimum.
 
