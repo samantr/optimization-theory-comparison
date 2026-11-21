@@ -47,17 +47,21 @@ def main():
          "-o",str(WORD)]
     subprocess.run(cmd,check=True)
     from docx import Document
-    from docx.shared import Inches,Pt,RGBColor
+    from docx.shared import Inches,Pt,RGBColor,Mm
     from docx.enum.text import WD_ALIGN_PARAGRAPH,WD_BREAK
     from docx.enum.table import WD_TABLE_ALIGNMENT,WD_CELL_VERTICAL_ALIGNMENT
     from docx.oxml import OxmlElement
     from docx.oxml.ns import qn
     doc=Document(WORD)
     sec=doc.sections[0]
-    sec.top_margin=Inches(.88)
-    sec.bottom_margin=Inches(.82)
-    sec.left_margin=Inches(.84)
-    sec.right_margin=Inches(.84)
+    # A4 is the university-standard paper size in Türkiye.
+    sec.page_width=Mm(210)
+    sec.page_height=Mm(297)
+    sec.top_margin=Mm(22)
+    sec.bottom_margin=Mm(20)
+    sec.left_margin=Mm(22)
+    sec.right_margin=Mm(22)
+    sec.different_first_page_header_footer=True
     sec.header_distance=Inches(.35)
     sec.footer_distance=Inches(.35)
     styles=doc.styles
@@ -90,6 +94,13 @@ def main():
                 run.font.size=Pt(9)
         if text.startswith("Keywords:"):
             p.alignment=WD_ALIGN_PARAGRAPH.LEFT
+    # Pandoc creates short automatic captions from image alt text; the
+    # manuscript already contains more descriptive full figure captions.
+    for p in list(doc.paragraphs):
+        if p.style.name == "Image Caption" and p.text.startswith("Figure "):
+            p._element.getparent().remove(p._element)
+        if p.text.strip() == "References":
+            p.paragraph_format.page_break_before=True
     # Pandoc handles OMML math. Retain all 16 numbered equations.
     for ti,table in enumerate(doc.tables):
         # Pandoc often supplies only its own "Table" style, not "Table Grid".
