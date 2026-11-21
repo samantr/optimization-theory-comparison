@@ -1,0 +1,42 @@
+name: Build Optimization Theory report
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-academic-report.yml'
+      - 'scripts/build_academic_report.py'
+      - 'docs/ACADEMIC_REPORT_DRAFT.md'
+      - 'docs/figures/*.svg'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install document converters and Python packages
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq pandoc libreoffice-writer poppler-utils fonts-crosextra-carlito
+          python -m pip install --upgrade python-docx cairosvg
+      - name: Convert exact Markdown source to DOCX and PDF
+        run: python scripts/build_academic_report.py
+      - name: Upload report as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: optimization-theory-report
+          path: |
+            deliverables/Optimization_Theory_GD_vs_Newton_Report.docx
+            deliverables/Optimization_Theory_GD_vs_Newton_Report.pdf
+            deliverables/QA_SUMMARY.txt
+      - name: Commit exported deliverables
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f deliverables/Optimization_Theory_GD_vs_Newton_Report.docx deliverables/Optimization_Theory_GD_vs_Newton_Report.pdf deliverables/QA_SUMMARY.txt
+          if ! git diff --cached --quiet; then
+            git commit -m "Build Word and PDF academic report from verified Markdown"
+            git push
+          fi
