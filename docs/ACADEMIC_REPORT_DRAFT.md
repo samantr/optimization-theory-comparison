@@ -219,7 +219,7 @@ At iteration $k$, batch Gradient Descent evaluates the complete training-set gra
 
 **Algorithm 1. Implemented fixed-step batch GD**
 
-\`\`\`text
+```text
 Input: training data, initial theta, frozen alpha, epsilon, cap=10000
 Evaluate initial training MSE and gradient g
 If ||g||_2 <= epsilon: stop (gradient_tolerance)
@@ -230,17 +230,17 @@ For k = 1,...,cap:
     Accept candidate; save completed update and diagnostics
     If ||g||_2 <= epsilon: stop (gradient_tolerance)
 If cap is exhausted: stop (max_iterations)
-\`\`\`
+```
 
 Unlike a line-search algorithm, fixed-step GD **does not reject** a finite update merely because training MSE rises. Such increases are retained in its loss history.
 
 ### 5.3. Full-step exact Newton
 
-Newton's Method uses both the gradient and the complete three-by-three Hessian of the training MSE [2], [10]. At each iteration it solves the linear system in Eq. (9) for the Newton displacement $\mathbf p_k$. The implementation uses a numerical linear-system solver, not an explicitly formed inverse matrix. It evaluates the Hessian condition number first: a nonfinite value triggers a \`singular_hessian\` outcome and a value larger than $10^{12}$ triggers \`ill_conditioned_hessian\`. A failed linear solve also triggers a singular-system outcome.
+Newton's Method uses both the gradient and the complete three-by-three Hessian of the training MSE [2], [10]. At each iteration it solves the linear system in Eq. (9) for the Newton displacement $\mathbf p_k$. The implementation uses a numerical linear-system solver, not an explicitly formed inverse matrix. It evaluates the Hessian condition number first: a nonfinite value triggers a `singular_hessian` outcome and a value larger than $10^{12}$ triggers `ill_conditioned_hessian`. A failed linear solve also triggers a singular-system outcome.
 
 **Algorithm 2. Implemented exact full-step Newton**
 
-\`\`\`text
+```text
 Input: training data, initial theta, epsilon, cap=100
 Evaluate initial training MSE and gradient g
 If ||g||_2 <= epsilon: stop (gradient_tolerance)
@@ -254,7 +254,7 @@ For k = 1,...,cap:
     Accept candidate; save completed update and diagnostics
     If ||g||_2 <= epsilon: stop (gradient_tolerance)
 If cap is exhausted: stop (max_iterations)
-\`\`\`
+```
 
 The Newton solver **does not demand a positive-definite Hessian**, and it **does not reject a finite trial step because MSE increased**. This faithfully exposes limitations of unsafeguarded full-step Newton: for an indefinite Hessian, the direction may fail to decrease the objective and can approach a saddle [3], [14]. The Hessian must not be silently replaced by $J_r^TJ_r$, which would change the algorithm to a Gauss–Newton approximation.
 
@@ -267,7 +267,7 @@ $
 \tag{14}
 $
 
-The iteration caps are **not equal**: 10,000 updates for GD and 100 for Newton. They are safety limits, not numbers of iterations that every run must execute. An exhausted cap is recorded as **not converged**. Numerical overflow, a nonfinite candidate, and Hessian-system problems are recorded rather than dropped. In either case, the recorded solution is the **last completed finite update** when available. Crucially, the optimizer's internal \`converged\` field means only *gradient-tolerance termination*, not arrival at a local or global minimum.
+The iteration caps are **not equal**: 10,000 updates for GD and 100 for Newton. They are safety limits, not numbers of iterations that every run must execute. An exhausted cap is recorded as **not converged**. Numerical overflow, a nonfinite candidate, and Hessian-system problems are recorded rather than dropped. In either case, the recorded solution is the **last completed finite update** when available. Crucially, the optimizer's internal `converged` field means only *gradient-tolerance termination*, not arrival at a local or global minimum.
 
 After each timed optimization, a separate training-data Hessian diagnostic classifies stationary endpoints using symmetric-matrix eigenvalues. Eigenvalues all above $10^{-8}$ indicate a positive-definite Hessian and a strict local minimum; eigenvalues all below $-10^{-8}$ indicate a negative-definite Hessian; mixed positive and negative eigenvalues indicate an indefinite saddle; otherwise the second-order classification is inconclusive. These are **numerical curvature labels with a specified threshold**, not proof of a global optimum. The post-run curvature check is excluded from optimizer-only timing.
 
@@ -339,8 +339,8 @@ A third, **exploratory** variant is retained for context but is not part of the 
 - Table 1 and equations (11)–(13) must be typeset and numbered consistently in the final paper; data-split statistics are sourced from project code, not falsely attributed to references [1]/[15].
 - No invented measured outcomes or figures; Section 4 describes the already registered and audited data-generation protocol.
 
-- Section 5 source-code cross-check: \`opttheory/optimizers/gradient_descent.py\`, \`opttheory/optimizers/newton.py\`, \`opttheory/optimizers/newton_safeguarded.py\`, \`opttheory/experiments/policy.py\`, \`opttheory/experiments/evaluation.py\`, \`config/selected_gd_rates.json\` and \`config/evaluation_protocol.json\`. No changes to optimizer code, selected rates, or frozen evaluation evidence.
-- One implementation nuance: the Newton condition-number check applies the default limit \`1e12\`; **indefinite matrices are not automatically rejected** in the exact Newton baseline. The diagnostic uses \`eigvalsh\` with curvature tolerance \`1e-8\` after optimizer timing and only labels stationary endpoints.
-- Professor's source alignment: \`yOptmT-h6.pdf\`, pp. 12–16 (quadratic approximation and Newton update); \`yOptmT-h7.pdf\`, pp. 2–3 (modified Newton discussion); \`yOptmT-h8.pdf\`, p. 3 (stopping criteria); consult original PDFs for final typography.
+- Section 5 source-code cross-check: `opttheory/optimizers/gradient_descent.py`, `opttheory/optimizers/newton.py`, `opttheory/optimizers/newton_safeguarded.py`, `opttheory/experiments/policy.py`, `opttheory/experiments/evaluation.py`, `config/selected_gd_rates.json` and `config/evaluation_protocol.json`. No changes to optimizer code, selected rates, or frozen evaluation evidence.
+- One implementation nuance: the Newton condition-number check applies the default limit `1e12`; **indefinite matrices are not automatically rejected** in the exact Newton baseline. The diagnostic uses `eigvalsh` with curvature tolerance `1e-8` after optimizer timing and only labels stationary endpoints.
+- Professor's source alignment: `yOptmT-h6.pdf`, pp. 12–16 (quadratic approximation and Newton update); `yOptmT-h7.pdf`, pp. 2–3 (modified Newton discussion); `yOptmT-h8.pdf`, p. 3 (stopping criteria); consult original PDFs for final typography.
 - New scholarly bibliography entry **[18]**: Nesterov (2004), verified via Springer bibliographic metadata. Its convex optimization results are introduced only with **explicit qualification** and are not treated as guarantees for our nonconvex regression models.
-- The algorithm pseudocode deliberately states both unequal iteration caps and does not imply the same wall-clock budget. \`converged\` refers to gradient tolerance, not Hessian-confirmed minimization. Combined report citation count is **18 distinct academic works**; at least 20 genuinely cited works are required before submission.
+- The algorithm pseudocode deliberately states both unequal iteration caps and does not imply the same wall-clock budget. `converged` refers to gradient tolerance, not Hessian-confirmed minimization. Combined report citation count is **18 distinct academic works**; at least 20 genuinely cited works are required before submission.
