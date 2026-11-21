@@ -3,7 +3,14 @@
 **Working academic report — English**  
 **Course:** Optimization Theory (BLM 599), Kocaeli University  
 **Instructor:** Prof. Dr. Yaşar Becerikli  
-**Status:** Sections 1–8 drafted, 2026-11-21. Full academic report is not yet complete. Reference numbering is provisional.
+**Student:** Saman Tarighpeima  
+**Status:** Complete manuscript draft, 2026-11-21. Final typography, reference QA and page-count verification pending.
+
+## Abstract
+
+This study compares fixed-step batch Gradient Descent (GD) and full-step exact Newton optimization for two nonlinear regression problems: exponential decay and logistic growth. Each three-parameter model was fitted to ten independently noise-seeded synthetic datasets containing 120 observations, with 72 training, 24 validation, and 24 held-out test observations. Five predefined initial parameter vectors were shared across methods for every dataset, producing 50 paired conditions per model. Model-specific GD learning rates were calibrated on separate datasets before evaluation. Optimization outcomes were assessed using gradient-based termination, final Hessian eigenvalues, test mean squared error (MSE), iteration counts, and repeated optimizer-only timing measurements. GD reached Hessian-confirmed strict local minima in all 50 conditions for each model, whereas exact Newton did so in 4/50 exponential and 22/50 logistic conditions; Newton frequently terminated at saddles. Newton had lower computational time per attempted invocation, with mean paired differences (Newton minus GD) of −83.24 ms and −149.54 ms for the exponential and logistic models, respectively. However, its median test MSE was considerably higher in both comparisons. These findings illustrate that rapid gradient-tolerance termination does not necessarily imply successful minimization. Conclusions are limited to the examined synthetic models, selected initializations, and frozen implementations.
+
+**Keywords:** Nonlinear regression; Gradient Descent; Newton's Method; Hessian; Saddle points; Optimization; Reproducible experiments.
 
 ## 1. Introduction
 
@@ -429,7 +436,23 @@ Fourth, timing measurements reflect one Python/NumPy execution environment with 
 
 Taken together, the evidence supports a conditional conclusion: **for these paired nonlinear-regression experiments and these frozen implementations, fixed-step GD was more reliable at finding low-error strict local minima, while full-step exact Newton terminated substantially faster per attempted optimization but frequently at saddles**. The observed trade-off motivates, rather than settles, further research on safeguarded Newton variants, additional starting-point distributions, larger model families and time-to-satisfactory-solution comparisons.
 
-## Provisional references for Sections 1–8 (renumber after completing the report)
+## 9. Conclusion and Future Work
+
+### 9.1. Conclusion
+
+This study examined two established optimization methods—fixed-step batch Gradient Descent (GD) and full-step exact Newton—in parameter estimation for exponential-decay and logistic-growth regression models. The comparison used matched datasets and starting vectors, independently calibrated GD rates, analytical gradients and exact Hessians, documented stopping rules, and audited computation records. A central methodological choice was to distinguish a small final gradient from a Hessian-confirmed strict local minimum and to retain unsuccessful attempts.
+
+Under these experimental conditions, GD reached a strict local minimum in all **50/50** registered attempts for each model. Exact Newton reached strict local minima in **4/50** exponential-decay attempts and **22/50** logistic-growth attempts, while **44** and **24** Newton attempts, respectively, terminated at indefinite stationary saddles. Although Newton required fewer updates and less time per attempted optimizer invocation, its median test MSE was much higher for both models. The contrast shows why optimizer comparisons should report solution quality, curvature and failure outcomes alongside iteration count and elapsed time.
+
+The findings are **conditional**, not a universal ranking of first- and second-order methods. A favorable logistic starting point allowed Newton to reach a comparably accurate strict local minimum in four updates, whereas other initial conditions led to saddles or numerical problems. The experiment thus illustrates both the rapid local behavior of exact Newton and its vulnerability to unfavorable curvature and initialization when full steps are taken without a minimization safeguard. It does not establish that GD is always more reliable or that Newton is always faster for obtaining a useful fitted model.
+
+### 9.2. Future Work
+
+Further evaluation could include additional nonlinear models, real datasets, larger parameter spaces and several noise intensities. More independent noise datasets and systematically sampled starting vectors would allow broader assessment of initialization sensitivity. A subsequent, separately preregistered comparison could examine line-search GD, trust-region methods, Gauss–Newton, Levenberg–Marquardt, and modified or safeguarded Newton algorithms [6], [9], [10], [13]. These alternatives should not be retroactively substituted for the original exact-Newton baseline.
+
+Future studies should also evaluate **time to a satisfactory solution**, rather than time per attempted invocation alone. That requires a predeclared quality criterion, explicit treatment of failed or censored runs, additional computing environments, and uncertainty estimates based on more independent datasets. Such work would address the present study's limitations while preserving its central lesson: an optimizer's reliability cannot be determined from a small gradient or a short runtime alone.
+
+## References
 [1] D. M. Bates and D. G. Watts, *Nonlinear Regression Analysis and Its Applications*. New York: Wiley, 1988. doi: [10.1002/9780470316757](https://doi.org/10.1002/9780470316757).
 
 [2] J. Nocedal and S. J. Wright, *Numerical Optimization*, 2nd ed. New York: Springer, 2006. doi: [10.1007/978-0-387-40065-5](https://doi.org/10.1007/978-0-387-40065-5).
@@ -472,47 +495,3 @@ Taken together, the evidence supports a conditional conclusion: **for these pair
 [20] A. C. Davison and D. V. Hinkley, *Bootstrap Methods and Their Application*. Cambridge: Cambridge University Press, 1997. [Publisher record](https://www.cambridge.org/core/books/bootstrap-methods-and-their-application/ED2FD043579F27952363566DC09CBD6A).
 
 [21] A. C. Cameron, J. B. Gelbach, and D. L. Miller, “Bootstrap-Based Improvements for Inference with Clustered Errors,” *The Review of Economics and Statistics*, vol. 90, no. 3, pp. 414–427, 2008. doi: [10.1162/rest.90.3.414](https://doi.org/10.1162/rest.90.3.414).
-
----
-
-### Editorial verification (not part of the final manuscript)
-
-- Section 1 was retained as drafted. Section 2 newly uses sources [6]–[14], giving **14 distinct scholarly works actually cited across the first two sections**, not yet the professor's required 20.
-- [6] Original Armijo article, pp. 1–3, reviewed; [7] Wolfe publisher abstract confirmed; [8] Barzilai–Borwein abstract/intro and first paper page directly reviewed.
-- [9] Conn–Gould–Toint publisher book/chapter description reviewed; [10] Dennis–Schnabel Chapter 10 publisher description reviewed (not the complete chapter).
-- [11] Levenberg original article pp. 164–168 checked, including the introductory problem and damped normal-equation derivation; [12] Marquardt publisher publication metadata confirmed (complete primary paper not yet read); [13] Moré original manuscript text checked, including scaled regularized least-squares derivation.
-- [14] Dauphin et al. original NeurIPS text and opening analysis checked; claims concerning high-dimensional neural networks are explicitly not generalized to our low-dimensional models.
-- Existing sources [4], [5] describe **conditional strict-saddle avoidance** and **modified Newton**, respectively, not universal guarantees for our exact implementations.
-- Mathematical Foundations (Section 3) will present and derive the exact Hessian formula, including its residual-weighted second-derivative contribution, and connect it to the source code.
-- The primary experiment's frozen GD rates and exact full-step Newton remain unchanged. The safeguarded Newton and two adaptive-GD pilots are separate exploratory analyses.
-- The final bibliography is provisional and must be consolidated with at least 20 sources cited in the complete report, with accurate DOI/edition details. The abstract is drafted last.
-
-
-- Section 3 equations (1)–(10) are **locally numbered in this draft** and must be renumbered consistently across the full report at typesetting.
-- Mathematical derivations checked directly against `opttheory/objectives/mse.py`, `opttheory/objectives/logistic_mse.py`, `opttheory/optimizers/gradient_descent.py`, and `opttheory/optimizers/newton.py`.
-- Professor Becerikli's `yOptmT-h5.pdf` p. 7 demonstrates \\(q(x_1,x_2)=2x_1^2-3x_1x_2+2x_2^2\\) and Hessian eigenvalues \\(1,7\\); pp. 8–9 cover stationary points and Hessian classification. `yOptmT-h6.pdf` p. 12 derives Newton from the quadratic/Taylor approximation. `yOptmT-h8.pdf` p. 3 lists various stopping criteria.
-- Source [15] (Björck) was checked via SIAM's 1996 edition and its published Chapter 9 description; full technical chapter was not read. Source [16] (Boyd–Vandenberghe) author-hosted text verifies the convexity terminology; source [17] (Gill–Murray–Wright) is catalogued as an **original 1981** book, despite the 1986 date on the professor's recommended-books slide. Avoid attributing precise theorem/page numbers to a book whose full relevant chapter has not been inspected.
-- References newly added in this section: [15] Björck, [16] Boyd–Vandenberghe, [17] Gill–Murray–Wright. **17 distinct scholarly items** are now cited in the Sections 1–3 draft; at least 20 actually used references are needed in the finished manuscript.
-
-- Section 4 checked against `opttheory/models/exponential.py`, `opttheory/models/logistic.py`, `opttheory/datasets/synthetic.py`, `config/model1.json`, `config/model2.json`, `config/experiment_plan.json`, and `opttheory/experiments/evaluation.py`.
-- **Important source nuance:** `config/model1.json` retains an initial pilot noise seed (`42`), but the **final evaluation runner explicitly overrides** it with the preregistered trial seeds 1000–1009. The logistic initial seed 1100 is likewise replaced by the trial's registered seed for each dataset. We report only the **executed evaluation conditions** in Table 1.
-- Table 1 and equations (11)–(13) must be typeset and numbered consistently in the final paper; data-split statistics are sourced from project code, not falsely attributed to references [1]/[15].
-- No invented measured outcomes or figures; Section 4 describes the already registered and audited data-generation protocol.
-
-- Section 5 source-code cross-check: `opttheory/optimizers/gradient_descent.py`, `opttheory/optimizers/newton.py`, `opttheory/optimizers/newton_safeguarded.py`, `opttheory/experiments/policy.py`, `opttheory/experiments/evaluation.py`, `config/selected_gd_rates.json` and `config/evaluation_protocol.json`. No changes to optimizer code, selected rates, or frozen evaluation evidence.
-- One implementation nuance: the Newton condition-number check applies the default limit `1e12`; **indefinite matrices are not automatically rejected** in the exact Newton baseline. The diagnostic uses `eigvalsh` with curvature tolerance `1e-8` after optimizer timing and only labels stationary endpoints.
-- Professor's source alignment: `yOptmT-h6.pdf`, pp. 12–16 (quadratic approximation and Newton update); `yOptmT-h7.pdf`, pp. 2–3 (modified Newton discussion); `yOptmT-h8.pdf`, p. 3 (stopping criteria); consult original PDFs for final typography.
-- New scholarly bibliography entry **[18]**: Nesterov (2004), verified via Springer bibliographic metadata. Its convex optimization results are introduced only with **explicit qualification** and are not treated as guarantees for our nonconvex regression models.
-- The algorithm pseudocode deliberately states both unequal iteration caps and does not imply the same wall-clock budget. `converged` refers to gradient tolerance, not Hessian-confirmed minimization. Combined report citation count is **18 distinct academic works**; at least 20 genuinely cited works are required before submission.
-
-- Section 6 verified against `config/experiment_plan.json`, `config/selected_gd_rates.json`, `config/evaluation_protocol.json`, `config/evaluation_provenance.json`, `docs/CALIBRATION_RESULTS.md`, `docs/EVALUATION_RUNNER.md`, `docs/FINAL_EVALUATION_RESULTS.md`, `opttheory/experiments/evaluation.py`, and `opttheory/experiments/plan.py`. The two preregistration files retain their **historical pre-execution status fields**; actual execution is established by the archived outputs and post-execution provenance. Do not rewrite the frozen files.
-- New distinct scholarly references genuinely cited in this section: [19] Efron (1979), [20] Davison & Hinkley (1997), [21] Cameron et al. (2008), bringing the report to **21 in-text-cited scholarly works** (minimum 20). Source [21] is used for dependence/few-cluster concerns; it does not validate the percentile interval employed in this study.
-- Section 6 deliberately excludes calibration overhead from optimization times, does not collapse convergence into test quality, and maintains the **GD 10,000 / Newton 100** unequal iteration caps. Refer to original records for timings and failure classifications in Section 7 rather than inserting results prematurely.
-
-- Section 7 derives **only from audited original evidence**: `evidence/evaluation_2026-11-01/model1_runs.csv`, `model2_runs.csv`, `model1_summary.json`, `model2_summary.json`, and `docs/FINAL_EVALUATION_RESULTS.md`. The summary's dataset differences were recomputed from all paired GD/Newton run-level medians before generating the figures.
-- Figures 1 and 2 are descriptive graphics computed from the archived counts and dataset-level timing summaries; no new benchmark results or optimizer trajectories were generated. Original method-specific runtime, failure cases, and held-out errors remain unchanged.
-
-- Section 8's Table 5 was independently tabulated from all 50 exact-Newton conditions per model in `evidence/evaluation_2026-11-01/model1_runs.csv` and `model2_runs.csv`; starting-vector groups are not independent datasets. Counts: Exponential [0,0,4,0,0], logistic [10,8,4,0,0].
-- The saddle-point mechanism is a local Taylor/eigenspace interpretation grounded in the mathematics and relevant literature [3], [14], not a numerical re-execution or a claim of guaranteed finite-iteration behavior.
-- Citations for the statistical caution [19]–[21] and modified-Newton context [5], [9], [13] are **qualified** to distinguish their published methods from the present code. No additional scholarly sources were padded into the list.
-- Limitations explicitly include two small synthetic models, five selected initializations, independent GD-only calibration, unequal caps, host-dependent timing, ten bootstrap clusters, approximate stationarity, and lack of global-optimality proof.
