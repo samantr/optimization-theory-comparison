@@ -27,6 +27,8 @@ def main():
     assert all(f"## {n}. " in source for n in range(1,10))
     assert "## Abstract" in source and "## References" in source
     source=source[source.index("## Abstract"):]
+    if re.search(r"(?m)^\$",source):
+        raise RuntimeError("Malformed display math delimiter: standalone single-dollar line")
     if "### Editorial verification" in source:
         raise RuntimeError("Editorial notes leaked into manuscript.")
     # Pandoc silently drops \tag{n} in OOXML equations. Preserve equation
