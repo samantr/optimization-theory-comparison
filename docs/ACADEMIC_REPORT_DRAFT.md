@@ -3,7 +3,7 @@
 **Working academic report — English**  
 **Course:** Optimization Theory (BLM 599), Kocaeli University  
 **Instructor:** Prof. Dr. Yaşar Becerikli  
-**Status:** Sections 1–3 drafted, 2026-11-21. Full academic report is not yet complete. Reference numbering is provisional.
+**Status:** Sections 1–4 drafted, 2026-11-21. Full academic report is not yet complete. Reference numbering is provisional.
 
 ## 1. Introduction
 
@@ -150,7 +150,64 @@ $$
 
 Both eigenvalues are positive; hence the stationary point at $(0,0)$ is a strict minimum. In contrast, a Hessian with both positive and negative eigenvalues is indefinite. In the present study, this local classification is computed separately from gradient-tolerance termination and final test MSE. **A small gradient is not, by itself, evidence of a successful minimum.**
 
-## Provisional references for Sections 1–3 (renumber after completing the report)
+## 4. Regression Models and Data
+
+### 4.1. Selected nonlinear regression models
+
+Two smooth, three-parameter regression functions were chosen to compare optimization behavior while keeping model complexity manageable. Both are fitted to **continuous responses**, using the MSE objective introduced in Section 3; the logistic function is used for nonlinear **regression**, not binary classification. These model families provide different parameter interactions and objective landscapes without introducing additional covariates or optimization constraints. The use of nonlinear least squares for parameter estimation is well established [1], [15].
+
+The first model is an **exponential decay with an offset**:
+
+$
+f_1(x;a,b,c)=ae^{bx}+c,\qquad \boldsymbol{\theta}_1=(a,b,c)^T.
+\tag{11}
+$
+
+Here \(a\) determines the initial contribution above the offset, \(b\) controls exponential growth or decay, and \(c\) is the additive baseline. The data-generating parameters were \(a=4\), \(b=-\ln(2)\approx-0.693147\), and \(c=1\), corresponding to a decay half-life of one input unit. Thus, for example, the noise-free prediction at \(x=0\) is \(f_1(0)=5\).
+
+The second model is a **logistic growth curve**:
+
+$
+f_2(x;L,k,x_0)=\frac{L}{1+\exp[-k(x-x_0)]},
+\qquad \boldsymbol{\theta}_2=(L,k,x_0)^T.
+\tag{12}
+$
+
+With positive \(L\) and \(k\), \(L\) is the upper asymptote, \(k\) controls steepness, and \(x_0\) identifies the midpoint where the prediction equals \(L/2\). The data-generating values were \((L,k,x_0)=(10,1.5,2)\), giving a midpoint prediction of \(f_2(2)=5\). The optimization code does not constrain candidate vectors to these positive generating values; deliberately difficult initializations, including negative \(k\), remain part of the registered comparison.
+
+### 4.2. Synthetic observations and noise
+
+For each model, 120 equally spaced input locations were constructed over \(x\in[0,4]\). Observed responses were generated from the corresponding known curve with additive Gaussian noise:
+
+$
+y_i=f_m(x_i;\boldsymbol{\theta}_{m,\mathrm{true}})+\varepsilon_i,
+\qquad \varepsilon_i\overset{\mathrm{iid}}{\sim}\mathcal{N}(0,0.1^2),
+\qquad m\in\{1,2\}.
+\tag{13}
+$
+
+The noise standard deviation was fixed at \(0.1\) for both model families, but each dataset used a distinct pseudorandom noise seed. Ten datasets were generated for each family, yielding **20 distinct model-and-noise realizations** in total. The exponential datasets used seeds 1000–1009, and logistic datasets used seeds 1100–1109. The input grid and clean generating curve remained fixed *within each model* across noise seeds. This controlled design isolates the effect of different noise realizations from changes in the input domain or sample count.
+
+**Table 1. Registered data-generation settings**
+
+| Setting | Exponential decay (Model 1) | Logistic growth (Model 2) |
+|---|---|---|
+| Prediction function | \(ae^{bx}+c\) | \(L/[1+\exp(-k(x-x_0))]\) |
+| True generating parameters | \((4,-\ln2,1)\) | \((10,1.5,2)\) |
+| Input range and observations | \([0,4]\), \(120\) | \([0,4]\), \(120\) |
+| Additive noise standard deviation | \(0.1\) | \(0.1\) |
+| Evaluation noise seeds | 1000–1009 | 1100–1109 |
+| Training / validation / test | \(72/24/24\) | \(72/24/24\) |
+
+### 4.3. Dataset partitioning and information isolation
+
+Each dataset was divided by a reproducible random permutation into **72 training observations (60%)**, **24 validation observations (20%)**, and **24 test observations (20%)**. The split used seed 2026, independent of the noise-generating seed. Consequently, the same 120 input indices received the same train/validation/test labels across dataset realizations; only their noise values changed.
+
+During optimization, GD and exact Newton received **training inputs and observed training responses only**. Validation observations were used during the separate GD learning-rate calibration procedure; the selected rate was then frozen before evaluating the registered datasets. Test observations were reserved for scoring the final estimated parameters after optimization, not for tuning or updates. Although the generating parameters were known for synthetic-data construction and subsequent interpretation, neither optimizer received them.
+
+Each of the ten noise realizations was evaluated from the same five prespecified, model-specific initial parameter vectors for both algorithms. Thus, both methods were compared on exactly matched training data and initializations. The starting vectors and complete calibration/evaluation schedule are reported in Section 6. Since five starts on one dataset share its observations, the analysis treats the **noise-seeded dataset**—not the individual starting point—as the independent resampling unit when quantifying uncertainty.
+
+## Provisional references for Sections 1–4 (renumber after completing the report)
 [1] D. M. Bates and D. G. Watts, *Nonlinear Regression Analysis and Its Applications*. New York: Wiley, 1988. doi: [10.1002/9780470316757](https://doi.org/10.1002/9780470316757).
 
 [2] J. Nocedal and S. J. Wright, *Numerical Optimization*, 2nd ed. New York: Springer, 2006. doi: [10.1007/978-0-387-40065-5](https://doi.org/10.1007/978-0-387-40065-5).
@@ -206,3 +263,8 @@ Both eigenvalues are positive; hence the stationary point at $(0,0)$ is a strict
 - Professor Becerikli's `yOptmT-h5.pdf` p. 7 demonstrates \\(q(x_1,x_2)=2x_1^2-3x_1x_2+2x_2^2\\) and Hessian eigenvalues \\(1,7\\); pp. 8–9 cover stationary points and Hessian classification. `yOptmT-h6.pdf` p. 12 derives Newton from the quadratic/Taylor approximation. `yOptmT-h8.pdf` p. 3 lists various stopping criteria.
 - Source [15] (Björck) was checked via SIAM's 1996 edition and its published Chapter 9 description; full technical chapter was not read. Source [16] (Boyd–Vandenberghe) author-hosted text verifies the convexity terminology; source [17] (Gill–Murray–Wright) is catalogued as an **original 1981** book, despite the 1986 date on the professor's recommended-books slide. Avoid attributing precise theorem/page numbers to a book whose full relevant chapter has not been inspected.
 - References newly added in this section: [15] Björck, [16] Boyd–Vandenberghe, [17] Gill–Murray–Wright. **17 distinct scholarly items** are now cited in the Sections 1–3 draft; at least 20 actually used references are needed in the finished manuscript.
+
+- Section 4 checked against `opttheory/models/exponential.py`, `opttheory/models/logistic.py`, `opttheory/datasets/synthetic.py`, `config/model1.json`, `config/model2.json`, `config/experiment_plan.json`, and `opttheory/experiments/evaluation.py`.
+- **Important source nuance:** `config/model1.json` retains an initial pilot noise seed (`42`), but the **final evaluation runner explicitly overrides** it with the preregistered trial seeds 1000–1009. The logistic initial seed 1100 is likewise replaced by the trial's registered seed for each dataset. We report only the **executed evaluation conditions** in Table 1.
+- Table 1 and equations (11)–(13) must be typeset and numbered consistently in the final paper; data-split statistics are sourced from project code, not falsely attributed to references [1]/[15].
+- No invented measured outcomes or figures; Section 4 describes the already registered and audited data-generation protocol.
