@@ -3,7 +3,7 @@
 **Working academic report — English**  
 **Course:** Optimization Theory (BLM 599), Kocaeli University  
 **Instructor:** Prof. Dr. Yaşar Becerikli  
-**Status:** Sections 1–7 drafted, 2026-11-21. Full academic report is not yet complete. Reference numbering is provisional.
+**Status:** Sections 1–8 drafted, 2026-11-21. Full academic report is not yet complete. Reference numbering is provisional.
 
 ## 1. Introduction
 
@@ -387,7 +387,49 @@ A separately registered safeguard variant used a gradient fallback for unsuitabl
 The archive contains final parameter vectors, measured objective values and final Hessian eigenvalues, but not an exported iteration-by-iteration loss trajectory for every registered condition. Therefore, no loss-versus-iteration figure is presented as if it were part of the originally archived observations. Any future trajectory illustration would require a separately labelled diagnostic reconstruction.
 
 
-## Provisional references for Sections 1–7 (renumber after completing the report)
+## 8. Discussion and Limitations
+
+### 8.1. Why small-gradient Newton terminations did not imply minima
+
+The principal finding of this controlled comparison is the distinction between **stationarity** and **successful minimization**. Exact Newton satisfied the common gradient-norm tolerance in 48/50 conditions for each model, yet reached Hessian-confirmed strict local minima in only 4/50 exponential-decay conditions and 22/50 logistic-growth conditions. The remaining stationary outcomes were predominantly indefinite saddles (44 and 24, respectively), with two additional inconclusive-curvature cases for the logistic model. In contrast, fixed-step GD met the gradient tolerance and attained a positive-definite final Hessian in every registered condition for both models. These classifications come from the measured training-objective Hessian; they do not establish global optimality.
+
+The mechanism is consistent with the known limitations of unmodified Newton steps on nonconvex objectives [3], [14]. Near a stationary point $\boldsymbol{\theta}^*$, let $\boldsymbol{\delta}=\boldsymbol{\theta}-\boldsymbol{\theta}^*$ and approximate $\nabla J(\boldsymbol{\theta})\approx H(\boldsymbol{\theta}^*)\boldsymbol{\delta}$. Where this Hessian is nonsingular, a full Newton displacement is approximately $-H^{-1}H\boldsymbol{\delta}=-\boldsymbol{\delta}$: the update moves toward the stationary point even if some curvature directions are negative. For GD, the corresponding local displacement evolves approximately as $(I-\alpha H)\boldsymbol{\delta}$; along a negative eigenvalue $\lambda<0$, the factor $1-\alpha\lambda$ exceeds one for $\alpha>0$. This helps explain the methods' contrasting local behavior, although it is a **local linearization, not a proof** that the finite runs must follow those trajectories. Moreover, Lee et al.'s strict-saddle avoidance theorem for GD requires specific smoothness, step-size and random-initialization assumptions [4]; our five fixed starts and calibrated rates do not establish those conditions.
+
+### 8.2. Sensitivity to initial parameters
+
+The outcomes were not uniform across initial parameter vectors. Table 5 aggregates Newton's **Hessian-confirmed strict local minima out of ten noise-seeded datasets for each fixed start**. It was calculated from the complete archived run-level records, rather than inferred from a single illustrative trajectory.
+
+**Table 5. Strict local minima reached by exact Newton, grouped by prespecified start (out of ten datasets each)**
+
+| Starting vector ID | Exponential decay | Logistic growth |
+|---|---:|---:|
+| S1 | 0/10 | 10/10 |
+| S2 | 0/10 | 8/10 |
+| S3 | 4/10 | 4/10 |
+| S4 | 0/10 | 0/10 |
+| S5 | 0/10 | 0/10 |
+
+The contrast is particularly clear for the logistic model: Newton reached a strict local minimum for all ten datasets from S1, whereas it did so for none of the ten datasets from S4 or S5. For the exponential model, only S3 ever yielded a strict local minimum for exact Newton. GD reached a Hessian-confirmed strict local minimum in 10/10 datasets for **every** registered starting vector in both models. These observations support an initialization-sensitivity finding **within this deliberately chosen starting-vector set**. They do not estimate the success probability under a broader random-start distribution, and starts sharing the same noise dataset are not independent evidence units.
+
+### 8.3. Computational speed versus solution quality
+
+Exact Newton used far fewer updates and much less optimizer-only time per attempted invocation. The mean dataset-paired differences were approximately $-83.24$ ms for exponential decay and $-149.54$ ms for logistic growth (Newton minus GD). Both reported bootstrap intervals lay below zero in this particular execution environment. These contrasts are meaningful as **per-attempt computational costs**, because the Hessian calculations and linear solves were included in Newton's measured time. They must not be presented as evidence that Newton obtains an equally accurate minimum more quickly *on average*: many rapidly terminated Newton runs ended at saddles with poor predictions.
+
+This distinction is reinforced by final test MSE. The median Newton test errors, 1.155205 for exponential decay and 10.805764 for logistic growth, were markedly higher than GD's 0.008850 and 0.009147. Conversely, the logistic D01/S1 example demonstrates that, from a favorable initialization, exact Newton can reach a strict local minimum with predictive error comparable to GD in very few updates. Therefore, a method comparison that reports only convergence speed or only the subset of successful runs would give an incomplete picture. The single extreme but finite exponential Newton test-MSE value exceeding $10^{12}$ also illustrates why medians were emphasized and raw failures/outliers were retained.
+
+### 8.4. Safeguards and alternatives
+
+The separately labelled safeguarded Newton variant attained strict local minima in 20/50 exponential and 38/50 logistic conditions, compared with 4/50 and 22/50 for unmodified exact Newton. This exploratory improvement in minimum counts did **not** establish superiority to GD: the safeguarded variant exhausted its 100-update budget in 30/50 exponential and 12/50 logistic runs, and its backtracking/fallback costs need to be considered. The result suggests that safeguards can materially change the behavior of a Newton-based method, in line with established work on trust regions, damping and negative-curvature modifications [5], [9], [13]. It is **not** evidence that our exploratory safeguard is equivalent to Levenberg–Marquardt or to the particular modifications studied in those sources. The later adaptive-GD pilots are outside this official evaluation and are not used to modify the principal findings.
+
+### 8.5. Study limitations and interpretation
+
+Several limitations restrict how broadly these findings can be generalized. First, only **two synthetic, three-parameter model families**, a single Gaussian noise standard deviation ($0.1$), and a fixed input domain were examined; performance on other models, noise levels, parameter scales or real data is unknown. Second, the five starts were intentionally selected, not independently sampled from a probability distribution. Third, GD was calibrated using separate validation datasets while primary Newton used an undamped full step, and their registered maximum update counts were **10,000 versus 100**, respectively. This is a controlled comparison of the **specified implementations**, not a claim that all possible GD and Newton configurations received identical tuning or iteration budgets.
+
+Fourth, timing measurements reflect one Python/NumPy execution environment with small $3\times3$ Hessians; costs may shift with hardware, implementation language, parameter dimension and linear-solver efficiency. Fifth, the bootstrap treated ten noise datasets per model as independent sampling units and kept their five paired starts together, but **ten independent groups are few**. Percentile intervals may have imperfect nominal coverage; the clustered-inference literature urges caution with limited group counts [19]–[21]. No $p$-values or general population-level superiority claims were made. Sixth, numerical eigenvalue thresholds and finite gradient tolerances classify *approximate* stationary endpoints; positive-definite local curvature does not establish a global minimum or identical predictive quality.
+
+Taken together, the evidence supports a conditional conclusion: **for these paired nonlinear-regression experiments and these frozen implementations, fixed-step GD was more reliable at finding low-error strict local minima, while full-step exact Newton terminated substantially faster per attempted optimization but frequently at saddles**. The observed trade-off motivates, rather than settles, further research on safeguarded Newton variants, additional starting-point distributions, larger model families and time-to-satisfactory-solution comparisons.
+
+## Provisional references for Sections 1–8 (renumber after completing the report)
 [1] D. M. Bates and D. G. Watts, *Nonlinear Regression Analysis and Its Applications*. New York: Wiley, 1988. doi: [10.1002/9780470316757](https://doi.org/10.1002/9780470316757).
 
 [2] J. Nocedal and S. J. Wright, *Numerical Optimization*, 2nd ed. New York: Springer, 2006. doi: [10.1007/978-0-387-40065-5](https://doi.org/10.1007/978-0-387-40065-5).
@@ -469,3 +511,8 @@ The archive contains final parameter vectors, measured objective values and fina
 
 - Section 7 derives **only from audited original evidence**: `evidence/evaluation_2026-11-01/model1_runs.csv`, `model2_runs.csv`, `model1_summary.json`, `model2_summary.json`, and `docs/FINAL_EVALUATION_RESULTS.md`. The summary's dataset differences were recomputed from all paired GD/Newton run-level medians before generating the figures.
 - Figures 1 and 2 are descriptive graphics computed from the archived counts and dataset-level timing summaries; no new benchmark results or optimizer trajectories were generated. Original method-specific runtime, failure cases, and held-out errors remain unchanged.
+
+- Section 8's Table 5 was independently tabulated from all 50 exact-Newton conditions per model in `evidence/evaluation_2026-11-01/model1_runs.csv` and `model2_runs.csv`; starting-vector groups are not independent datasets. Counts: Exponential [0,0,4,0,0], logistic [10,8,4,0,0].
+- The saddle-point mechanism is a local Taylor/eigenspace interpretation grounded in the mathematics and relevant literature [3], [14], not a numerical re-execution or a claim of guaranteed finite-iteration behavior.
+- Citations for the statistical caution [19]–[21] and modified-Newton context [5], [9], [13] are **qualified** to distinguish their published methods from the present code. No additional scholarly sources were padded into the list.
+- Limitations explicitly include two small synthetic models, five selected initializations, independent GD-only calibration, unequal caps, host-dependent timing, ten bootstrap clusters, approximate stationarity, and lack of global-optimality proof.
