@@ -293,25 +293,25 @@ This training/validation-only procedure selected $\alpha=0.1$ for exponential de
 
 Each algorithm was evaluated using the common gradient tolerance $10^{-4}$, with the previously registered method-specific limits of 10,000 GD updates and 100 Newton updates (Section 5). Recorded outcomes included the reason for stopping, update count, final gradient norm, objective/gradient/Hessian evaluation counts, final parameter vector, and training, validation and test MSE. Stationarity and successful minimization were assessed separately: **only for a gradient-tolerance termination** was the final training-objective Hessian classified by eigenvalues using threshold $10^{-8}$. Singular or ill-conditioned Hessians, numerical failures and exhausted iteration caps were preserved with their original reason codes. A nonconverged run was not removed merely because its finite final MSE was poor.
 
-Wall-clock time was measured with Python's high-resolution \`time.perf_counter\` immediately around each complete optimizer invocation. Each method condition was repeated **five times**, always restarting from the same data and initial parameter vector; the median of the five times was the condition-level timing statistic. The timed interval included Newton's Hessian calculations and linear-system solves, but excluded dataset construction, learning-rate calibration, final MSE scoring and post-optimization Hessian classification. The order of GD and Newton was alternated across matched conditions to reduce fixed-order timing bias. The five repetition outcomes were checked for deterministic consistency, and all **1,500 raw timing measurements** (300 method conditions $\times$ five repetitions) were archived.
+Wall-clock time was measured with Python's high-resolution `time.perf_counter` immediately around each complete optimizer invocation. Each method condition was repeated **five times**, always restarting from the same data and initial parameter vector; the median of the five times was the condition-level timing statistic. The timed interval included Newton's Hessian calculations and linear-system solves, but excluded dataset construction, learning-rate calibration, final MSE scoring and post-optimization Hessian classification. The order of GD and Newton was alternated across matched conditions to reduce fixed-order timing bias. The five repetition outcomes were checked for deterministic consistency, and all **1,500 raw timing measurements** (300 method conditions $\times$ five repetitions) were archived.
 
 ### 6.4. Paired descriptive statistics and uncertainty
 
 For model $m$, dataset $d\in\{1,\ldots,10\}$ and initial vector $s\in\{1,\ldots,5\}$, let $t^{(N)}_{m,d,s}$ and $t^{(G)}_{m,d,s}$ denote the **median of five optimizer-only timing repetitions** for Newton and GD, respectively. Their paired difference is
 
-$
+$$
 \Delta t_{m,d,s}=t^{(N)}_{m,d,s}-t^{(G)}_{m,d,s}.
 \tag{15}
-$
+$$
 
 A negative value indicates that Newton took less time **per attempted run**, irrespective of whether it reached a minimum. First, the five paired differences within each dataset were averaged:
 
-$
+$$
 \overline{\Delta t}_{m,d}=\frac{1}{5}\sum_{s=1}^{5}\Delta t_{m,d,s};
 \qquad
 \widehat{\mu}_{m}=\frac{1}{10}\sum_{d=1}^{10}\overline{\Delta t}_{m,d}.
 \tag{16}
-$
+$$
 
 Uncertainty for this mean was estimated with a **paired dataset-level percentile bootstrap** [19]–[21]. For each of 10,000 bootstrap draws, ten dataset identifiers were sampled with replacement, and the statistic $\widehat{\mu}_m$ was recomputed from their ten *whole-dataset* summaries. The five start-specific paired observations within each selected dataset stayed together. The lower and upper interval endpoints were the empirical 2.5th and 97.5th percentiles of the resulting bootstrap means. A fixed base seed of 20261101, with deterministic model-specific offsets, made the resampling reproducible. The published literature supports bootstrap resampling in general [19], [20] and cautions against ignoring within-cluster dependence [21], but **our simple percentile cluster bootstrap is not the more specialized bootstrap-$t$ method studied by Cameron et al.** With only ten independent noise datasets per model, the nominal 95% coverage of these intervals is uncertain; no hypothesis-test $p$-values were claimed.
 
