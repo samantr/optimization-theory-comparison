@@ -1,0 +1,7 @@
+Export: Optimization_Theory_GD_vs_Newton_Report.docx and Optimization_Theory_GD_vs_Newton_Report.pdf
+PDF pages: 21
+Equation labels preserved as mathematical text: 1-16
+Academic references: 21 (source manuscript audit)
+Original optimization experiment: unchanged
+Bibliography source-level QA and human visual review: STILL REQUIRED
+Generated from: docs/ACADEMIC_REPORT_DRAFT.md
