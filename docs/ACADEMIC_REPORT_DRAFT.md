@@ -3,7 +3,7 @@
 **Working academic report — English**  
 **Course:** Optimization Theory (BLM 599), Kocaeli University  
 **Instructor:** Prof. Dr. Yaşar Becerikli  
-**Status:** Sections 1–5 drafted, 2026-11-21. Full academic report is not yet complete. Reference numbering is provisional.
+**Status:** Sections 1–6 drafted, 2026-11-21. Full academic report is not yet complete. Reference numbering is provisional.
 
 ## 1. Introduction
 
@@ -275,7 +275,53 @@ After each timed optimization, a separate training-data Hessian diagnostic class
 
 A third, **exploratory** variant is retained for context but is not part of the primary GD-versus-exact-Newton paired comparison. When the Hessian is not positive definite or sufficiently well conditioned, it substitutes the negative gradient as a descent direction. It also applies an Armijo sufficient-decrease test with geometric backtracking, initially $\alpha=1$, reduction factor $0.5$, and at most 30 reductions [6]. This variant differs from both unrestricted Newton and Levenberg–Marquardt [13]. Its results and additional line-search/fallback costs are reported **separately** in the Results section. The later adaptive-GD exploratory pilots are excluded entirely from the official study.
 
-## Provisional references for Sections 1–5 (renumber after completing the report)
+## 6. Experimental Methodology and Reproducibility
+
+### 6.1. Paired experimental design
+
+The comparison was organized to isolate the optimization method while keeping the data and initial parameter vector fixed within each pair. For each of the two models, ten independently seeded Gaussian-noise realizations (D01–D10) were evaluated from five prespecified starting parameter vectors (S1–S5), producing **50 paired conditions per model** and **100 pairs in total**. Each pair consisted of fixed-step GD and full-step exact Newton applied to the same 72 training observations and identical initial parameters. A third, safeguarded Newton variant was evaluated separately as an exploratory method. Thus the full registered grid comprised **200 primary method conditions and 100 exploratory conditions**. All conditions were retained irrespective of their outcomes. The five starts within one dataset are repeated optimization conditions, **not five independent datasets**.
+
+Starting vectors were deliberately varied to expose sensitivity to initialization without optimizing those choices against the final results. Exponential starts (parameter order $[a,b,c]$) were $[3,-0.5,1]$, $[1,-1.2,0]$, $[6,-0.2,2]$, $[-1,-0.5,3]$, and $[2,0.4,0]$. Logistic starts (parameter order $[L,k,x_0]$) were $[9,1,2]$, $[6,0.5,1]$, $[14,3,3]$, $[10,-1,2]$, and $[7,0.15,0]$. In particular, the negative-$k$ logistic start was kept rather than removed after observing any optimization outcome.
+
+### 6.2. Learning-rate calibration and evaluation isolation
+
+GD's constant learning rate was calibrated **before** the final comparison, using separate noise realizations: seeds 2000–2002 for the exponential model and 2100–2102 for the logistic model. Eight prespecified candidate rates, $\{0.0001,0.0003,0.001,0.003,0.01,0.03,0.1,0.3\}$, were tested across three calibration datasets and all five fixed starts for each model, yielding **120 trials per model (240 total)**. The selection rule first minimized numerical failures; among equally reliable candidates, it minimized the mean validation MSE among finite, nonfailed trials, with the smaller rate as the last tie-breaker. Iteration-cap exhaustion remained explicitly recorded rather than being mistaken for convergence.
+
+This training/validation-only procedure selected $\alpha=0.1$ for exponential decay and $\alpha=0.03$ for logistic growth. Both rates were then frozen across all ten final evaluation datasets and five starting points per model. Neither the final test responses nor the Newton outcomes were consulted during rate selection. Calibration time was excluded from the reported optimizer-only execution times.
+
+### 6.3. Termination, performance measures and computational timing
+
+Each algorithm was evaluated using the common gradient tolerance $10^{-4}$, with the previously registered method-specific limits of 10,000 GD updates and 100 Newton updates (Section 5). Recorded outcomes included the reason for stopping, update count, final gradient norm, objective/gradient/Hessian evaluation counts, final parameter vector, and training, validation and test MSE. Stationarity and successful minimization were assessed separately: **only for a gradient-tolerance termination** was the final training-objective Hessian classified by eigenvalues using threshold $10^{-8}$. Singular or ill-conditioned Hessians, numerical failures and exhausted iteration caps were preserved with their original reason codes. A nonconverged run was not removed merely because its finite final MSE was poor.
+
+Wall-clock time was measured with Python's high-resolution \`time.perf_counter\` immediately around each complete optimizer invocation. Each method condition was repeated **five times**, always restarting from the same data and initial parameter vector; the median of the five times was the condition-level timing statistic. The timed interval included Newton's Hessian calculations and linear-system solves, but excluded dataset construction, learning-rate calibration, final MSE scoring and post-optimization Hessian classification. The order of GD and Newton was alternated across matched conditions to reduce fixed-order timing bias. The five repetition outcomes were checked for deterministic consistency, and all **1,500 raw timing measurements** (300 method conditions $\times$ five repetitions) were archived.
+
+### 6.4. Paired descriptive statistics and uncertainty
+
+For model $m$, dataset $d\in\{1,\ldots,10\}$ and initial vector $s\in\{1,\ldots,5\}$, let $t^{(N)}_{m,d,s}$ and $t^{(G)}_{m,d,s}$ denote the **median of five optimizer-only timing repetitions** for Newton and GD, respectively. Their paired difference is
+
+$
+\Delta t_{m,d,s}=t^{(N)}_{m,d,s}-t^{(G)}_{m,d,s}.
+\tag{15}
+$
+
+A negative value indicates that Newton took less time **per attempted run**, irrespective of whether it reached a minimum. First, the five paired differences within each dataset were averaged:
+
+$
+\overline{\Delta t}_{m,d}=\frac{1}{5}\sum_{s=1}^{5}\Delta t_{m,d,s};
+\qquad
+\widehat{\mu}_{m}=\frac{1}{10}\sum_{d=1}^{10}\overline{\Delta t}_{m,d}.
+\tag{16}
+$
+
+Uncertainty for this mean was estimated with a **paired dataset-level percentile bootstrap** [19]–[21]. For each of 10,000 bootstrap draws, ten dataset identifiers were sampled with replacement, and the statistic $\widehat{\mu}_m$ was recomputed from their ten *whole-dataset* summaries. The five start-specific paired observations within each selected dataset stayed together. The lower and upper interval endpoints were the empirical 2.5th and 97.5th percentiles of the resulting bootstrap means. A fixed base seed of 20261101, with deterministic model-specific offsets, made the resampling reproducible. The published literature supports bootstrap resampling in general [19], [20] and cautions against ignoring within-cluster dependence [21], but **our simple percentile cluster bootstrap is not the more specialized bootstrap-$t$ method studied by Cameron et al.** With only ten independent noise datasets per model, the nominal 95% coverage of these intervals is uncertain; no hypothesis-test $p$-values were claimed.
+
+Timing differences, final MSE values, stationarity rates and Hessian-based outcomes were interpreted **together**. In particular, an algorithm that quickly stops at an indefinite saddle was not credited with having found a satisfactory minimum. The paired timing contrast therefore estimates time **per attempted optimizer invocation**, not time needed to reach equally accurate solutions.
+
+### 6.5. Reproducibility and audit trail
+
+The experiments were executed from a frozen source-code revision with registered model configurations, starting vectors, noise seeds, selected GD rates, stopping rules, and analysis settings. For every dataset the generation procedure saved a content hash. The archive contains one row for each of the 300 registered method conditions, all 1,500 raw timing measurements, and two model-level summary files. The execution provenance records Python 3.12.14, NumPy 2.3.5, code/configuration SHA-256 hashes and the exact data hashes. An independent audit reproduced the 20 dataset hashes, timing medians, paired summaries and bootstrap intervals. These verifications support computational reproducibility of the **archived experiment**; numerical timings on another computer may differ. The archived results were not changed after observing test outcomes.
+
+## Provisional references for Sections 1–6 (renumber after completing the report)
 [1] D. M. Bates and D. G. Watts, *Nonlinear Regression Analysis and Its Applications*. New York: Wiley, 1988. doi: [10.1002/9780470316757](https://doi.org/10.1002/9780470316757).
 
 [2] J. Nocedal and S. J. Wright, *Numerical Optimization*, 2nd ed. New York: Springer, 2006. doi: [10.1007/978-0-387-40065-5](https://doi.org/10.1007/978-0-387-40065-5).
@@ -313,6 +359,12 @@ A third, **exploratory** variant is retained for context but is not part of the 
 
 [18] Y. Nesterov, *Introductory Lectures on Convex Optimization: A Basic Course*. Boston: Kluwer Academic Publishers, 2004. doi: [10.1007/978-1-4419-8853-9](https://doi.org/10.1007/978-1-4419-8853-9).
 
+[19] B. Efron, “Bootstrap Methods: Another Look at the Jackknife,” *The Annals of Statistics*, vol. 7, no. 1, pp. 1–26, 1979. doi: [10.1214/aos/1176344552](https://doi.org/10.1214/aos/1176344552).
+
+[20] A. C. Davison and D. V. Hinkley, *Bootstrap Methods and Their Application*. Cambridge: Cambridge University Press, 1997. [Publisher record](https://www.cambridge.org/core/books/bootstrap-methods-and-their-application/ED2FD043579F27952363566DC09CBD6A).
+
+[21] A. C. Cameron, J. B. Gelbach, and D. L. Miller, “Bootstrap-Based Improvements for Inference with Clustered Errors,” *The Review of Economics and Statistics*, vol. 90, no. 3, pp. 414–427, 2008. doi: [10.1162/rest.90.3.414](https://doi.org/10.1162/rest.90.3.414).
+
 ---
 
 ### Editorial verification (not part of the final manuscript)
@@ -344,3 +396,7 @@ A third, **exploratory** variant is retained for context but is not part of the 
 - Professor's source alignment: `yOptmT-h6.pdf`, pp. 12–16 (quadratic approximation and Newton update); `yOptmT-h7.pdf`, pp. 2–3 (modified Newton discussion); `yOptmT-h8.pdf`, p. 3 (stopping criteria); consult original PDFs for final typography.
 - New scholarly bibliography entry **[18]**: Nesterov (2004), verified via Springer bibliographic metadata. Its convex optimization results are introduced only with **explicit qualification** and are not treated as guarantees for our nonconvex regression models.
 - The algorithm pseudocode deliberately states both unequal iteration caps and does not imply the same wall-clock budget. `converged` refers to gradient tolerance, not Hessian-confirmed minimization. Combined report citation count is **18 distinct academic works**; at least 20 genuinely cited works are required before submission.
+
+- Section 6 verified against `config/experiment_plan.json`, `config/selected_gd_rates.json`, `config/evaluation_protocol.json`, `config/evaluation_provenance.json`, `docs/CALIBRATION_RESULTS.md`, `docs/EVALUATION_RUNNER.md`, `docs/FINAL_EVALUATION_RESULTS.md`, `opttheory/experiments/evaluation.py`, and `opttheory/experiments/plan.py`. The two preregistration files retain their **historical pre-execution status fields**; actual execution is established by the archived outputs and post-execution provenance. Do not rewrite the frozen files.
+- New distinct scholarly references genuinely cited in this section: [19] Efron (1979), [20] Davison & Hinkley (1997), [21] Cameron et al. (2008), bringing the report to **21 in-text-cited scholarly works** (minimum 20). Source [21] is used for dependence/few-cluster concerns; it does not validate the percentile interval employed in this study.
+- Section 6 deliberately excludes calibration overhead from optimization times, does not collapse convergence into test quality, and maintains the **GD 10,000 / Newton 100** unequal iteration caps. Refer to original records for timings and failure classifications in Section 7 rather than inserting results prematurely.
