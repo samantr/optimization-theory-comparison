@@ -3,7 +3,7 @@
 **Working academic report — English**  
 **Course:** Optimization Theory (BLM 599), Kocaeli University  
 **Instructor:** Prof. Dr. Yaşar Becerikli  
-**Status:** Sections 1–2 drafted, 2026-11-21. Full academic report is not yet complete. Reference numbering is provisional.
+**Status:** Sections 1–3 drafted, 2026-11-21. Full academic report is not yet complete. Reference numbering is provisional.
 
 ## 1. Introduction
 
@@ -40,7 +40,117 @@ Nonconvex optimization introduces another complication: reaching a small gradien
 
 These studies motivate evaluating **gradient-based termination, Hessian curvature, and final prediction error as separate outcomes**. Their theoretical guarantees and high-dimensional applications do not automatically transfer to our two three-parameter models. Accordingly, this project's contribution is not a new optimizer or a universal performance theorem; it is a reproducible paired experimental comparison of established algorithms, explicitly retaining unsuccessful stationary solutions and numerical failures.
 
-## Provisional references for Sections 1–2 (renumber after completing the report)
+## 3. Mathematical Foundations
+
+### 3.1. Nonlinear regression as a minimization problem
+
+Let \\(x_i,y_i)\\, \\(i=1,\\ldots,n\\), denote observed input–response pairs and let \\(f(x_i;\\boldsymbol{\\theta})\\) be a nonlinear regression prediction with parameter vector \\(\\boldsymbol{\\theta}\\in\\mathbb{R}^{p}\\). Define the residual as the difference between the prediction and the observed response:
+
+\\[
+r_i(\\boldsymbol{\\theta})=f(x_i;\\boldsymbol{\\theta})-y_i.
+\\tag{1}
+\\]
+
+In this study, the training objective is the mean squared error (MSE) [1], [15]:
+
+\\[
+J(\\boldsymbol{\\theta})=\\frac{1}{n}\\sum_{i=1}^{n}r_i(\\boldsymbol{\\theta})^2
+=\\frac{1}{n}\\mathbf r(\\boldsymbol{\\theta})^T\\mathbf r(\\boldsymbol{\\theta}).
+\\tag{2}
+\\]
+
+Here, \\(n\\) counts **training observations**, not all observations in a dataset. The optimizers evaluate (2) using a *candidate* parameter vector and observed training responses. The known parameters used to generate synthetic examples are never passed into the loss function. Although the error in (2) is a sum of squares, it need not be convex in the parameters when the residuals are nonlinear functions of those parameters [15], [16].
+
+### 3.2. The gradient and exact Hessian of MSE
+
+The **gradient** (gradient vector, *gradyan vektörü*) collects the first partial derivatives of the scalar objective. Applying the chain rule to each squared residual gives
+
+\\[
+\\nabla J(\\boldsymbol{\\theta})
+=\\frac{2}{n}\\sum_{i=1}^{n}r_i(\\boldsymbol{\\theta})\\nabla r_i(\\boldsymbol{\\theta})
+=\\frac{2}{n}J_r^T\\mathbf r,
+\\tag{3}
+\\]
+
+where \\(J_r\\in\\mathbb{R}^{n\\times p}\\) denotes the residual Jacobian, whose \\(i\\)th row is \\(\\nabla r_i^T\\). Differentiating (3) once more, using the product rule, yields the **exact Hessian** (Hessian or curvature matrix, *Hessian/eğrilik matrisi*):
+
+\\[
+H_J(\\boldsymbol{\\theta})
+=\\nabla^2J(\\boldsymbol{\\theta})
+=\\frac{2}{n}\\left[
+J_r^TJ_r+\\sum_{i=1}^{n}r_i(\\boldsymbol{\\theta})\\nabla^2r_i(\\boldsymbol{\\theta})
+\\right].
+\\tag{4}
+\\]
+
+The first term \\(J_r^TJ_r\\) is positive semidefinite. The second, **residual-weighted curvature term**, can alter the signs of the Hessian eigenvalues. Omitting this second term gives the Gauss–Newton approximation rather than the full Hessian used by exact Newton [10], [15]. This is not merely a distinction in terminology: the implemented algorithm's step direction depends on the complete matrix.
+
+For example, the exponential prediction considered later is \\(f(x;a,b,c)=ae^{bx}+c\\). Writing \\(E_i=e^{bx_i}\\), its prediction derivative is
+
+\\[
+\\nabla_{(a,b,c)}f(x_i;a,b,c)=
+\\begin{bmatrix}E_i & ax_iE_i & 1\\end{bmatrix}^T.
+\\tag{5}
+\\]
+
+Substitution of this vector into (3) gives the model's analytical MSE gradient. Its exact Hessian follows from (4), including terms involving \\(r_i\\). The logistic model follows the same general formulas but requires different prediction derivatives. Both sets of analytical derivatives were independently checked in the Python project against numerical finite differences.
+
+### 3.3. First- and second-order parameter updates
+
+A first-order Taylor approximation at the current parameter vector \\(\\boldsymbol{\\theta}_k\\) is
+
+\\[
+J(\\boldsymbol{\\theta}_k+\\mathbf p)
+\\approx J(\\boldsymbol{\\theta}_k)
++\\nabla J(\\boldsymbol{\\theta}_k)^T\\mathbf p.
+\\tag{6}
+\\]
+
+Consequently, **fixed-step batch Gradient Descent** updates parameters in the opposite direction to the gradient:
+
+\\[
+\\boldsymbol{\\theta}_{k+1}
+=\\boldsymbol{\\theta}_k-\\alpha\\nabla J(\\boldsymbol{\\theta}_k),\\qquad\\alpha>0.
+\\tag{7}
+\\]
+
+The learning rate \\(\\alpha\\) controls the step size. It remains constant within each model in the official experiment; neither line search nor adaptive rescaling is hidden in the GD baseline.
+
+Newton's Method instead uses a second-order Taylor approximation [2], [17]:
+
+\\[
+J(\\boldsymbol{\\theta}_k+\\mathbf p)
+\\approx J(\\boldsymbol{\\theta}_k)
++\\mathbf g_k^T\\mathbf p
++\\tfrac12\\mathbf p^TH_k\\mathbf p,
+\\tag{8}
+\\]
+
+with \\(\\mathbf g_k=\\nabla J(\\boldsymbol{\\theta}_k)\\) and \\(H_k=\\nabla^2J(\\boldsymbol{\\theta}_k)\\). Setting the derivative of this quadratic approximation with respect to \\(\\mathbf p\\) to zero leads to \\(H_k\\mathbf p_k=-\\mathbf g_k\\), giving the **full-step exact Newton** update
+
+\\[
+H_k\\mathbf p_k=-\\mathbf g_k,\\qquad
+\\boldsymbol{\\theta}_{k+1}=\\boldsymbol{\\theta}_k+\\mathbf p_k.
+\\tag{9}
+\\]
+
+When \\(H_k\\) is positive definite, \\(\\mathbf g_k^T\\mathbf p_k=-\\mathbf g_k^TH_k^{-1}\\mathbf g_k<0\\) for nonzero \\(\\mathbf g_k\\), so Newton's direction is a descent direction. An indefinite Hessian provides no such general guarantee. The implementation therefore checks for singular or ill-conditioned systems and uses a linear-system solve, not an explicitly computed matrix inverse [17]. It does **not** replace an indefinite Hessian with a positive-definite approximation in the primary comparison.
+
+### 3.4. Stationary points and curvature classification
+
+A point \\(\\boldsymbol{\\theta}^{*}\\) satisfying \\(\\nabla J(\\boldsymbol{\\theta}^{*})=\\mathbf0\\) is a **stationary point** (*durağan nokta*), but stationarity alone is insufficient to establish minimization. For a twice continuously differentiable objective at an interior point, a positive-definite Hessian at a stationary point is sufficient for a **strict local minimum**, a negative-definite Hessian indicates a strict local maximum, and an indefinite Hessian identifies a **saddle point**. When the Hessian is only semidefinite, the usual second-order test can be inconclusive [2], [16].
+
+A course-aligned two-parameter illustration is \\(q(x_1,x_2)=2x_1^2-3x_1x_2+2x_2^2\\). Its Hessian is
+
+\\[
+H_q=\\begin{bmatrix}4&-3\\\\-3&4\\end{bmatrix},
+\\qquad\\lambda_1=1,\\quad\\lambda_2=7.
+\\tag{10}
+\\]
+
+Both eigenvalues are positive; hence the stationary point at \\((0,0)\\) is a strict minimum. In contrast, a Hessian with both positive and negative eigenvalues is indefinite. In the present study, this local classification is computed separately from gradient-tolerance termination and final test MSE. **A small gradient is not, by itself, evidence of a successful minimum.**
+
+## Provisional references for Sections 1–3 (renumber after completing the report)
 [1] D. M. Bates and D. G. Watts, *Nonlinear Regression Analysis and Its Applications*. New York: Wiley, 1988. doi: [10.1002/9780470316757](https://doi.org/10.1002/9780470316757).
 
 [2] J. Nocedal and S. J. Wright, *Numerical Optimization*, 2nd ed. New York: Springer, 2006. doi: [10.1007/978-0-387-40065-5](https://doi.org/10.1007/978-0-387-40065-5).
@@ -70,6 +180,12 @@ These studies motivate evaluating **gradient-based termination, Hessian curvatur
 
 [14] Y. N. Dauphin, R. Pascanu, Ç. Gülçehre, K. Cho, S. Ganguli, and Y. Bengio, “Identifying and Attacking the Saddle Point Problem in High-Dimensional Non-Convex Optimization,” in *Advances in Neural Information Processing Systems*, vol. 27, pp. 2933–2941, 2014. [Proceedings](https://proceedings.neurips.cc/paper/2014/hash/04192426585542c54b96ba14445be996-Abstract.html).
 
+[15] Å. Björck, *Numerical Methods for Least Squares Problems*. Philadelphia: SIAM, 1996. doi: [10.1137/1.9781611971484](https://doi.org/10.1137/1.9781611971484).
+
+[16] S. Boyd and L. Vandenberghe, *Convex Optimization*. Cambridge: Cambridge University Press, 2004. [Author-hosted book](https://web.stanford.edu/~boyd/cvxbook/).
+
+[17] P. E. Gill, W. Murray, and M. H. Wright, *Practical Optimization*. London: Academic Press, 1981. [SIAM reprint DOI](https://doi.org/10.1137/1.9781611975604).
+
 ---
 
 ### Editorial verification (not part of the final manuscript)
@@ -83,3 +199,10 @@ These studies motivate evaluating **gradient-based termination, Hessian curvatur
 - Mathematical Foundations (Section 3) will present and derive the exact Hessian formula, including its residual-weighted second-derivative contribution, and connect it to the source code.
 - The primary experiment's frozen GD rates and exact full-step Newton remain unchanged. The safeguarded Newton and two adaptive-GD pilots are separate exploratory analyses.
 - The final bibliography is provisional and must be consolidated with at least 20 sources cited in the complete report, with accurate DOI/edition details. The abstract is drafted last.
+
+
+- Section 3 equations (1)–(10) are **locally numbered in this draft** and must be renumbered consistently across the full report at typesetting.
+- Mathematical derivations checked directly against `opttheory/objectives/mse.py`, `opttheory/objectives/logistic_mse.py`, `opttheory/optimizers/gradient_descent.py`, and `opttheory/optimizers/newton.py`.
+- Professor Becerikli's `yOptmT-h5.pdf` p. 7 demonstrates \\(q(x_1,x_2)=2x_1^2-3x_1x_2+2x_2^2\\) and Hessian eigenvalues \\(1,7\\); pp. 8–9 cover stationary points and Hessian classification. `yOptmT-h6.pdf` p. 12 derives Newton from the quadratic/Taylor approximation. `yOptmT-h8.pdf` p. 3 lists various stopping criteria.
+- Source [15] (Björck) was checked via SIAM's 1996 edition and its published Chapter 9 description; full technical chapter was not read. Source [16] (Boyd–Vandenberghe) author-hosted text verifies the convexity terminology; source [17] (Gill–Murray–Wright) is catalogued as an **original 1981** book, despite the 1986 date on the professor's recommended-books slide. Avoid attributing precise theorem/page numbers to a book whose full relevant chapter has not been inspected.
+- References newly added in this section: [15] Björck, [16] Boyd–Vandenberghe, [17] Gill–Murray–Wright. **17 distinct scholarly items** are now cited in the Sections 1–3 draft; at least 20 actually used references are needed in the finished manuscript.
