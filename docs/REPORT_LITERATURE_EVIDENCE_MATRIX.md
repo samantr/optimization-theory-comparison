@@ -1,6 +1,6 @@
 # Literature evidence matrix — first close-reading pass
 
-**Updated:** 2026-11-21  
+**Updated:** 2026-11-21 (second source-reading pass)  
 **Project:** Official fixed-rate GD versus full-step exact Newton nonlinear-regression study  
 **Stage:** Reference collection and claim verification; **the report's Introduction has not been drafted**.
 
@@ -12,7 +12,7 @@
 - See `docs/REPORT_REFERENCE_REGISTER.md` for all **24 scholarly candidates** and `docs/REPORT_FULLTEXT_ACCESS.md` for accessible source links.
 - The professor's Moodle screenshot requests **at least 20 academic sources** and **fewer than 20% direct internet-document references**. It does **not** request copies of every cited PDF. A DOI or publisher link used to locate a scholarly book/article is not a separate web-only reference.
 
-## Evidence matrix: first six high-priority sources
+## Evidence matrix: initial six high-priority sources
 
 | ID | Source / checked location | Evidence from the source | Intended report use | Important limit / do not claim | Status |
 |---|---|---|---|---|---|
@@ -40,3 +40,148 @@
 ## Course alignment
 
 Professor Becerikli's Week 5 slides (`yOptmT-h5.pdf`, pp. 4–9) introduce the Hessian and critical-point classification. Week 6 (`yOptmT-h6.pdf`, pp. 12–16) develops Newton updates and the one-step quadratic case. The literature provides broader context; the **professor's definitions and examples** remain the teaching anchor for this course.
+
+## Second source-reading pass — additional primary papers
+
+These are additions to the six items above. "Text examined" means the original
+PDF's extracted text or an original author-hosted accessible HTML rendering
+was inspected; **it does not mean every page and proof has been read**.
+The web viewer's PDF screenshot endpoint was attempted; some snapshots were
+unavailable, so do not claim a visual inspection of those pages.
+
+### R19 — Dauphin et al. (2014): saddle-free Newton
+
+**Full source:** [original NeurIPS proceedings paper](https://proceedings.neurips.cc/paper_files/paper/2014/file/17e23e50bedc63b4095e3d8204ce063b-Paper.pdf).
+
+- **Checked:** abstract and §§1, 4–5, 7; particularly PDF pp. 1, 4–7;
+  Section 4 explains the eigenvector-direction behavior of Newton near an
+  indefinite critical point.
+- **Evidence:** Write locally `g_i=lambda_i delta_i` in the Hessian
+  eigenbasis. GD's displacement `-alpha*g_i` points away from a critical
+  point in a negative-curvature direction (`lambda_i<0`), whereas
+  full-step exact Newton gives `-g_i/lambda_i=-delta_i`, which points
+  **toward** the critical point even when it is a saddle.
+- **Report claim:** This explains why a numerically converged exact Newton
+  iteration is not automatically a minimization success; connect to our
+  **measured Hessian eigenvalues** and poor-MSE Newton outcomes.
+- **Limit:** The paper focuses on **high-dimensional neural networks**;
+  statistical claims about the prevalence of saddles in high dimensions
+  are not measurements of our three-parameter exponential/logistic models.
+  Do not generalize their reported network accuracy or speed to our project.
+- **Status:** Direct primary paper text examined, selected sections.
+
+### R16 — Moré (1978): Levenberg–Marquardt derivation
+
+**Source:** [1977 original Argonne report / prepublication
+version at UNT](https://digital.library.unt.edu/ark:/67531/metadc1448594/),
+[archived readable scan](https://hwbdocs.env.nm.gov/Los%20Alamos%20National%20Labs/General/32166.pdf).
+**Final citation:** Moré, J. J. (1978), *Numerical Analysis*, LNM 630,
+pp. 105–116, DOI 10.1007/BFb0067700.
+The **1977 report date** belongs to the earlier manuscript, not to the
+1978 Springer proceedings entry.
+
+- **Checked:** paper's printed pp. 105–108, §1 and §2 derivation
+  (including eqs. 2.3–2.5); §3, equations 3.1 and 3.2.
+- **Evidence:** For residual vector `F(theta)`, linearize
+  `F(theta+p) ~ F(theta)+J p`. A constrained/scaled subproblem is
+  solved via a parameterized system of the form
+  `(J^T J + lambda D^T D) p = -J^T F`; the implementation also
+  **rejects** candidate updates that fail to reduce the residual norm.
+  It discusses potential numerical problems when forming normal
+  equations near rank deficiency.
+- **Report claim:** LM introduces Jacobian-based regularization and
+  scaling, offering a useful **related-work comparison** when Newton's
+  exact Hessian is indefinite or ill-conditioned.
+- **Limit:** LM's normal-equation matrix is **not** the full nonlinear
+  least-squares Hessian `(2/n)(J^T J + sum_i r_i H_i)` used by our
+  exact Newton solver. Our explicitly labelled safeguarded Newton is
+  also **not** Moré's LM algorithm.
+- **Status:** Direct primary-source sections read.
+
+### R11 — Armijo (1966): modified steepest descent
+
+**Full source:** [Pacific Journal of Mathematics, volume 16(1), printed
+pp. 1–3](https://msp.org/pjm/1966/16-1/pjm-v16-n1-p01-s.pdf).
+
+- **Checked:** printed pp. 1–3; conditions I–IV, convergence theorem,
+  Corollary 2 and discussion.
+- **Evidence:** A modified steepest-descent method tries an initial
+  step and geometrically reduces it until a **sufficient-decrease**
+  condition holds. The paper gives convergence statements under
+  assumptions including Lipschitz continuity on the starting-level
+  set and extra conditions implying a unique minimizer.
+- **Report claim:** Context for standard backtracking and for the course's
+  modified methods.
+- **Limit:** An arbitrary **nonconvex** regression MSE does not necessarily
+  meet those global conditions. Our final **fixed-step GD** did not use
+  Armijo backtracking, and our later personal adaptive-GD pilots are
+  outside the official comparison.
+- **Status:** Direct original text read; first source-page screenshot
+  successfully displayed, remaining screenshots not available.
+
+### R20 — Efron (1979): bootstrap
+
+**Source:** [The Annals of Statistics 7(1), 1–26](https://doi.org/10.1214/aos/1176344552);
+[public reading copy](https://ledaliang.github.io/journalclub/_static/efron1979/Efron1979.pdf).
+
+- **Checked:** printed pp. 1–2 (abstract/introduction), §8 discussion
+  of resampling.
+- **Evidence:** The paper introduces the nonparametric bootstrap to
+  estimate a statistic's sampling behavior using new samples drawn
+  with replacement from the empirical observations. The original
+  paper discusses examples and the jackknife's relation to the
+  bootstrap.
+- **Report claim:** Foundational citation for the idea of bootstrap
+  resampling.
+- **Limit:** This is **not** a validation of our specific 10-cluster,
+  10,000-resample **percentile** interval. R21 and a limitations paragraph
+  are needed to discuss within-dataset dependence and small numbers
+  of independent noise seeds.
+- **Status:** Original article text examined in part.
+
+### R22 — Paternain, Mokhtari and Ribeiro (2019): truncated positive Hessian
+
+**Author version:** [arXiv:1707.08028](https://arxiv.org/abs/1707.08028),
+[readable HTML](https://ar5iv.labs.arxiv.org/html/1707.08028).
+**Final version:** *SIAM Journal on Optimization* 29(1), 343–368,
+DOI 10.1137/17M1150116.
+
+- **Checked:** abstract, introductory description and Definition 2.1.
+- **Evidence:** A Newton-like update uses the **positive-definite
+  truncated inverse** rather than the unmodified inverse Hessian:
+  negative curvature eigenvalues are transformed to their absolute
+  values and small-magnitude modes are truncated.
+- **Report claim:** A concrete literature-motivated *alternative* for
+  negative-curvature saddle points.
+- **Limit:** This paper's proved escape properties require its own
+  assumptions and **do not apply** to our baseline exact Newton or
+  separately labelled safeguarded Newton implementation.
+- **Status:** Author-manuscript abstract, definition and opening section
+  read; proofs remain to examine if cited beyond the method overview.
+
+### R14 / R15 — early historical methods (metadata-only)
+
+- **R14:** Levenberg (1944), *Quarterly of Applied Mathematics*
+  **2(2), 164–168**, DOI 10.1090/qam/10666; publisher metadata
+  confirms publication, but **no original full-text analysis yet**.
+- **R15:** Marquardt (1963), *Journal of the Society for Industrial
+  and Applied Mathematics* **11(2), 431–441**,
+  DOI 10.1137/0111030; SIAM journal metadata confirms publication,
+  but **no original full-text analysis yet**. Search-indexed summaries
+  can conflate this paper with other least-absolute-deviation papers;
+  do not use an unverified secondary summary as the source of equations.
+- **Next:** inspect full historical texts only if we need a historical
+  mechanism claim beyond the publication and title.
+
+## Updated readiness
+
+- **Original candidate pool:** 24 scholarly works (unchanged).
+- **Source-specific claim notes:** 10 unique sources with substantive
+  evidence notes (R01, R06, R11, R16–R22). Depth varies; book-only
+  notes (R01/R06) are explicitly flagged as needing full chapters.
+- **Two extra historical references checked only for metadata:** R14/R15.
+- **Introduction:** not started, per student instruction.
+- **Priority next:** review nonlinear-regression textbook chapters,
+  the exact-Hessian versus Gauss–Newton derivation, and source sections
+  on small-cluster uncertainty; then finalize the bibliography based
+  on references actually used, not merely collected.
