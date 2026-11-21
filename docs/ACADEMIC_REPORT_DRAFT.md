@@ -3,7 +3,7 @@
 **Working academic report — English**  
 **Course:** Optimization Theory (BLM 599), Kocaeli University  
 **Instructor:** Prof. Dr. Yaşar Becerikli  
-**Status:** Sections 1–6 drafted, 2026-11-21. Full academic report is not yet complete. Reference numbering is provisional.
+**Status:** Sections 1–7 drafted, 2026-11-21. Full academic report is not yet complete. Reference numbering is provisional.
 
 ## 1. Introduction
 
@@ -321,7 +321,73 @@ Timing differences, final MSE values, stationarity rates and Hessian-based outco
 
 The experiments were executed from a frozen source-code revision with registered model configurations, starting vectors, noise seeds, selected GD rates, stopping rules, and analysis settings. For every dataset the generation procedure saved a content hash. The archive contains one row for each of the 300 registered method conditions, all 1,500 raw timing measurements, and two model-level summary files. The execution provenance records Python 3.12.14, NumPy 2.3.5, code/configuration SHA-256 hashes and the exact data hashes. An independent audit reproduced the 20 dataset hashes, timing medians, paired summaries and bootstrap intervals. These verifications support computational reproducibility of the **archived experiment**; numerical timings on another computer may differ. The archived results were not changed after observing test outcomes.
 
-## Provisional references for Sections 1–6 (renumber after completing the report)
+## 7. Experimental Results
+
+### 7.1. Stationarity and Hessian-based outcomes
+
+All results in this section derive from the **original, audited evaluation archived on 2026-11-01**. The primary analysis contains 50 paired conditions per model (ten independently noise-seeded datasets and five starts per dataset), for 200 GD and exact-Newton method-condition records across the two models. Each method's gradient-tolerance outcome and its final Hessian-based curvature classification are shown separately in Table 2. The denominator is always the full set of 50 registered attempts per model and method; failed runs were not discarded.
+
+**Table 2. Gradient-tolerance terminations and final curvature outcomes (counts of 50)**
+
+| Final diagnostic | Exponential GD | Exponential Newton | Logistic GD | Logistic Newton |
+|---|---:|---:|---:|---:|
+| Gradient-tolerance termination | 50 | 48 | 50 | 48 |
+| Hessian-confirmed strict local minimum | 50 | 4 | 50 | 22 |
+| Indefinite saddle | 0 | 44 | 0 | 24 |
+| Inconclusive near-zero curvature | 0 | 0 | 0 | 2 |
+| Did not reach gradient tolerance | 0 | 2 | 0 | 2 |
+
+Both GD configurations satisfied the gradient threshold and reached Hessian-confirmed strict local minima in **50/50** registered conditions. Exact Newton satisfied the gradient criterion in **48/50** conditions for *each* model, but its strict-local-minimum counts were only **4/50** for exponential decay and **22/50** for logistic growth. Of the stationary Newton endpoints, 44 were classified as indefinite saddles for the exponential model and 24 for the logistic model. Two logistic endpoints had inconclusive near-zero curvature. The remaining two Newton runs per model terminated before satisfying gradient tolerance, due to ill-conditioned Hessian or numerical-failure conditions.
+
+![Figure 1. Curvature classification of registered GD and exact-Newton attempts](figures/primary_curvature_outcomes.svg)
+
+**Figure 1.** Hessian-based classification of the final outcomes for the 200 primary method conditions. Each bar includes every registered condition. Curvature is diagnosed using the training objective and the predeclared eigenvalue tolerance of $10^{-8}$.
+
+### 7.2. Iterations, execution time and predictive error
+
+Table 3 reports the **median over all 50 attempts** for each method and model. Each condition's time is first defined as the median of five fresh optimizer invocations. Accordingly, these timings include incomplete and unsuccessful Newton attempts; they cannot be interpreted as time to an equally accurate fit.
+
+**Table 3. Descriptive outcomes of the primary optimizer comparison**
+
+| Metric (all registered attempts) | Exponential GD | Exponential Newton | Logistic GD | Logistic Newton |
+|---|---:|---:|---:|---:|
+| Median update count | 1,168 | 9 | 2,804 | 7 |
+| Median optimizer-only time (ms) | 66.69 | 1.10 | 147.09 | 1.13 |
+| Median final test MSE | 0.008850 | 1.155205 | 0.009147 | 10.805764 |
+
+For exponential decay, exact Newton required a median of **9** updates compared with **1,168** for GD, but had a substantially higher median final test MSE. The same contrast appeared for logistic growth: exact Newton used a median of **7** updates compared with **2,804** for GD, yet the median Newton test MSE remained far higher. These differences do not imply that every Newton attempt had poor predictive quality; some Newton runs reached minima with test errors comparable to GD.
+
+The exponential-model Newton records include a very large but finite test-MSE outlier of approximately **1.132e+12**. The primary table therefore uses medians rather than a mean dominated by this extreme observation. The outlier remains in the original records. Newton had a numerically lower test MSE than its paired GD run in only **3/50** exponential conditions and **14/50** logistic conditions (including very small differences); these are descriptive paired counts, not independent statistical trials.
+
+### 7.3. Paired computational-time differences
+
+For every dataset and start, a paired time difference was calculated as exact-Newton time minus GD time, using the method-specific median of five timing measurements. The five start-specific differences were averaged **within** each independent dataset before estimating the overall mean and its dataset-level bootstrap uncertainty (Eqs. 15–16).
+
+**Table 4. Dataset-level paired runtime differences, Newton minus GD**
+
+| Model | Mean difference (ms) | 95% dataset-bootstrap percentile interval (ms) |
+|---|---:|---:|
+| Exponential decay | **-83.24** | [-91.72, -75.36] |
+| Logistic growth | **-149.54** | [-160.81, -138.33] |
+
+![Figure 2. Ten paired dataset-level timing differences for each model](figures/dataset_paired_timing.svg)
+
+**Figure 2.** The ten independent dataset-level mean paired differences for each model, together with the mean and its 95% percentile-bootstrap interval (10,000 whole-dataset resamples). Negative values mean lower *per-attempt* runtime for Newton. All ten dataset-level differences were negative for both models. The intervals were generated with only ten independent datasets per model and may have imperfect nominal coverage; **no $p$-values were calculated**. They do not measure time required to obtain a strict local minimum or equal test MSE.
+
+### 7.4. Representative paired outcomes
+
+A representative failure mode is seen in exponential dataset **D02**, start **S5**. GD reached a strict local minimum after **2945** updates, with test MSE **0.007642**. Exact Newton stopped after **8** updates with gradient norm **5.31e-7**, but its test MSE was **1.142132**. Newton's final Hessian eigenvalues were approximately **[-1.712, 1.157, 4.556]**, containing both positive and negative values: the endpoint was a saddle, not a strict minimum. This numerical example demonstrates why small-gradient termination alone is insufficient.
+
+To avoid presenting Newton as uniformly unsuccessful, a contrasting case is **logistic dataset D01, start S1**. Both algorithms reached strict local minima; GD took **2563** updates (test MSE **0.010753**) whereas Newton took **4** updates (test MSE **0.010743**). Newton therefore did reach a comparable fitted solution much more quickly **in this particular favorable condition**. These two pairs are selected as transparent illustrations, not as estimates of average success.
+
+### 7.5. Exploratory safeguarded Newton
+
+A separately registered safeguard variant used a gradient fallback for unsuitable Newton directions and Armijo backtracking. It reached Hessian-confirmed strict local minima in **20/50** exponential conditions and **38/50** logistic conditions. The other **30/50** and **12/50** conditions, respectively, reached the 100-update cap before gradient-tolerance termination. Its median per-condition optimizer time was **11.03 ms** (exponential) and **2.59 ms** (logistic), while median test MSE was **0.134525** and **0.010743**. This variant does **not** replace exact Newton in Tables 2–4, nor does it enter their paired timing confidence intervals.
+
+The archive contains final parameter vectors, measured objective values and final Hessian eigenvalues, but not an exported iteration-by-iteration loss trajectory for every registered condition. Therefore, no loss-versus-iteration figure is presented as if it were part of the originally archived observations. Any future trajectory illustration would require a separately labelled diagnostic reconstruction.
+
+
+## Provisional references for Sections 1–7 (renumber after completing the report)
 [1] D. M. Bates and D. G. Watts, *Nonlinear Regression Analysis and Its Applications*. New York: Wiley, 1988. doi: [10.1002/9780470316757](https://doi.org/10.1002/9780470316757).
 
 [2] J. Nocedal and S. J. Wright, *Numerical Optimization*, 2nd ed. New York: Springer, 2006. doi: [10.1007/978-0-387-40065-5](https://doi.org/10.1007/978-0-387-40065-5).
@@ -400,3 +466,6 @@ The experiments were executed from a frozen source-code revision with registered
 - Section 6 verified against `config/experiment_plan.json`, `config/selected_gd_rates.json`, `config/evaluation_protocol.json`, `config/evaluation_provenance.json`, `docs/CALIBRATION_RESULTS.md`, `docs/EVALUATION_RUNNER.md`, `docs/FINAL_EVALUATION_RESULTS.md`, `opttheory/experiments/evaluation.py`, and `opttheory/experiments/plan.py`. The two preregistration files retain their **historical pre-execution status fields**; actual execution is established by the archived outputs and post-execution provenance. Do not rewrite the frozen files.
 - New distinct scholarly references genuinely cited in this section: [19] Efron (1979), [20] Davison & Hinkley (1997), [21] Cameron et al. (2008), bringing the report to **21 in-text-cited scholarly works** (minimum 20). Source [21] is used for dependence/few-cluster concerns; it does not validate the percentile interval employed in this study.
 - Section 6 deliberately excludes calibration overhead from optimization times, does not collapse convergence into test quality, and maintains the **GD 10,000 / Newton 100** unequal iteration caps. Refer to original records for timings and failure classifications in Section 7 rather than inserting results prematurely.
+
+- Section 7 derives **only from audited original evidence**: `evidence/evaluation_2026-11-01/model1_runs.csv`, `model2_runs.csv`, `model1_summary.json`, `model2_summary.json`, and `docs/FINAL_EVALUATION_RESULTS.md`. The summary's dataset differences were recomputed from all paired GD/Newton run-level medians before generating the figures.
+- Figures 1 and 2 are descriptive graphics computed from the archived counts and dataset-level timing summaries; no new benchmark results or optimizer trajectories were generated. Original method-specific runtime, failure cases, and held-out errors remain unchanged.
