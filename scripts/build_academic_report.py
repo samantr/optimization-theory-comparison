@@ -92,7 +92,8 @@ def main():
             p.alignment=WD_ALIGN_PARAGRAPH.LEFT
     # Pandoc handles OMML math. Retain all 16 numbered equations.
     for ti,table in enumerate(doc.tables):
-        table.style="Table Grid"
+        # Pandoc often supplies only its own "Table" style, not "Table Grid".
+        table.style = "Table Grid" if "Table Grid" in [st.name for st in styles] else "Table"
         table.alignment=WD_TABLE_ALIGNMENT.CENTER
         table.autofit=True
         for ri,row in enumerate(table.rows):
